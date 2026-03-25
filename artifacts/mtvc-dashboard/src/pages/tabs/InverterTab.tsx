@@ -62,7 +62,6 @@ export function InverterTab({ inverter }: Props) {
           System Data
         </div>
         <Row label="Output Power" value={`${inverter.outputKw.toFixed(2)} kW`} />
-        <Row label="Frequency"    value={`${inverter.acHz.toFixed(1)} Hz`} />
         <Row label="DC Current"   value={`${inverter.dcCurrent.toFixed(1)} A`} />
         <Row label="Temperature"  value={`${inverter.temp}°C`}  color={tempC} />
         <div style={{

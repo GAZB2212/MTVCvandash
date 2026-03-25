@@ -6,34 +6,29 @@ interface CardProps {
   style?: CSSProperties;
   className?: string;
   title?: string;
+  padding?: number | string;
 }
 
-export function Card({ children, accent, style, className, title }: CardProps) {
+export function Card({ children, accent, style, className, title, padding = '14px' }: CardProps) {
   return (
     <div
-      className={className}
+      className={`glass-card ${className || ''}`}
       style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border-color)',
-        borderTop: accent ? `2px solid ${accent}` : '1px solid var(--border-color)',
-        borderRadius: 4,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        padding: '10px',
+        padding,
+        position: 'relative',
+        overflow: 'hidden',
         ...style,
       }}
     >
+      {accent && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+          background: `linear-gradient(90deg, ${accent}, ${accent}80)`,
+          borderRadius: '14px 14px 0 0',
+        }} />
+      )}
       {title && (
-        <div
-          style={{
-            fontSize: 10,
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            color: 'var(--text-dim)',
-            fontFamily: 'Rajdhani, sans-serif',
-            fontWeight: 700,
-            marginBottom: 8,
-          }}
-        >
+        <div className="label-caps" style={{ marginBottom: 10, marginTop: accent ? 4 : 0 }}>
           {title}
         </div>
       )}

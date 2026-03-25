@@ -3,196 +3,162 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
+/* ─── FONTS ─────────────────────────────────────────────────── */
+/* Rajdhani + Share Tech Mono loaded via index.html */
 
-  --font-sans: var(--app-font-sans);
-  --font-mono: var(--app-font-mono);
-
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-}
-
-/* DARK MODE (default) */
+/* ─── DARK THEME (default) ───────────────────────────────────── */
 :root {
-  --bg: #080A0D;
-  --surface: #0E1318;
-  --surface2: #141B22;
-  --border-color: #1C2730;
-  --amber: #6DC82B;
-  --green: #22C55E;
-  --red: #EF4444;
-  --blue: #38BDF8;
-  --text: #CBD5E1;
-  --text-dim: #475569;
-
-  --background: 213 60% 5%;
-  --foreground: 213 22% 80%;
-  --border: 207 27% 14%;
-  --input: 207 27% 14%;
-  --ring: 95 64% 48%;
-  --card: 213 30% 8%;
-  --card-foreground: 213 22% 80%;
-  --primary: 95 64% 48%;
-  --primary-foreground: 213 60% 5%;
-  --secondary: 207 27% 14%;
-  --secondary-foreground: 213 22% 80%;
-  --muted: 207 27% 10%;
-  --muted-foreground: 213 15% 35%;
-  --accent: 207 27% 14%;
-  --accent-foreground: 213 22% 80%;
-  --destructive: 0 79% 60%;
-  --destructive-foreground: 0 0% 100%;
-
-  --app-font-sans: 'Rajdhani', sans-serif;
-  --app-font-mono: 'Share Tech Mono', monospace;
-  --radius: 4px;
+  --bg-base:        #08090d;
+  --bg-grad:        linear-gradient(155deg, #09090f 0%, #0a0d13 50%, #0c0a15 100%);
+  --glass-heavy:    rgba(255,255,255,0.07);
+  --glass-mid:      rgba(255,255,255,0.045);
+  --glass-light:    rgba(255,255,255,0.025);
+  --glass-border:   rgba(255,255,255,0.09);
+  --glass-border-hi: rgba(255,255,255,0.14);
+  --brand:          #6DC82B;
+  --brand-glow:     rgba(109,200,43,0.35);
+  --brand-dim:      rgba(109,200,43,0.15);
+  --blue:           #38BDF8;
+  --blue-glow:      rgba(56,189,248,0.25);
+  --green:          #34D399;
+  --red:            #F87171;
+  --red-glow:       rgba(248,113,113,0.3);
+  --amber:          #FBB040;
+  --text-hi:        rgba(255,255,255,0.92);
+  --text-mid:       rgba(255,255,255,0.60);
+  --text-lo:        rgba(255,255,255,0.32);
+  --radius-card:    14px;
+  --radius-sm:      8px;
+  --radius-pill:    100px;
+  --shadow-card:    0 4px 24px rgba(0,0,0,0.5), 0 1px 0 var(--glass-border) inset;
+  --shadow-glow-brand: 0 0 20px var(--brand-glow);
+  --transition:     all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ─── LIGHT THEME ─────────────────────────────────────────────── */
 .light {
-  --bg: #F0F2F5;
-  --surface: #FFFFFF;
-  --surface2: #E8ECF2;
-  --border-color: #D1D9E6;
-  --amber: #4A8A18;
-  --green: #15803D;
-  --red: #B91C1C;
-  --blue: #0369A1;
-  --text: #374151;
-  --text-dim: #6B7280;
-
-  --background: 220 20% 95%;
-  --foreground: 220 14% 20%;
-  --border: 220 20% 85%;
-  --input: 220 20% 85%;
-  --ring: 95 71% 32%;
-  --card: 0 0% 100%;
-  --card-foreground: 220 14% 20%;
-  --primary: 95 71% 32%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 220 20% 91%;
-  --secondary-foreground: 220 14% 20%;
-  --muted: 220 20% 91%;
-  --muted-foreground: 220 8% 43%;
-  --accent: 220 20% 91%;
-  --accent-foreground: 220 14% 20%;
-  --destructive: 0 72% 42%;
-  --destructive-foreground: 0 0% 100%;
+  --bg-base:        #f2f4f7;
+  --bg-grad:        linear-gradient(155deg, #f0f2f8 0%, #edf0f7 100%);
+  --glass-heavy:    rgba(255,255,255,0.85);
+  --glass-mid:      rgba(255,255,255,0.70);
+  --glass-light:    rgba(255,255,255,0.50);
+  --glass-border:   rgba(0,0,0,0.08);
+  --glass-border-hi: rgba(0,0,0,0.13);
+  --brand:          #4A8A18;
+  --brand-glow:     rgba(74,138,24,0.2);
+  --brand-dim:      rgba(74,138,24,0.10);
+  --blue:           #0284C7;
+  --blue-glow:      rgba(2,132,199,0.15);
+  --green:          #059669;
+  --red:            #DC2626;
+  --red-glow:       rgba(220,38,38,0.15);
+  --amber:          #D97706;
+  --text-hi:        rgba(0,0,0,0.90);
+  --text-mid:       rgba(0,0,0,0.55);
+  --text-lo:        rgba(0,0,0,0.30);
+  --shadow-card:    0 2px 16px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.9) inset;
+  --shadow-glow-brand: 0 0 16px rgba(74,138,24,0.2);
 }
 
-@layer base {
-  * {
-    @apply border-border;
-    box-sizing: border-box;
-  }
-  body {
-    font-family: var(--app-font-sans), sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-    overflow: hidden;
-  }
+/* ─── BASE ────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-hi);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  user-select: none;
 }
 
-/* CUSTOM SYSTEM COLORS */
-.font-mono-data {
-  font-family: 'Share Tech Mono', monospace;
-}
-
-/* Transitions */
 * {
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition);
 }
 
-/* Spin animation for fans */
-@keyframes spin-slow {
+/* ─── GLASS CARD ────────────────────────────────────────────────── */
+.glass-card {
+  background: var(--glass-heavy);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.glass-card-mid {
+  background: var(--glass-mid);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+}
+
+/* ─── TYPOGRAPHY SYSTEM ─────────────────────────────────────────── */
+.label-caps {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+}
+
+.label-mid {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+}
+
+.mono {
+  font-family: 'Share Tech Mono', 'SF Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass-border-hi); border-radius: 2px; }
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────── */
+@keyframes spin-gear {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
-.spin-active {
-  animation: spin-slow 1s linear infinite;
-}
+.spin-active { animation: spin-gear 1.2s linear infinite; }
 
-/* Pulse animation for status dots */
-@keyframes pulse-glow {
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  50%       { opacity: 0.7; box-shadow: 0 0 6px 2px currentColor; }
+}
+.pulse-dot { animation: pulse-dot 2.2s ease-in-out infinite; }
+
+@keyframes emerg-pulse {
+  0%, 100% { box-shadow: 0 0 30px var(--red-glow), 0 0 80px var(--red-glow); }
+  50%       { box-shadow: 0 0 60px rgba(248,113,113,0.6), 0 0 120px rgba(248,113,113,0.3); }
+}
+.emerg-glow { animation: emerg-pulse 1s ease-in-out infinite; }
+
+@keyframes warn-blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50%       { opacity: 0.2; }
 }
-.pulse-dot {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
+.warn-blink { animation: warn-blink 0.9s ease-in-out infinite; }
 
-/* Emergency pulse */
-@keyframes emergency-pulse {
-  0%, 100% { box-shadow: 0 0 20px #EF4444, 0 0 60px #EF4444; }
-  50% { box-shadow: 0 0 40px #EF4444, 0 0 100px #EF4444; }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.emergency-active {
-  animation: emergency-pulse 1s ease-in-out infinite;
-}
+.fade-in { animation: fade-in 0.2s ease forwards; }
 
-/* Warning blink */
-@keyframes warning-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-.warning-blink {
-  animation: warning-blink 0.8s ease-in-out infinite;
-}
+/* ─── BUTTON PRESS ─────────────────────────────────────────────── */
+button:active { transform: scale(0.96); }
 
-/* Active press state */
-button:active {
-  transform: scale(0.97);
-  transition: transform 0.1s ease;
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-dim);
-}
-
-/* Hex clip path for logo */
-.hex-clip {
-  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
-}
-
-/* HBar glow */
-.hbar-glow-amber { box-shadow: 0 0 8px rgba(109,200,43,0.5); }
-.hbar-glow-blue { box-shadow: 0 0 8px rgba(56,189,248,0.5); }
-.hbar-glow-green { box-shadow: 0 0 8px rgba(34,197,94,0.5); }
-.hbar-glow-red { box-shadow: 0 0 8px rgba(239,68,68,0.5); }
-
-/* ConnDot glow */
-.conn-glow-green { box-shadow: 0 0 6px rgba(34,197,94,0.8); }
-.conn-glow-red { box-shadow: 0 0 6px rgba(239,68,68,0.8); }
+/* ─── BRAND GLOW HELPERS ────────────────────────────────────────── */
+.glow-brand  { box-shadow: var(--shadow-glow-brand); }
+.glow-blue   { box-shadow: 0 0 16px var(--blue-glow); }
+.glow-red    { box-shadow: 0 0 16px var(--red-glow); }
+.conn-green  { color: var(--green); box-shadow: 0 0 8px var(--green); }
+.conn-red    { color: var(--red);   box-shadow: 0 0 8px var(--red); }

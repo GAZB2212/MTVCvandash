@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLiveData } from '../hooks/useLiveData';
+import { useVanConfig } from '../hooks/useVanConfig';
 import { ConnDot } from '../components/ConnDot';
 import { ArcGauge } from '../components/ArcGauge';
 import { HBar } from '../components/HBar';
@@ -26,12 +27,32 @@ function formatUptime(s: number) {
 
 const VDIV = <div style={{ width: '0.5px', background: 'var(--sep)', alignSelf: 'stretch', margin: '10px 0' }} />;
 
+const EMERGENCY_LIGHT_ID = 7;
+
 export default function CabDisplay() {
   const data = useLiveData();
-  const emergLight = data.lights.find(l => l.name === 'Emergency');
+  const { config } = useVanConfig();
+
+  // Merge config names + enabled into live data
+  const activeLights = data.lights
+    .map(l => {
+      const cfg = config.lights.find(c => c.id === l.id);
+      return cfg ? { ...l, name: cfg.name, _enabled: cfg.enabled } : { ...l, _enabled: true };
+    })
+    .filter(l => l._enabled);
+
+  const activeFans = data.fans
+    .map(f => {
+      const cfg = config.fans.find(c => c.id === f.id);
+      return cfg ? { ...f, name: cfg.name, _enabled: cfg.enabled } : { ...f, _enabled: true };
+    })
+    .filter(f => f._enabled);
+
+  // Emergency light — find by ID so renaming doesn't break it
+  const emergLight = data.lights.find(l => l.id === EMERGENCY_LIGHT_ID);
   const emergActive = emergLight?.on ?? false;
   const toggleEmerg = () =>
-    emergLight && data.setLights(data.lights.map(l => l.id === emergLight.id ? { ...l, on: !l.on } : l));
+    emergLight && data.setLights(data.lights.map(l => l.id === EMERGENCY_LIGHT_ID ? { ...l, on: !l.on } : l));
 
   const socC  = data.battery.soc > 60 ? 'var(--sys-green)' : data.battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
   const psiPct = (data.pressure.psi / data.pressure.maxPsi) * 100;
@@ -137,15 +158,15 @@ export default function CabDisplay() {
         <div style={{ width: 260, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 12, flexShrink: 0 }}>
           {/* Lights */}
           <div>
-            {colHead(`Lighting — ${data.lights.filter(l=>l.on).length} On`)}
+            {colHead(`Lighting — ${activeLights.filter(l=>l.on).length} On`)}
             <div className="card" style={{ borderRadius: 10 }}>
-              {data.lights.map((light, i) => {
-                const isEmerg = light.name === 'Emergency';
+              {activeLights.map((light, i) => {
+                const isEmerg = light.id === EMERGENCY_LIGHT_ID;
                 const accentC = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
                 return (
                   <div key={light.id} className="list-row" style={{
                     padding: '7px 12px', minHeight: 34,
-                    borderBottom: i < data.lights.length - 1 ? undefined : 'none',
+                    borderBottom: i < activeLights.length - 1 ? undefined : 'none',
                   }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: light.on ? accentC : 'var(--surface3)', flexShrink: 0 }} />
                     <span className="list-row-label" style={{ flex: 1, fontSize: 12, marginLeft: 8, color: light.on ? 'var(--label)' : 'var(--label2)' }}>{light.name}</span>
@@ -158,12 +179,12 @@ export default function CabDisplay() {
 
           {/* Fans */}
           <div>
-            {colHead(`Fans — ${data.fans.filter(f=>f.on).length} On`)}
+            {colHead(`Fans — ${activeFans.filter(f=>f.on).length} On`)}
             <div className="card" style={{ borderRadius: 10 }}>
-              {data.fans.map((fan, i) => (
+              {activeFans.map((fan, i) => (
                 <div key={fan.id} className="list-row" style={{
                   padding: '7px 12px', minHeight: 34,
-                  borderBottom: i < data.fans.length - 1 ? undefined : 'none', gap: 8,
+                  borderBottom: i < activeFans.length - 1 ? undefined : 'none', gap: 8,
                 }}>
                   <span className={fan.on ? 'spin' : ''} style={{ fontSize: 13, color: fan.on ? 'var(--brand)' : 'var(--label3)', flexShrink: 0 }}>◎</span>
                   <span className="list-row-label" style={{ flex: 1, fontSize: 12, color: fan.on ? 'var(--label)' : 'var(--label2)' }}>{fan.name}</span>

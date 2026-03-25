@@ -88,8 +88,8 @@ export default function CabDisplay() {
       {/* ── COLUMNS (334px) ── */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
-        {/* COL 1: Battery (240px) */}
-        <div style={{ width: 240, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, flexShrink: 0 }}>
+        {/* COL 1: Battery */}
+        <div style={{ flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0 }}>
           {colHead('Battery Percentage')}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
             <ArcGauge value={data.battery.soc} max={100} size={140} color={socC} strokeWidth={8}>
@@ -103,8 +103,8 @@ export default function CabDisplay() {
 
         {VDIV}
 
-        {/* COL 2: Lights (520px — 2-column grid) */}
-        <div style={{ width: 520, padding: '12px 14px', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+        {/* COL 2: Lights */}
+        <div style={{ flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           {/* Header row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexShrink: 0 }}>
             <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--label3)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>

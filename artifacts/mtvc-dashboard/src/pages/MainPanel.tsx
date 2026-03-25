@@ -42,7 +42,7 @@ function MtvcLogo() {
     <img
       src="/mtvc-logo.png"
       alt="MTVC Logo"
-      style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0 }}
+      style={{ width: 80, height: 80, objectFit: 'contain', flexShrink: 0 }}
     />
   );
 }
@@ -67,10 +67,10 @@ export default function MainPanel() {
         userSelect: 'none',
       }}
     >
-      {/* Header — 48px */}
+      {/* Header — 88px */}
       <div
         style={{
-          height: 48,
+          height: 88,
           display: 'flex',
           alignItems: 'center',
           gap: 10,

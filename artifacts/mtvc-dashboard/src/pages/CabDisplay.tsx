@@ -32,7 +32,7 @@ function MtvcLogo() {
     <img
       src="/mtvc-logo.png"
       alt="MTVC Logo"
-      style={{ width: 30, height: 30, objectFit: 'contain', flexShrink: 0 }}
+      style={{ width: 60, height: 60, objectFit: 'contain', flexShrink: 0 }}
     />
   );
 }
@@ -78,10 +78,10 @@ export default function CabDisplay() {
         userSelect: 'none',
       }}
     >
-      {/* Header — 36px */}
+      {/* Header — 68px */}
       <div
         style={{
-          height: 36,
+          height: 68,
           display: 'flex',
           alignItems: 'center',
           gap: 10,

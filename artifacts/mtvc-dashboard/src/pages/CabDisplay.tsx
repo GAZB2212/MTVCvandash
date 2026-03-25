@@ -47,13 +47,6 @@ export default function CabDisplay() {
     })
     .filter(l => l._enabled);
 
-  const activeFans = data.fans
-    .map(f => {
-      const cfg = config.fans.find(c => c.id === f.id);
-      return cfg ? { ...f, name: cfg.name, _enabled: cfg.enabled } : { ...f, _enabled: true };
-    })
-    .filter(f => f._enabled);
-
   // Emergency light — find by ID so renaming doesn't break it
   const emergLight = data.lights.find(l => l.id === EMERGENCY_LIGHT_ID);
   const emergActive = emergLight?.on ?? false;
@@ -66,7 +59,6 @@ export default function CabDisplay() {
   const online = data.inverter.connected && data.battery.connected;
 
   const toggleLight = (id: number) => data.setLights(data.lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
-  const toggleFan   = (id: number) => data.setFans(data.fans.map(f => f.id === id ? { ...f, on: !f.on } : f));
 
   const colHead = (label: string) => (
     <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--label3)', letterSpacing: '0.06em', textTransform: 'uppercase', paddingBottom: 10 }}>
@@ -132,44 +124,66 @@ export default function CabDisplay() {
 
         {VDIV}
 
-        {/* COL 2: Lights + Fans (260px) */}
-        <div style={{ width: 260, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 12, flexShrink: 0 }}>
-          {/* Lights */}
-          <div>
-            {colHead(`Lighting — ${activeLights.filter(l=>l.on).length} On`)}
-            <div className="card" style={{ borderRadius: 10 }}>
-              {activeLights.map((light, i) => {
-                const isEmerg = light.id === EMERGENCY_LIGHT_ID;
-                const accentC = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
-                return (
-                  <div key={light.id} className="list-row" style={{
-                    padding: '7px 12px', minHeight: 34,
-                    borderBottom: i < activeLights.length - 1 ? undefined : 'none',
-                  }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: light.on ? accentC : 'var(--surface3)', flexShrink: 0 }} />
-                    <span className="list-row-label" style={{ flex: 1, fontSize: 12, marginLeft: 8, color: light.on ? 'var(--label)' : 'var(--label2)' }}>{light.name}</span>
-                    <Toggle on={light.on} onToggle={() => toggleLight(light.id)} color={accentC} size="sm" />
-                  </div>
-                );
-              })}
+        {/* COL 2: Lights (520px — 2-column grid) */}
+        <div style={{ width: 520, padding: '12px 14px', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+          {/* Header row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexShrink: 0 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--label3)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              Lighting
+            </span>
+            <div style={{
+              padding: '2px 9px', borderRadius: 99, fontSize: 10, fontWeight: 700,
+              background: activeLights.filter(l => l.on).length > 0 ? 'var(--brand-dim)' : 'var(--surface1)',
+              color: activeLights.filter(l => l.on).length > 0 ? 'var(--brand)' : 'var(--label3)',
+            }}>
+              {activeLights.filter(l => l.on).length} on
             </div>
           </div>
 
-          {/* Fans */}
-          <div>
-            {colHead(`Fans — ${activeFans.filter(f=>f.on).length} On`)}
-            <div className="card" style={{ borderRadius: 10 }}>
-              {activeFans.map((fan, i) => (
-                <div key={fan.id} className="list-row" style={{
-                  padding: '7px 12px', minHeight: 34,
-                  borderBottom: i < activeFans.length - 1 ? undefined : 'none', gap: 8,
-                }}>
-                  <span className={fan.on ? 'spin' : ''} style={{ fontSize: 13, color: fan.on ? 'var(--brand)' : 'var(--label3)', flexShrink: 0 }}>◎</span>
-                  <span className="list-row-label" style={{ flex: 1, fontSize: 12, color: fan.on ? 'var(--label)' : 'var(--label2)' }}>{fan.name}</span>
-                  <Toggle on={fan.on} onToggle={() => toggleFan(fan.id)} size="sm" />
+          {/* 2-column grid — fills remaining height */}
+          <div style={{
+            flex: 1,
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gridTemplateRows: `repeat(${Math.ceil(activeLights.length / 2)}, 1fr)`,
+            gap: 6,
+            minHeight: 0,
+          }}>
+            {activeLights.map(light => {
+              const isEmerg = light.id === EMERGENCY_LIGHT_ID;
+              const accentC = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
+              const glowC   = isEmerg ? 'rgba(255,69,58,0.10)' : 'rgba(109,200,43,0.08)';
+              return (
+                <div
+                  key={light.id}
+                  onClick={() => toggleLight(light.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12, padding: '0 16px',
+                    borderRadius: 12, cursor: 'pointer',
+                    background: light.on ? glowC : 'var(--surface1)',
+                    border: `1px solid ${light.on
+                      ? (isEmerg ? 'rgba(255,69,58,0.28)' : 'rgba(109,200,43,0.22)')
+                      : 'transparent'}`,
+                    transition: 'background 0.2s, border-color 0.2s',
+                  }}
+                >
+                  <div style={{
+                    width: 12, height: 12, borderRadius: '50%', flexShrink: 0,
+                    background: light.on ? accentC : 'var(--surface3)',
+                    boxShadow: light.on ? `0 0 10px ${isEmerg ? 'rgba(255,69,58,0.8)' : 'rgba(109,200,43,0.8)'}` : 'none',
+                    transition: 'background 0.2s, box-shadow 0.2s',
+                  }} />
+                  <span style={{
+                    flex: 1, fontSize: 15, fontWeight: 600,
+                    color: light.on ? 'var(--label)' : 'var(--label2)',
+                    transition: 'color 0.2s',
+                  }}>
+                    {light.name}
+                  </span>
+                  <Toggle on={light.on} onToggle={() => toggleLight(light.id)} color={accentC} size="md" />
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
 

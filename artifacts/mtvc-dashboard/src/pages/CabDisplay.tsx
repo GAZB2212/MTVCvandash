@@ -92,15 +92,15 @@ export default function CabDisplay() {
         <div style={{ flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0, position: 'relative' }}>
           <img src="/mtvc-logo.png" aria-hidden="true" style={{
             position: 'absolute', inset: 0, width: '100%', height: '100%',
-            objectFit: 'contain', opacity: 0.04, pointerEvents: 'none',
+            objectFit: 'contain', opacity: 0.12, pointerEvents: 'none',
             userSelect: 'none', filter: 'grayscale(1)',
           }} />
           {colHead('Battery Percentage')}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-            <ArcGauge value={data.battery.soc} max={100} size={140} color={socC} strokeWidth={8}>
+            <ArcGauge value={data.battery.soc} max={100} size={220} color={socC} strokeWidth={10}>
               <div style={{ textAlign: 'center', lineHeight: 1 }}>
-                <div style={{ fontSize: 46, fontWeight: 200, color: socC, letterSpacing: '-0.03em' }}>{data.battery.soc}</div>
-                <div style={{ fontSize: 14, fontWeight: 400, color: 'var(--label3)', marginTop: 4 }}>%</div>
+                <div style={{ fontSize: 68, fontWeight: 200, color: socC, letterSpacing: '-0.03em' }}>{data.battery.soc}</div>
+                <div style={{ fontSize: 18, fontWeight: 400, color: 'var(--label3)', marginTop: 6 }}>%</div>
               </div>
             </ArcGauge>
           </div>

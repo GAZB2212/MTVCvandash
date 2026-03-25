@@ -1,0 +1,151 @@
+Build a React TypeScript dashboard application using Vite for a van control system called MTVC Van Control System by Mobile Tyre Van City. This runs on a Raspberry Pi 5 with a 7" touchscreen at 800×480px. Use Tailwind CSS for styling.
+Tech stack:
+
+React 18 + TypeScript
+Vite
+Tailwind CSS
+React Router for page navigation
+
+The app has two separate views:
+/ — Main panel (800×480px) for the power cabinet touchscreen
+/cab — Cab display (1280×400px) for a bar screen mounted at the top of the windscreen
+
+DESIGN SYSTEM
+Dark industrial aesthetic. Use these CSS variables throughout:
+css--bg: #080A0D
+--surface: #0E1318
+--surface2: #141B22
+--border: #1C2730
+--amber: #E8A020
+--green: #22C55E
+--red: #EF4444
+--blue: #38BDF8
+--text: #CBD5E1
+--text-dim: #475569
+Light mode alternative (toggled via a moon/sun switch in the header):
+css--bg: #F0F2F5
+--surface: #FFFFFF
+--surface2: #E8ECF2
+--border: #D1D9E6
+--amber: #B45309
+--green: #15803D
+--red: #B91C1C
+--blue: #0369A1
+--text: #374151
+--text-dim: #6B7280
+Typography: Import Rajdhani (weights 400, 600, 700) and Share Tech Mono from Google Fonts. Use Rajdhani for all labels and UI text. Use Share Tech Mono for all live numerical data.
+
+GLOBAL COMPONENTS
+Create these reusable components in /src/components/:
+ArcGauge.tsx — SVG arc gauge, 270° sweep, rounded linecaps, takes value, max, size, color, children props. Shows a track ring and a coloured fill ring. Children render centred inside.
+HBar.tsx — Horizontal progress bar, takes pct (0-100) and color props. Dark track with coloured fill and subtle glow box-shadow.
+StatRow.tsx — A row with a dim uppercase label on the left and a monospace value on the right. Optional left accent border. Dark surface2 background.
+Card.tsx — Dark surface card with 1px border, 2px coloured top border (accent prop), 4px border radius, subtle box-shadow. Transitions on background and border for theme switching.
+Toggle.tsx — A pill-shaped on/off toggle switch. Takes on (boolean), onToggle, color props. Smooth left/right thumb animation.
+ConnDot.tsx — A small coloured dot with glow box-shadow. Green when connected, red when not. Gentle pulse animation.
+
+MOCK DATA LAYER
+Create /src/hooks/useLiveData.ts
+This hook returns all system data and setters. Use useState with these initial values and useEffect with setInterval (2000ms) to simulate live fluctuation on inverter and pressure values:
+typescriptinverter: {
+  acVoltage: 230.4, acHz: 49.9, dcVoltage: 51.8,
+  dcCurrent: 34.2, outputKw: 1.77, loadPct: 38,
+  mode: 'Inverting', temp: 42, connected: true
+}
+battery: {
+  soc: 74, voltage: 52.1, current: -34.2,
+  remaining: 92500, fullCap: 125000, cycles: 12,
+  cellMin: 3.244, cellMax: 3.251, delta: 7,
+  temp: 24, chargeMos: true, dischargeMos: true,
+  balancing: false,
+  cells: Array of 16 floats between 3.244 and 3.252,
+  connected: true
+}
+pressure: { psi: 94, maxPsi: 150, connected: true }
+fans: [
+  { id: 0, name: 'Cabinet', on: true, auto: true },
+  { id: 1, name: 'Exhaust', on: false, auto: true },
+  { id: 2, name: 'Aux', on: false, auto: false }
+]
+fanThreshold: 45
+lights: Array of 8 objects { id, name, on }
+  Names: Cab, Load Bay, Work, Step, Exterior, Tools, Rear, Emergency
+alerts: Array of 4 log entries { id, type ('ok'|'warn'|'error'), msg, time }
+uptime: 15737 (seconds, increments every second)
+Also create /src/hooks/useApi.ts — identical structure but fetches from import.meta.env.VITE_API_URL (defaults to http://localhost:8000). Export both hooks, use useLiveData for development, swap to useApi for Pi deployment.
+
+MAIN PANEL — / (800×480px)
+/src/pages/MainPanel.tsx
+Layout: fixed 800×480 container, flex column. Header (48px) + content area (flex-1, position relative) + nav bar (44px).
+Header:
+
+Left: MTVC hexagon logo mark (CSS clip-path hexagon, amber fill, M inside) + "MTVC" in wide letter-spacing + "Mobile Tyre Van City" subtitle in amber below
+Centre-left: system status pill with ConnDot and "Systems Online" / "Fault Detected" text
+Right: SOC pill (amber), Load pill (blue), dark/light mode toggle (moon🌙/sun☀️ toggle switch, smooth thumb animation), digital clock in monospace
+
+Nav bar:
+6 equal tabs: Inverter ⚡ · Battery 🔋 · Air 💨 · Fans ⚙ · Lights 💡 · Status 📊
+Active tab: 2px amber top border, amber icon and label, subtle amber background tint
+Inactive: dimmed
+6 content pages (each absolutely positioned, fills content area, padding 12px, flex column gap 10px, overflow-y auto):
+Page 1 — Inverter:
+
+Top row: 2 Cards side by side. Card 1 (amber accent): "AC OUTPUT" label, large amber monospace AC voltage, HBar for load %, load % value. Card 2 (blue accent): "DC INPUT" label, large blue monospace DC voltage, HBar for current, current value in amps
+Middle: Card (amber accent) "SYSTEM DATA" — 2-column grid of 4 StatRows: Output Power (kW), Frequency (Hz), DC Current (A), Temperature (°C). Temperature StatRow colour changes: green below 45°C, amber 45-60°C, red above 60°C
+Bottom: full-width div with amber top border — ConnDot + "VE.BUS STATUS" label left, inverter mode right in monospace. Mode colour: amber=Inverting, green=Charging
+
+Page 2 — Battery:
+
+Top: 2-column grid. Left: Card with ArcGauge (soc, 100, 130px) — percentage number inside in colour, "SOC %" label, "Fogstar Drift 48V" and "125Ah LiFePO₄" below gauge. Right: 2 stacked Cards — Pack (Voltage, Current, Remaining Ah, Cycles StatRows) and Cells (Min Cell, Max Cell, Delta mV, Temp StatRows)
+Middle: Card "CELL VOLTAGES — 16S" — 8-column grid of 16 cell tiles. Each tile: C1 label, voltage in monospace coloured green/amber/red, tiny 3px fill bar at bottom
+Bottom: 3 equal status tiles for Charge MOS / Discharge MOS / Balancing — coloured top border, ON/OFF value
+
+Page 3 — Air Pressure:
+
+2-column layout. Left: Card centred, contains ArcGauge (psi, maxPsi, 150px) with needle line SVG, PSI number and label inside. Right: 2 stacked Cards — Tank Pressure (large PSI number, HBar, 0 and MAX labels) and Status (Current, Maximum, Usable % StatRows). Gauge/number colour: green above 60%, amber 40-60%, red below 40%
+
+Page 4 — Fan Control:
+
+Top: 2 Cards. Card 1 (dynamic colour): "CABINET TEMPERATURE", large monospace temp number with °C, small dim label "SOURCE: VICTRON MULTIPLUS 2". Card 2 (amber): "AUTO THRESHOLD" with − value + buttons (32×32px, tap to adjust ±1°C, min 30 max 70)
+Middle: Card "FAN CONTROL" — 3 fan rows. Each row: spinning ⚙ icon (CSS spin animation when on), fan name, AUTO pill button (blue tint when active), Toggle switch on right. Row has amber tint background and amber border when fan is on
+Bottom: status bar — "X of 3 fans active" left, "AUTO COOLING ACTIVE" or "STANDBY" right
+
+Page 5 — Lighting:
+
+Top: 2 full-width buttons — ALL ON (amber border and text) and ALL OFF (dim)
+Grid: 2×4 grid of zone cards. Each card: large emoji icon (desaturated/opacity 0.3 when off), zone name in caps, "● ON" or "○ OFF" status, Toggle switch. Active card has amber top border and amber tint background
+Bottom: active count bar
+
+Page 6 — Status:
+
+Health grid: 6 tiles 3×2 — VE.Bus, BMS Bluetooth, Pressure Sensor, Inverter Temp, Cell Delta, Battery SOC. Each: label, monospace value, green or amber border
+Middle: 2 Cards — Uptime (amber, large HH:MM:SS monospace, increments live) and Energy Today (blue, calculated from outputKw × uptime hours)
+Bottom: Event log Card — 4 entries, each with coloured circle icon, message, right-aligned time. Left accent border coloured by type
+
+
+CAB DISPLAY — /cab (1280×400px)
+/src/pages/CabDisplay.tsx
+Fixed 1280×400 container. Same dark background. Header bar (36px) + main content + footer bar (28px).
+Header: MTVC logo mark + name left, system status chip, animated pulsing red "⚠ EMERGENCY LIGHTS ACTIVE" banner (only visible when emergency is on), clock right
+Main content — 4 vertical columns separated by 1px borders:
+Column 1 (280px) — Battery:
+ArcGauge (soc, 100, 120px) with SOC % inside coloured by level. Voltage and current with direction arrow (↑ charging, ↓ discharging) below gauge. "Fogstar Drift 48V · 125Ah" label. SOC HBar below.
+Column 2 (260px) — Inverter:
+Large AC voltage number. Load HBar with percentage. 2×2 grid of small stat tiles: Cabinet Temp, Hz, DC Input, Load %. Tile colours by state.
+Column 3 (240px) — Lights + Fans:
+"LIGHTING" label + active count chip. 4×2 grid of compact zone pill toggles (tap to toggle, amber when on, red for Emergency). "CABINET FANS" label below. 3 fan status tiles (Cabinet, Exhaust, Aux) with spinning ⚙ when active.
+Column 4 (flex-1, right side nearest driver) — Emergency:
+Centred vertically. "EMERGENCY" or "ACTIVE" status label above button. Large circular button (160×160px): deep red radial gradient, 🚨 emoji, "EMERG" text. When active: red glow box-shadow, pulse animation, whole column gets subtle red radial background glow. "TAP TO ACTIVATE / DEACTIVATE" label below. "⚠ LIGHTS ON" pulsing chip appears below when active.
+Footer: 7 compact status pills across full width — SOC, Pack Voltage, Load, AC Out, Temp, Air PSI, Uptime. Each has a dim label and coloured monospace value.
+
+ADDITIONAL REQUIREMENTS
+Theme switching: implement via React context (ThemeContext). Provide dark and light token sets. All components read colours from context. Transition all colour properties with transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1).
+Environment config: create .env.development with VITE_API_URL=http://localhost:8000 and .env.production with VITE_API_URL=http://vanctrl.local:8000.
+Create a README.md with:
+
+How to run locally (npm run dev)
+How to build for Pi (npm run build)
+How to copy to Pi (rsync -av dist/ pi@vanctrl.local:~/vanctrl/ui/)
+Environment variable explanation
+
+Make the app feel premium and responsive. Every interactive element should have a subtle active/press state. All transitions smooth. No placeholder grey boxes — every component fully styled and functional from the start.

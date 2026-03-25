@@ -148,6 +148,18 @@ body {
 }
 .slide-in { animation: slide-in 0.22s var(--ease) both; }
 
+@keyframes battery-breathe {
+  0%,100% { opacity: 1;   transform: scale(1);    }
+  50%      { opacity: 0.72; transform: scale(0.97); }
+}
+.battery-breathe { animation: battery-breathe 3s ease-in-out infinite; }
+
+@keyframes battery-critical {
+  0%,100% { opacity: 1;   transform: scale(1);    filter: drop-shadow(0 0 0px var(--sys-red)); }
+  50%      { opacity: 0.6; transform: scale(0.95); filter: drop-shadow(0 0 18px var(--sys-red)); }
+}
+.battery-critical { animation: battery-critical 0.85s ease-in-out infinite; }
+
 /* ── BUTTON STATES ── */
 button { -webkit-tap-highlight-color: transparent; }
 button:active { opacity: 0.75; }

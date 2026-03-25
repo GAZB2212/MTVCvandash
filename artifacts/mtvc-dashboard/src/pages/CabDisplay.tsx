@@ -46,7 +46,9 @@ export default function CabDisplay() {
   const toggleEmerg = () =>
     emergLight && data.setLights(data.lights.map(l => l.id === EMERGENCY_LIGHT_ID ? { ...l, on: !l.on } : l));
 
-  const socC  = data.battery.soc > 60 ? 'var(--sys-green)' : data.battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
+  const soc = data.battery.soc;
+  const socC  = soc > 30 ? 'var(--sys-green)' : soc > 10 ? 'var(--sys-orange)' : 'var(--sys-red)';
+  const isCritical = soc <= 10;
   const online = data.inverter.connected && data.battery.connected;
 
   const toggleLight = (id: number) => data.setLights(data.lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
@@ -91,13 +93,24 @@ export default function CabDisplay() {
         {/* COL 1: Battery */}
         <div style={{ flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0, position: 'relative' }}>
           {colHead('Battery Percentage')}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-            <ArcGauge value={data.battery.soc} max={100} size={220} color={socC} strokeWidth={10}>
-              <div style={{ textAlign: 'center', lineHeight: 1 }}>
-                <div style={{ fontSize: 68, fontWeight: 200, color: socC, letterSpacing: '-0.03em' }}>{data.battery.soc}</div>
-                <div style={{ fontSize: 18, fontWeight: 400, color: 'var(--label3)', marginTop: 6 }}>%</div>
-              </div>
-            </ArcGauge>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center', position: 'relative' }}>
+            {/* Radial glow — breathes behind the gauge */}
+            <div style={{
+              position: 'absolute',
+              width: 220, height: 220,
+              borderRadius: '50%',
+              background: `radial-gradient(circle, color-mix(in srgb, ${socC} 18%, transparent) 0%, transparent 70%)`,
+              animation: `${isCritical ? 'battery-critical' : 'battery-breathe'} ${isCritical ? '0.85s' : '3s'} ease-in-out infinite`,
+              pointerEvents: 'none',
+            }} />
+            <div className={isCritical ? 'battery-critical' : 'battery-breathe'}>
+              <ArcGauge value={soc} max={100} size={220} color={socC} strokeWidth={10}>
+                <div style={{ textAlign: 'center', lineHeight: 1 }}>
+                  <div style={{ fontSize: 68, fontWeight: 200, color: socC, letterSpacing: '-0.03em' }}>{soc}</div>
+                  <div style={{ fontSize: 18, fontWeight: 400, color: 'var(--label3)', marginTop: 6 }}>%</div>
+                </div>
+              </ArcGauge>
+            </div>
           </div>
         </div>
 

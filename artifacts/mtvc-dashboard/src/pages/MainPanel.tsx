@@ -8,13 +8,10 @@ import { calcTimeRemaining } from './tabs/BatteryTab';
 import { InverterTab } from './tabs/InverterTab';
 import { BatteryTab } from './tabs/BatteryTab';
 import { HomeTab } from './tabs/HomeTab';
-import { FansTab } from './tabs/FansTab';
-import { LightsTab } from './tabs/LightsTab';
 import { StatusTab } from './tabs/StatusTab';
 
 const TABS = [
   { id: 'home',     label: 'Home'     },
-  { id: 'lights',   label: 'Lights'   },
   { id: 'inverter', label: 'Inverter' },
   { id: 'battery',  label: 'Battery'  },
   { id: 'status',   label: 'Status'   },
@@ -76,24 +73,8 @@ export default function MainPanel() {
     })
     .filter(l => l._enabled);
 
-  const activeFans = data.fans
-    .map(f => {
-      const cfg = vanConfig.config.fans.find(c => c.id === f.id);
-      return cfg ? { ...f, name: cfg.name, _enabled: cfg.enabled } : { ...f, _enabled: true };
-    })
-    .filter(f => f._enabled);
-
-  // Sync setLights/setFans to pass only visible items but maintain full array in state
   const setLightsProxy = (next: typeof data.lights) => {
-    // Merge back — keep disabled lights unchanged
     data.setLights(data.lights.map(orig => {
-      const updated = next.find(n => n.id === orig.id);
-      return updated ?? orig;
-    }));
-  };
-
-  const setFansProxy = (next: typeof data.fans) => {
-    data.setFans(data.fans.map(orig => {
       const updated = next.find(n => n.id === orig.id);
       return updated ?? orig;
     }));
@@ -205,19 +186,7 @@ export default function MainPanel() {
             {t.id === 'home'     && <HomeTab battery={data.battery} powerKw={data.inverter.outputKw} lights={activeLights} setLights={setLightsProxy} />}
             {t.id === 'inverter' && <InverterTab inverter={data.inverter} />}
             {t.id === 'battery'  && <BatteryTab  battery={data.battery} powerKw={data.inverter.outputKw} />}
-            {t.id === 'fans'     && (
-              <FansTab
-                fans={activeFans}
-                fanThreshold={data.fanThreshold}
-                inverterTemp={data.inverter.temp}
-                setFans={setFansProxy}
-                setFanThreshold={data.setFanThreshold}
-              />
-            )}
-            {t.id === 'lights' && (
-              <LightsTab lights={activeLights} setLights={setLightsProxy} />
-            )}
-            {t.id === 'status' && (
+            {t.id === 'status'   && (
               <StatusTab inverter={data.inverter} battery={data.battery}
                 pressure={data.pressure} alerts={data.alerts} uptime={data.uptime} />
             )}

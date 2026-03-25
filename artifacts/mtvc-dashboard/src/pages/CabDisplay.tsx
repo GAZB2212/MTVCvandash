@@ -3,7 +3,6 @@ import { useLiveData } from '../hooks/useLiveData';
 import { useVanConfig } from '../hooks/useVanConfig';
 import { ConnDot } from '../components/ConnDot';
 import { ArcGauge } from '../components/ArcGauge';
-import { HBar } from '../components/HBar';
 import { Toggle } from '../components/Toggle';
 
 function Clock({ offset }: { offset: number }) {
@@ -99,26 +98,14 @@ export default function CabDisplay() {
 
         {/* COL 1: Battery (240px) */}
         <div style={{ width: 240, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, flexShrink: 0 }}>
-          {colHead('Battery')}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center', gap: 10 }}>
-            <ArcGauge value={data.battery.soc} max={100} size={110} color={socC} strokeWidth={7}>
+          {colHead('Battery Percentage')}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+            <ArcGauge value={data.battery.soc} max={100} size={140} color={socC} strokeWidth={8}>
               <div style={{ textAlign: 'center', lineHeight: 1 }}>
-                <div style={{ fontSize: 28, fontWeight: 200, color: socC, letterSpacing: '-0.02em' }}>{data.battery.soc}</div>
-                <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--label3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 2 }}>SOC %</div>
+                <div style={{ fontSize: 46, fontWeight: 200, color: socC, letterSpacing: '-0.03em' }}>{data.battery.soc}</div>
+                <div style={{ fontSize: 14, fontWeight: 400, color: 'var(--label3)', marginTop: 4 }}>%</div>
               </div>
             </ArcGauge>
-            <div style={{ width: '100%' }}>
-              <HBar pct={data.battery.soc} color={socC} height={3} />
-            </div>
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 14, fontWeight: 300, color: 'var(--sys-blue)', fontVariantNumeric: 'tabular-nums' }}>
-                {data.battery.voltage.toFixed(1)}V
-              </span>
-              <span style={{ fontSize: 14, fontWeight: 300, color: 'var(--label2)', fontVariantNumeric: 'tabular-nums' }}>
-                {Math.abs(data.battery.current).toFixed(1)}A
-              </span>
-            </div>
-            <div style={{ fontSize: 10, color: 'var(--label3)', fontWeight: 500 }}>Fogstar Drift 48V · 125Ah</div>
           </div>
         </div>
 

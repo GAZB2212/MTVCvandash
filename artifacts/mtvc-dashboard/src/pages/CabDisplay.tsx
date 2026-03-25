@@ -5,7 +5,6 @@ import { ConnDot } from '../components/ConnDot';
 import { ArcGauge } from '../components/ArcGauge';
 import { HBar } from '../components/HBar';
 import { Toggle } from '../components/Toggle';
-import { StatRow } from '../components/StatRow';
 
 function Clock() {
   const [t, setT] = useState('');
@@ -57,7 +56,6 @@ export default function CabDisplay() {
   const socC  = data.battery.soc > 60 ? 'var(--sys-green)' : data.battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
   const psiPct = (data.pressure.psi / data.pressure.maxPsi) * 100;
   const psiC  = psiPct > 60 ? 'var(--sys-green)' : psiPct > 40 ? 'var(--sys-orange)' : 'var(--sys-red)';
-  const tmpC  = data.inverter.temp < 45 ? 'var(--sys-green)' : data.inverter.temp < 60 ? 'var(--sys-orange)' : 'var(--sys-red)';
   const online = data.inverter.connected && data.battery.connected;
 
   const toggleLight = (id: number) => data.setLights(data.lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
@@ -127,34 +125,7 @@ export default function CabDisplay() {
 
         {VDIV}
 
-        {/* COL 2: Inverter (250px) */}
-        <div style={{ width: 250, padding: '12px 14px', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-          {colHead('Inverter')}
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 40, fontWeight: 200, color: 'var(--label)', letterSpacing: '-0.03em', lineHeight: 1 }}>
-              {data.inverter.acVoltage.toFixed(1)}
-              <span style={{ fontSize: 17, fontWeight: 300, color: 'var(--label2)', marginLeft: 3 }}>V</span>
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--label3)', fontWeight: 600, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>AC Output</div>
-            <div style={{ marginTop: 10 }}>
-              <HBar pct={data.inverter.loadPct} color="var(--brand)" height={3} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
-                <span style={{ fontSize: 11, color: 'var(--label3)', fontWeight: 500 }}>Load</span>
-                <span style={{ fontSize: 11, color: 'var(--brand)', fontWeight: 600 }}>{data.inverter.loadPct}%</span>
-              </div>
-            </div>
-          </div>
-          <div className="card" style={{ borderRadius: 10 }}>
-            <StatRow label="DC Input"   value={`${data.inverter.dcVoltage.toFixed(1)} V`}  valueColor="var(--sys-blue)" />
-            <StatRow label="Frequency"  value={`${data.inverter.acHz.toFixed(1)} Hz`} />
-            <StatRow label="Temp"       value={`${data.inverter.temp}°C`}             valueColor={tmpC} />
-            <StatRow label="Mode"       value={data.inverter.mode}                    valueColor="var(--brand)" last />
-          </div>
-        </div>
-
-        {VDIV}
-
-        {/* COL 3: Lights + Fans (260px) */}
+        {/* COL 2: Lights + Fans (260px) */}
         <div style={{ width: 260, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 12, flexShrink: 0 }}>
           {/* Lights */}
           <div>
@@ -310,13 +281,10 @@ export default function CabDisplay() {
         flexShrink: 0,
       }}>
         {[
-          { label: 'SOC',    value: `${data.battery.soc}%`,                         color: socC },
-          { label: 'Pack',   value: `${data.battery.voltage.toFixed(1)}V`,           color: 'var(--sys-blue)' },
-          { label: 'AC',     value: `${data.inverter.acVoltage.toFixed(1)}V`,        color: 'var(--brand)' },
-          { label: 'Load',   value: `${data.inverter.loadPct}%`,                     color: 'var(--brand)' },
-          { label: 'Temp',   value: `${data.inverter.temp}°C`,                       color: tmpC },
-          { label: 'Air',    value: `${data.pressure.psi} PSI`,                      color: psiC },
-          { label: 'Uptime', value: formatUptime(data.uptime),                        color: 'var(--label2)' },
+          { label: 'SOC',    value: `${data.battery.soc}%`,               color: socC },
+          { label: 'Pack',   value: `${data.battery.voltage.toFixed(1)}V`, color: 'var(--sys-blue)' },
+          { label: 'Air',    value: `${data.pressure.psi} PSI`,            color: psiC },
+          { label: 'Uptime', value: formatUptime(data.uptime),              color: 'var(--label2)' },
         ].map(({ label, value, color }, i, arr) => (
           <div key={label} style={{
             display: 'flex', alignItems: 'center', gap: 5,

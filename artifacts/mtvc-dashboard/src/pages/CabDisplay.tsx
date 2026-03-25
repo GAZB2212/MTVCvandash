@@ -89,7 +89,12 @@ export default function CabDisplay() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
         {/* COL 1: Battery */}
-        <div style={{ flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0 }}>
+        <div style={{ flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0, position: 'relative' }}>
+          <img src="/mtvc-logo.png" aria-hidden="true" style={{
+            position: 'absolute', inset: 0, width: '100%', height: '100%',
+            objectFit: 'contain', opacity: 0.04, pointerEvents: 'none',
+            userSelect: 'none', filter: 'grayscale(1)',
+          }} />
           {colHead('Battery Percentage')}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
             <ArcGauge value={data.battery.soc} max={100} size={140} color={socC} strokeWidth={8}>

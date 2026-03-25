@@ -28,7 +28,10 @@ const VDIV = <div style={{ width: '0.5px', background: 'var(--sep)', alignSelf: 
 
 export default function CabDisplay() {
   const data = useLiveData();
-  const [emergActive, setEmergActive] = useState(false);
+  const emergLight = data.lights.find(l => l.name === 'Emergency');
+  const emergActive = emergLight?.on ?? false;
+  const toggleEmerg = () =>
+    emergLight && data.setLights(data.lights.map(l => l.id === emergLight.id ? { ...l, on: !l.on } : l));
 
   const socC  = data.battery.soc > 60 ? 'var(--sys-green)' : data.battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
   const psiPct = (data.pressure.psi / data.pressure.maxPsi) * 100;
@@ -184,7 +187,7 @@ export default function CabDisplay() {
           </div>
 
           <button
-            onClick={() => setEmergActive(v => !v)}
+            onClick={toggleEmerg}
             className={emergActive ? 'emerg-pulse' : ''}
             style={{
               width: 130, height: 130, borderRadius: '50%', cursor: 'pointer', border: 'none',

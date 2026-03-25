@@ -21,7 +21,25 @@ export function HomeTab({ battery, powerKw, lights, setLights }: Props) {
     setLights(lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
 
   return (
-    <div style={{ display: 'flex', gap: 8, height: '100%', minHeight: 0 }}>
+    <div style={{ display: 'flex', gap: 8, height: '100%', minHeight: 0, position: 'relative' }}>
+
+      {/* Ghost logo */}
+      <img
+        src="/mtvc-logo.png"
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          opacity: 0.035,
+          pointerEvents: 'none',
+          userSelect: 'none',
+          filter: 'grayscale(1)',
+        }}
+      />
 
       {/* LEFT: Battery snapshot */}
       <div style={{ width: 232, display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>

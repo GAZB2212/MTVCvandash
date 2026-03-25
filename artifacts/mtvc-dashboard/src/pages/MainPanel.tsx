@@ -185,8 +185,9 @@ export default function MainPanel() {
           <div key={t.id} style={{
             position: 'absolute', inset: 0,
             padding: '12px 14px',
-            overflowY: 'auto',
-            display: tab === t.id ? 'block' : 'none',
+            overflow: 'hidden',
+            display: tab === t.id ? 'flex' : 'none',
+            flexDirection: 'column',
           }}>
             {t.id === 'inverter' && <InverterTab inverter={data.inverter} />}
             {t.id === 'battery'  && <BatteryTab  battery={data.battery} />}

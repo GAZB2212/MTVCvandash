@@ -3,57 +3,87 @@ import { LightData } from '../../hooks/useLiveData';
 
 interface Props { lights: LightData[]; setLights: (lights: LightData[]) => void; }
 
+const EMERGENCY_ID = 7;
+
 export function LightsTab({ lights, setLights }: Props) {
-  const toggle  = (id: number) => setLights(lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
-  const allOn   = () => setLights(lights.map(l => ({ ...l, on: true  })));
-  const allOff  = () => setLights(lights.map(l => ({ ...l, on: false })));
-  const active  = lights.filter(l => l.on).length;
+  const toggle = (id: number) => setLights(lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
+  const allOn  = () => setLights(lights.map(l => ({ ...l, on: true  })));
+  const allOff = () => setLights(lights.map(l => ({ ...l, on: false })));
+  const active = lights.filter(l => l.on).length;
 
   return (
-    <div className="slide-in" style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%' }}>
-      {/* Quick actions */}
-      <div style={{ display: 'flex', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 8 }}>
+
+      {/* Action bar */}
+      <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
         <button onClick={allOn} style={{
-          flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer',
-          background: 'var(--brand-dim)',
-          fontSize: 13, fontWeight: 600, color: 'var(--brand)',
+          flex: 1, height: 40, borderRadius: 10, border: 'none', cursor: 'pointer',
+          background: 'var(--brand-dim)', fontSize: 14, fontWeight: 600, color: 'var(--brand)',
         }}>All On</button>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '0 14px', fontSize: 12, fontWeight: 600, color: 'var(--label3)',
+          letterSpacing: '0.04em',
+        }}>
+          {active}/{lights.length}
+        </div>
         <button onClick={allOff} style={{
-          flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer',
-          background: 'var(--surface1)',
-          fontSize: 13, fontWeight: 600, color: 'var(--label2)',
+          flex: 1, height: 40, borderRadius: 10, border: 'none', cursor: 'pointer',
+          background: 'var(--surface1)', fontSize: 14, fontWeight: 600, color: 'var(--label2)',
         }}>All Off</button>
       </div>
 
-      {/* Zone grid */}
-      <div>
-        <div className="section-header">Zones — {active} of {lights.length} On</div>
-        <div className="card" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-          {lights.map((light, i) => {
-            const isEmerg = light.name === 'Emergency';
-            const accentC  = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
-            const isOdd = i % 2 === 1;
-            return (
-              <div key={light.id} onClick={() => toggle(light.id)} style={{
+      {/* Zone grid — fills all remaining height */}
+      <div style={{
+        flex: 1,
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: `repeat(${Math.ceil(lights.length / 2)}, 1fr)`,
+        gap: 6,
+        minHeight: 0,
+      }}>
+        {lights.map(light => {
+          const isEmerg = light.id === EMERGENCY_ID;
+          const accentC = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
+          const glowC   = isEmerg ? 'rgba(255,69,58,0.12)' : 'rgba(109,200,43,0.10)';
+          return (
+            <div
+              key={light.id}
+              onClick={() => toggle(light.id)}
+              style={{
+                boxSizing: 'border-box',
                 display: 'flex', alignItems: 'center', gap: 12,
-                padding: '11px 14px', cursor: 'pointer',
-                borderBottom: i < lights.length - 2 ? '0.5px solid var(--sep)' : 'none',
-                borderRight: !isOdd ? '0.5px solid var(--sep)' : 'none',
-                background: light.on ? `color-mix(in srgb, ${isEmerg ? '#FF453A' : '#6DC82B'} 8%, transparent)` : 'transparent',
+                padding: '0 18px',
+                borderRadius: 14,
+                background: light.on ? glowC : 'var(--surface1)',
+                border: `1px solid ${light.on ? (isEmerg ? 'rgba(255,69,58,0.3)' : 'rgba(109,200,43,0.25)') : 'transparent'}`,
+                cursor: 'pointer',
+                transition: 'background 0.2s, border-color 0.2s',
+              }}
+            >
+              {/* Status dot */}
+              <div style={{
+                width: 12, height: 12, borderRadius: '50%', flexShrink: 0,
+                background: light.on ? accentC : 'var(--surface3)',
+                boxShadow: light.on ? `0 0 10px ${isEmerg ? 'rgba(255,69,58,0.7)' : 'rgba(109,200,43,0.7)'}` : 'none',
+                transition: 'background 0.2s, box-shadow 0.2s',
+              }} />
+
+              {/* Name */}
+              <span style={{
+                flex: 1, fontSize: 15, fontWeight: 600,
+                color: light.on ? 'var(--label)' : 'var(--label2)',
+                textAlign: 'left',
+                transition: 'color 0.2s',
               }}>
-                <div style={{
-                  width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
-                  background: light.on ? accentC : 'var(--surface3)',
-                  boxShadow: light.on ? `0 0 8px ${isEmerg ? 'rgba(255,69,58,0.6)' : 'rgba(109,200,43,0.6)'}` : 'none',
-                }} />
-                <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: light.on ? 'var(--label)' : 'var(--label2)' }}>
-                  {light.name}
-                </span>
-                <Toggle on={light.on} onToggle={() => toggle(light.id)} color={accentC} size="sm" />
-              </div>
-            );
-          })}
-        </div>
+                {light.name}
+              </span>
+
+              {/* Toggle */}
+              <Toggle on={light.on} onToggle={() => toggle(light.id)} color={accentC} size="md" />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -14,69 +14,101 @@ export function FansTab({ fans, fanThreshold, inverterTemp, setFans, setFanThres
   const activeFans = fans.filter(f => f.on).length;
 
   return (
-    <div className="slide-in" style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%' }}>
-      <div style={{ display: 'flex', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 8 }}>
+
+      {/* Stat cards row */}
+      <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
         {/* Temperature */}
-        <div className="card" style={{ flex: 1, padding: '16px' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 10 }}>
+        <div className="card" style={{ flex: 1, padding: '14px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 4 }}>
             Cabinet Temp
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3 }}>
-            <span style={{ fontSize: 48, fontWeight: 200, color: tempC, lineHeight: 1, letterSpacing: '-0.03em' }}>{inverterTemp}</span>
-            <span style={{ fontSize: 20, fontWeight: 300, color: 'var(--label2)', paddingBottom: 8 }}>°C</span>
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--label3)', marginTop: 8, fontWeight: 500 }}>
-            SOURCE: VICTRON MULTIPLUS 2
+            <span style={{ fontSize: 44, fontWeight: 200, color: tempC, lineHeight: 1, letterSpacing: '-0.03em' }}>{inverterTemp}</span>
+            <span style={{ fontSize: 18, fontWeight: 300, color: 'var(--label2)', paddingBottom: 6 }}>°C</span>
           </div>
         </div>
 
         {/* Threshold */}
-        <div className="card" style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 10 }}>
+        <div className="card" style={{ flex: 1, padding: '14px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--label3)' }}>
             Auto Threshold
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button onClick={() => setFanThreshold(Math.max(30, fanThreshold - 1))} style={{
-              width: 34, height: 34, borderRadius: 8, border: 'none',
-              background: 'var(--surface2)', color: 'var(--label)', fontSize: 22,
+              width: 42, height: 42, borderRadius: 10, border: 'none',
+              background: 'var(--surface2)', color: 'var(--label)', fontSize: 26,
               fontWeight: 200, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>−</button>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 38, fontWeight: 200, color: 'var(--brand)', lineHeight: 1, letterSpacing: '-0.02em' }}>
-                {fanThreshold}°
-              </div>
+            <div style={{ fontSize: 40, fontWeight: 200, color: 'var(--brand)', lineHeight: 1, letterSpacing: '-0.02em' }}>
+              {fanThreshold}°
             </div>
             <button onClick={() => setFanThreshold(Math.min(70, fanThreshold + 1))} style={{
-              width: 34, height: 34, borderRadius: 8, border: 'none',
-              background: 'var(--surface2)', color: 'var(--label)', fontSize: 22,
+              width: 42, height: 42, borderRadius: 10, border: 'none',
+              background: 'var(--surface2)', color: 'var(--label)', fontSize: 26,
               fontWeight: 200, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>+</button>
           </div>
         </div>
       </div>
 
-      {/* Fan list */}
-      <div>
-        <div className="section-header">Fan Control — {activeFans} of {fans.length} Active</div>
-        <div className="card">
-          {fans.map((fan, i) => (
-            <div key={fan.id} className="list-row" style={{
-              borderBottom: i < fans.length - 1 ? undefined : 'none',
-              gap: 12,
-            }}>
-              <span className={fan.on ? 'spin' : ''} style={{ fontSize: 16, color: fan.on ? 'var(--brand)' : 'var(--label3)', flexShrink: 0 }}>◎</span>
-              <span className="list-row-label" style={{ flex: 1, color: fan.on ? 'var(--label)' : 'var(--label2)' }}>{fan.name}</span>
-              <button onClick={() => setFans(fans.map(f => f.id === fan.id ? { ...f, auto: !f.auto } : f))}
-                style={{
-                  padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                  border: 'none', cursor: 'pointer', letterSpacing: '0.03em',
-                  background: fan.auto ? 'rgba(10,132,255,0.15)' : 'var(--surface2)',
-                  color: fan.auto ? 'var(--sys-blue)' : 'var(--label3)',
-                }}>Auto</button>
-              <Toggle on={fan.on} onToggle={() => setFans(fans.map(f => f.id === fan.id ? { ...f, on: !f.on } : f))} size="sm" />
-            </div>
-          ))}
+      {/* Fan rows — fill remaining height */}
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column', gap: 6, minHeight: 0,
+      }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--label3)', letterSpacing: '0.06em', textTransform: 'uppercase', flexShrink: 0 }}>
+          Fan Control — {activeFans} of {fans.length} Active
         </div>
+
+        {fans.map(fan => (
+          <div key={fan.id} style={{
+            flex: 1,
+            display: 'flex', alignItems: 'center', gap: 16,
+            padding: '0 20px',
+            borderRadius: 14,
+            background: fan.on ? 'rgba(109,200,43,0.08)' : 'var(--surface1)',
+            border: `1px solid ${fan.on ? 'rgba(109,200,43,0.2)' : 'transparent'}`,
+            transition: 'background 0.2s, border-color 0.2s',
+            cursor: 'pointer',
+          }} onClick={() => setFans(fans.map(f => f.id === fan.id ? { ...f, on: !f.on } : f))}>
+
+            {/* Spin icon */}
+            <span className={fan.on ? 'spin' : ''} style={{
+              fontSize: 24, color: fan.on ? 'var(--brand)' : 'var(--surface3)',
+              flexShrink: 0, lineHeight: 1,
+              transition: 'color 0.2s',
+            }}>◎</span>
+
+            {/* Name */}
+            <span style={{
+              flex: 1, fontSize: 16, fontWeight: 600,
+              color: fan.on ? 'var(--label)' : 'var(--label2)',
+              transition: 'color 0.2s',
+            }}>
+              {fan.name}
+            </span>
+
+            {/* Auto badge */}
+            <button
+              onClick={e => { e.stopPropagation(); setFans(fans.map(f => f.id === fan.id ? { ...f, auto: !f.auto } : f)); }}
+              style={{
+                padding: '7px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700,
+                border: 'none', cursor: 'pointer', letterSpacing: '0.03em',
+                background: fan.auto ? 'rgba(10,132,255,0.18)' : 'var(--surface2)',
+                color: fan.auto ? 'var(--sys-blue)' : 'var(--label3)',
+                transition: 'background 0.2s, color 0.2s',
+              }}>
+              Auto
+            </button>
+
+            {/* Toggle */}
+            <Toggle
+              on={fan.on}
+              onToggle={() => setFans(fans.map(f => f.id === fan.id ? { ...f, on: !f.on } : f))}
+              size="md"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

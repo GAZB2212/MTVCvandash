@@ -276,6 +276,22 @@ export default function CabDisplay() {
         </div>
       </div>
 
+      {/* ── FOOTER ── */}
+      <div style={{
+        height: 26, display: 'flex', alignItems: 'center', padding: '0 16px',
+        background: 'var(--surface1)',
+        borderTop: '0.5px solid var(--sep)',
+        flexShrink: 0,
+      }}>
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--label3)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          Powered by GAJO Technologies
+        </span>
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', fontVariantNumeric: 'tabular-nums' }}>
+          v1.0.0
+        </span>
+      </div>
+
     </div>
   );
 }

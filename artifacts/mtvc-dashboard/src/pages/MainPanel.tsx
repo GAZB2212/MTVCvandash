@@ -14,10 +14,9 @@ import { StatusTab } from './tabs/StatusTab';
 
 const TABS = [
   { id: 'home',     label: 'Home'     },
+  { id: 'lights',   label: 'Lights'   },
   { id: 'inverter', label: 'Inverter' },
   { id: 'battery',  label: 'Battery'  },
-  { id: 'fans',     label: 'Fans'     },
-  { id: 'lights',   label: 'Lights'   },
   { id: 'status',   label: 'Status'   },
 ];
 

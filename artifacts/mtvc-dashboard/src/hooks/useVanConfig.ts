@@ -10,6 +10,7 @@ export interface VanConfig {
   vanName: string;
   lights: OutputConfig[];
   fans: OutputConfig[];
+  dateTimeOffset: number; // ms added to Date.now() for display
 }
 
 const DEFAULT_LIGHTS = ['Cab', 'Load Bay', 'Work', 'Step', 'Exterior', 'Tools', 'Rear', 'Emergency'];
@@ -20,6 +21,7 @@ function defaultConfig(): VanConfig {
     vanName: 'Van 01',
     lights: DEFAULT_LIGHTS.map((name, id) => ({ id, name, enabled: true })),
     fans:   DEFAULT_FANS.map((name, id)   => ({ id, name, enabled: true })),
+    dateTimeOffset: 0,
   };
 }
 
@@ -30,10 +32,10 @@ function loadConfig(): VanConfig {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultConfig();
     const parsed = JSON.parse(raw) as VanConfig;
-    // Merge — ensures new defaults are picked up if IDs were added
     const def = defaultConfig();
     return {
       vanName: parsed.vanName ?? def.vanName,
+      dateTimeOffset: parsed.dateTimeOffset ?? 0,
       lights: def.lights.map(d => {
         const saved = parsed.lights?.find(l => l.id === d.id);
         return saved ? { ...d, ...saved } : d;
@@ -57,16 +59,12 @@ export interface VanConfigAPI {
   setVanName: (name: string) => void;
   setLightConfig: (id: number, patch: Partial<Omit<OutputConfig, 'id'>>) => void;
   setFanConfig:   (id: number, patch: Partial<Omit<OutputConfig, 'id'>>) => void;
+  setDateTimeOffset: (offsetMs: number) => void;
   resetConfig: () => void;
 }
 
 export function useVanConfig(): VanConfigAPI {
   const [config, setConfig] = useState<VanConfig>(loadConfig);
-
-  const update = useCallback((next: VanConfig) => {
-    saveConfig(next);
-    setConfig(next);
-  }, []);
 
   const setVanName = useCallback((vanName: string) => {
     setConfig(c => { const n = { ...c, vanName }; saveConfig(n); return n; });
@@ -86,11 +84,15 @@ export function useVanConfig(): VanConfigAPI {
     });
   }, []);
 
+  const setDateTimeOffset = useCallback((dateTimeOffset: number) => {
+    setConfig(c => { const n = { ...c, dateTimeOffset }; saveConfig(n); return n; });
+  }, []);
+
   const resetConfig = useCallback(() => {
     const n = defaultConfig();
     saveConfig(n);
     setConfig(n);
   }, []);
 
-  return { config, setVanName, setLightConfig, setFanConfig, resetConfig };
+  return { config, setVanName, setLightConfig, setFanConfig, setDateTimeOffset, resetConfig };
 }

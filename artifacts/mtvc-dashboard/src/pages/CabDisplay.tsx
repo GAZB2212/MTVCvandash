@@ -6,14 +6,21 @@ import { ArcGauge } from '../components/ArcGauge';
 import { HBar } from '../components/HBar';
 import { Toggle } from '../components/Toggle';
 
-function Clock() {
-  const [t, setT] = useState('');
+function Clock({ offset }: { offset: number }) {
+  const [now, setNow] = useState(() => new Date(Date.now() + offset));
   useEffect(() => {
-    const tick = () => setT(new Date().toLocaleTimeString('en-GB', { hour12: false }));
-    tick(); const iv = setInterval(tick, 1000); return () => clearInterval(iv);
-  }, []);
+    const iv = setInterval(() => setNow(new Date(Date.now() + offset)), 1000);
+    return () => clearInterval(iv);
+  }, [offset]);
+
+  const time = now.toLocaleTimeString('en-GB', { hour12: false });
+  const date = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
   return (
-    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--label2)', fontVariantNumeric: 'tabular-nums' }}>{t}</span>
+    <div style={{ textAlign: 'right', lineHeight: 1 }}>
+      <div style={{ fontSize: 26, fontWeight: 200, color: 'var(--label)', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em' }}>{time}</div>
+      <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', marginTop: 3, letterSpacing: '0.02em' }}>{date}</div>
+    </div>
   );
 }
 
@@ -70,9 +77,9 @@ export default function CabDisplay() {
   return (
     <div style={{ width: 1280, height: 400, background: 'var(--bg)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-      {/* ── HEADER (38px) ── */}
+      {/* ── HEADER (56px) ── */}
       <div style={{
-        height: 38, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12,
+        height: 56, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12,
         background: 'rgba(28,28,30,0.92)',
         backdropFilter: 'blur(40px)',
         WebkitBackdropFilter: 'blur(40px)',
@@ -92,7 +99,7 @@ export default function CabDisplay() {
           </div>
         )}
         <div style={{ flex: 1 }} />
-        <Clock />
+        <Clock offset={config.dateTimeOffset ?? 0} />
       </div>
 
       {/* ── COLUMNS (334px) ── */}

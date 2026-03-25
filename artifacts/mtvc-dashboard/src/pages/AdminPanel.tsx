@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { VanConfigAPI } from '../hooks/useVanConfig';
 import { Toggle } from '../components/Toggle';
 
@@ -88,10 +88,34 @@ function EditRow({
   );
 }
 
+function toLocalInputs(ms: number) {
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return { date, time };
+}
+
 export function AdminPanel({ api, onClose }: Props) {
-  const { config, setVanName, setLightConfig, setFanConfig, resetConfig } = api;
+  const { config, setVanName, setLightConfig, setFanConfig, setDateTimeOffset, resetConfig } = api;
   const [vanDraft, setVanDraft] = useState(config.vanName);
   const [confirmReset, setConfirmReset] = useState(false);
+
+  const currentDisplayMs = Date.now() + (config.dateTimeOffset ?? 0);
+  const [dtDate, setDtDate] = useState(() => toLocalInputs(currentDisplayMs).date);
+  const [dtTime, setDtTime] = useState(() => toLocalInputs(currentDisplayMs).time);
+
+  useEffect(() => {
+    const target = new Date(`${dtDate}T${dtTime}`).getTime();
+    if (!isNaN(target)) setDateTimeOffset(target - Date.now());
+  }, [dtDate, dtTime]);
+
+  const resetDateTime = () => {
+    setDateTimeOffset(0);
+    const { date, time } = toLocalInputs(Date.now());
+    setDtDate(date);
+    setDtTime(time);
+  };
 
   const commitVanName = () => {
     const t = vanDraft.trim();
@@ -142,6 +166,42 @@ export function AdminPanel({ api, onClose }: Props) {
                 textAlign: 'right',
               }}
             />
+          </div>
+        </div>
+
+        {/* Date & Time */}
+        <SectionHead>Date &amp; Time</SectionHead>
+        <div style={{ background: 'var(--surface1)', borderRadius: 12, margin: '0 12px 4px', overflow: 'hidden' }}>
+          {[
+            { label: 'Date', type: 'date', value: dtDate, onChange: (v: string) => setDtDate(v) },
+            { label: 'Time', type: 'time', value: dtTime, onChange: (v: string) => setDtTime(v), extra: { step: '1' } },
+          ].map(({ label, type, value, onChange, extra }, i, arr) => (
+            <div key={label} style={{
+              display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px',
+              borderBottom: i < arr.length - 1 ? '0.5px solid var(--sep)' : 'none',
+            }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label)', flex: 1 }}>{label}</span>
+              <input
+                type={type}
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                {...(extra || {})}
+                style={{
+                  background: 'var(--surface2)', border: '1px solid var(--sep)',
+                  borderRadius: 7, padding: '5px 10px', fontSize: 13, fontWeight: 500,
+                  color: 'var(--label)', outline: 'none', fontFamily: 'inherit',
+                  colorScheme: 'dark',
+                }}
+              />
+            </div>
+          ))}
+          <div style={{ padding: '8px 16px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 11, color: 'var(--label3)', flex: 1 }}>Adjusts the clock offset on the cab display.</span>
+            <button onClick={resetDateTime} style={{
+              padding: '4px 12px', borderRadius: 8, border: 'none', cursor: 'pointer',
+              background: 'var(--surface2)', fontSize: 11, fontWeight: 600,
+              color: 'var(--label3)', fontFamily: 'inherit',
+            }}>Use System Time</button>
           </div>
         </div>
 

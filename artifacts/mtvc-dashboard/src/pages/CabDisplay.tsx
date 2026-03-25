@@ -71,7 +71,7 @@ export default function CabDisplay() {
         borderBottom: '0.5px solid var(--sep)',
         flexShrink: 0,
       }}>
-        <img src="/mtvc-logo.png" alt="MTVC" style={{ height: 28, width: 'auto', objectFit: 'contain' }} />
+        <img src="/mtvc-logo.png" alt="MTVC" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderRadius: 99, background: online ? 'rgba(48,209,88,0.10)' : 'rgba(255,69,58,0.10)' }}>
           <ConnDot connected={online} size={5} />
           <span style={{ fontSize: 10, fontWeight: 600, color: online ? 'var(--sys-green)' : 'var(--sys-red)' }}>

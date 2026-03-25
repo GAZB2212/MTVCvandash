@@ -23,12 +23,6 @@ function Clock({ offset }: { offset: number }) {
   );
 }
 
-function formatUptime(s: number) {
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-}
 
 const VDIV = <div style={{ width: '0.5px', background: 'var(--sep)', alignSelf: 'stretch', margin: '10px 0' }} />;
 
@@ -53,8 +47,6 @@ export default function CabDisplay() {
     emergLight && data.setLights(data.lights.map(l => l.id === EMERGENCY_LIGHT_ID ? { ...l, on: !l.on } : l));
 
   const socC  = data.battery.soc > 60 ? 'var(--sys-green)' : data.battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
-  const psiPct = (data.pressure.psi / data.pressure.maxPsi) * 100;
-  const psiC  = psiPct > 60 ? 'var(--sys-green)' : psiPct > 40 ? 'var(--sys-orange)' : 'var(--sys-red)';
   const online = data.inverter.connected && data.battery.connected;
 
   const toggleLight = (id: number) => data.setLights(data.lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
@@ -279,31 +271,6 @@ export default function CabDisplay() {
         </div>
       </div>
 
-      {/* ── FOOTER (28px) ── */}
-      <div style={{
-        height: 28, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 0,
-        background: 'rgba(28,28,30,0.92)',
-        backdropFilter: 'blur(40px)',
-        WebkitBackdropFilter: 'blur(40px)',
-        borderTop: '0.5px solid var(--sep)',
-        flexShrink: 0,
-      }}>
-        {[
-          { label: 'SOC',    value: `${data.battery.soc}%`,               color: socC },
-          { label: 'Pack',   value: `${data.battery.voltage.toFixed(1)}V`, color: 'var(--sys-blue)' },
-          { label: 'Air',    value: `${data.pressure.psi} PSI`,            color: psiC },
-          { label: 'Uptime', value: formatUptime(data.uptime),              color: 'var(--label2)' },
-        ].map(({ label, value, color }, i, arr) => (
-          <div key={label} style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            paddingRight: 14, marginRight: 14,
-            borderRight: i < arr.length - 1 ? '0.5px solid var(--sep)' : 'none',
-          }}>
-            <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
-            <span style={{ fontSize: 11, fontWeight: 600, color, fontVariantNumeric: 'tabular-nums' }}>{value}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

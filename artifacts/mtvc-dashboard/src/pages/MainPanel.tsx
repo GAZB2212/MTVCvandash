@@ -4,6 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useVanConfig } from '../hooks/useVanConfig';
 import { ConnDot } from '../components/ConnDot';
 import { AdminPanel } from './AdminPanel';
+import { calcTimeRemaining } from './tabs/BatteryTab';
 import { InverterTab } from './tabs/InverterTab';
 import { BatteryTab } from './tabs/BatteryTab';
 import { AirTab } from './tabs/AirTab';
@@ -43,6 +44,7 @@ export default function MainPanel() {
   const vanConfig = useVanConfig();
   const { isDark, toggleTheme } = useTheme();
   const online = data.inverter.connected && data.battery.connected;
+  const timeLeft = calcTimeRemaining(data.battery.remaining, data.battery.voltage, data.inverter.outputKw);
 
   // Long-press on logo
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -168,6 +170,18 @@ export default function MainPanel() {
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--sys-blue)' }}>{data.inverter.loadPct}% Load</span>
         </div>
 
+        {/* Time remaining chip */}
+        <div style={{
+          padding: '4px 12px', borderRadius: 99,
+          background: `color-mix(in srgb, ${timeLeft.color} 14%, transparent)`,
+          display: 'flex', alignItems: 'center', gap: 5,
+        }}>
+          <span style={{ fontSize: 10, color: timeLeft.color, opacity: 0.7 }}>⏱</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: timeLeft.color, fontVariantNumeric: 'tabular-nums' }}>
+            {timeLeft.label}
+          </span>
+        </div>
+
         {/* Theme */}
         <button onClick={toggleTheme} style={{
           width: 32, height: 32, borderRadius: 8, border: 'none',
@@ -190,7 +204,7 @@ export default function MainPanel() {
             flexDirection: 'column',
           }}>
             {t.id === 'inverter' && <InverterTab inverter={data.inverter} />}
-            {t.id === 'battery'  && <BatteryTab  battery={data.battery} />}
+            {t.id === 'battery'  && <BatteryTab  battery={data.battery} powerKw={data.inverter.outputKw} />}
             {t.id === 'air'      && <AirTab       pressure={data.pressure} />}
             {t.id === 'fans'     && (
               <FansTab

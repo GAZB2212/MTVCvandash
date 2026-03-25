@@ -1,7 +1,7 @@
 import { ArcGauge } from '../../components/ArcGauge';
 import { BatteryData } from '../../hooks/useLiveData';
 
-interface Props { battery: BatteryData }
+interface Props { battery: BatteryData; powerKw: number }
 
 function cellColor(v: number) {
   return v >= 3.25 ? 'var(--sys-green)' : v >= 3.20 ? 'var(--sys-orange)' : 'var(--sys-red)';
@@ -21,27 +21,61 @@ function DRow({ label, value, color, last }: { label: string; value: string; col
   );
 }
 
-export function BatteryTab({ battery }: Props) {
+export function calcTimeRemaining(remainingMah: number, voltageV: number, powerKw: number) {
+  const powerW = powerKw * 1000;
+  if (powerW < 10) return { label: '∞', color: 'var(--sys-green)' };
+  const remainingWh = (remainingMah / 1000) * voltageV;
+  const hoursLeft = remainingWh / powerW;
+  const minutesLeft = hoursLeft * 60;
+  const color = minutesLeft > 120 ? 'var(--sys-green)' : minutesLeft > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
+  if (hoursLeft > 99) return { label: '∞', color: 'var(--sys-green)' };
+  const h = Math.floor(hoursLeft);
+  const m = Math.floor((hoursLeft - h) * 60);
+  const label = h === 0 ? `${m}m` : h >= 24 ? `${Math.floor(h / 24)}d ${h % 24}h` : `${h}h ${m}m`;
+  return { label, color };
+}
+
+export function BatteryTab({ battery, powerKw }: Props) {
   const socC   = battery.soc > 60 ? 'var(--sys-green)' : battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
   const deltaC = battery.delta > 10 ? 'var(--sys-red)' : battery.delta > 5 ? 'var(--sys-orange)' : 'var(--sys-green)';
   const remainAh = (battery.remaining / 1000).toFixed(1);
+  const timeLeft = calcTimeRemaining(battery.remaining, battery.voltage, powerKw);
 
   return (
     <div style={{ display: 'flex', gap: 8, height: '100%', minHeight: 0 }}>
 
-      {/* LEFT: Gauge + key stats */}
+      {/* LEFT: Gauge + time remaining + key stats */}
       <div style={{ width: 210, display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
-        {/* Gauge card */}
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px 16px', gap: 6, flexShrink: 0 }}>
-          <ArcGauge value={battery.soc} max={100} size={100} color={socC} strokeWidth={7}>
+        {/* Gauge + time remaining card */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '10px 16px', gap: 5, flexShrink: 0 }}>
+          <ArcGauge value={battery.soc} max={100} size={96} color={socC} strokeWidth={7}>
             <div style={{ textAlign: 'center', lineHeight: 1 }}>
-              <div style={{ fontSize: 28, fontWeight: 200, color: socC, letterSpacing: '-0.02em' }}>{battery.soc}</div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--label3)', marginTop: 2, letterSpacing: '0.05em', textTransform: 'uppercase' }}>SOC %</div>
+              <div style={{ fontSize: 26, fontWeight: 200, color: socC, letterSpacing: '-0.02em' }}>{battery.soc}</div>
+              <div style={{ fontSize: 9, fontWeight: 600, color: 'var(--label3)', marginTop: 2, letterSpacing: '0.05em', textTransform: 'uppercase' }}>SOC %</div>
             </div>
           </ArcGauge>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--label)' }}>Fogstar Drift</div>
-            <div style={{ fontSize: 10, color: 'var(--label3)' }}>48V · 125Ah</div>
+
+          {/* Time remaining — prominent */}
+          <div style={{
+            width: '100%', padding: '8px 10px', borderRadius: 10, marginTop: 2,
+            background: `color-mix(in srgb, ${timeLeft.color} 12%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${timeLeft.color} 25%, transparent)`,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
+          }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--label3)', letterSpacing: '0.10em', textTransform: 'uppercase' }}>
+              Time Remaining
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 200, color: timeLeft.color, lineHeight: 1, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+              {timeLeft.label}
+            </div>
+            <div style={{ fontSize: 9, color: 'var(--label3)', fontWeight: 500 }}>
+              @ {(powerKw * 1000).toFixed(0)} W draw
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: 2 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--label)' }}>Fogstar Drift</div>
+            <div style={{ fontSize: 9, color: 'var(--label3)' }}>48V · 125Ah</div>
           </div>
         </div>
 

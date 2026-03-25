@@ -1,75 +1,62 @@
-import { Card } from '../../components/Card';
 import { HBar } from '../../components/HBar';
 import { StatRow } from '../../components/StatRow';
 import { ConnDot } from '../../components/ConnDot';
 import { InverterData } from '../../hooks/useLiveData';
-import { useTheme } from '../../context/ThemeContext';
 
 interface Props { inverter: InverterData }
 
-export function InverterTab({ inverter }: Props) {
-  const { isDark } = useTheme();
-  const brand = isDark ? '#6DC82B' : '#4A8A18';
-  const blue  = isDark ? '#38BDF8' : '#0284C7';
-  const green = isDark ? '#34D399' : '#059669';
-  const red   = isDark ? '#F87171' : '#DC2626';
-  const amber = isDark ? '#FBB040' : '#D97706';
+function MetricCard({ label, value, unit, sub, subValue, color, pct }: {
+  label: string; value: string; unit: string;
+  sub: string; subValue: string; color: string; pct: number;
+}) {
+  return (
+    <div className="card" style={{ padding: '16px 16px 14px', flex: 1 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 10 }}>
+        {label}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, marginBottom: 12 }}>
+        <span style={{ fontSize: 44, fontWeight: 200, color: 'var(--label)', lineHeight: 1, letterSpacing: '-0.03em' }}>
+          {value}
+        </span>
+        <span style={{ fontSize: 18, fontWeight: 300, color: 'var(--label2)', paddingBottom: 6 }}>{unit}</span>
+      </div>
+      <HBar pct={pct} color={color} height={3} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+        <span style={{ fontSize: 12, color: 'var(--label3)', fontWeight: 500 }}>{sub}</span>
+        <span style={{ fontSize: 12, color: color, fontWeight: 500 }}>{subValue}</span>
+      </div>
+    </div>
+  );
+}
 
-  const tempColor = inverter.temp < 45 ? green : inverter.temp < 60 ? amber : red;
-  const modeColor = inverter.mode === 'Inverting' ? brand : blue;
+export function InverterTab({ inverter }: Props) {
+  const tempC = inverter.temp < 45 ? 'var(--sys-green)' : inverter.temp < 60 ? 'var(--sys-orange)' : 'var(--sys-red)';
 
   return (
-    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '100%' }}>
-      {/* Top row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        {/* AC Output */}
-        <Card accent={brand}>
-          <div className="label-caps" style={{ marginBottom: 6, marginTop: 6 }}>AC Output</div>
-          <div className="mono" style={{ fontSize: 34, color: brand, lineHeight: 1, marginBottom: 8 }}>
-            {inverter.acVoltage.toFixed(1)}<span style={{ fontSize: 15, opacity: 0.7, marginLeft: 3 }}>V</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-            <span className="label-caps">Load</span>
-            <span className="mono" style={{ fontSize: 12, color: brand }}>{inverter.loadPct}%</span>
-          </div>
-          <HBar pct={inverter.loadPct} color={brand} height={4} />
-        </Card>
-
-        {/* DC Input */}
-        <Card accent={blue}>
-          <div className="label-caps" style={{ marginBottom: 6, marginTop: 6 }}>DC Input</div>
-          <div className="mono" style={{ fontSize: 34, color: blue, lineHeight: 1, marginBottom: 8 }}>
-            {inverter.dcVoltage.toFixed(1)}<span style={{ fontSize: 15, opacity: 0.7, marginLeft: 3 }}>V</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-            <span className="label-caps">Current</span>
-            <span className="mono" style={{ fontSize: 12, color: blue }}>{inverter.dcCurrent.toFixed(1)} A</span>
-          </div>
-          <HBar pct={Math.min(100, (inverter.dcCurrent / 60) * 100)} color={blue} height={4} />
-        </Card>
+    <div className="slide-in" style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%' }}>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <MetricCard label="AC Output" value={inverter.acVoltage.toFixed(1)} unit="V"
+          sub="Load" subValue={`${inverter.loadPct}%`}
+          color="var(--brand)" pct={inverter.loadPct} />
+        <MetricCard label="DC Input" value={inverter.dcVoltage.toFixed(1)} unit="V"
+          sub="Current" subValue={`${inverter.dcCurrent.toFixed(1)} A`}
+          color="var(--sys-blue)" pct={Math.min(100, (inverter.dcCurrent / 60) * 100)} />
       </div>
 
-      {/* System data */}
-      <Card title="System Data">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+      <div>
+        <div className="section-header">System Data</div>
+        <div className="card">
           <StatRow label="Output Power" value={`${inverter.outputKw.toFixed(2)} kW`} />
           <StatRow label="Frequency"    value={`${inverter.acHz.toFixed(1)} Hz`} />
           <StatRow label="DC Current"   value={`${inverter.dcCurrent.toFixed(1)} A`} />
-          <StatRow label="Temperature"  value={`${inverter.temp}°C`} valueColor={tempColor} />
+          <StatRow label="Temperature"  value={`${inverter.temp}°C`} valueColor={tempC} last />
         </div>
-      </Card>
+      </div>
 
-      {/* VE.Bus status strip */}
-      <div className="glass-card" style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px',
-        borderTop: `1.5px solid ${brand}40`,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ConnDot connected={inverter.connected} />
-          <span className="label-caps" style={{ color: 'var(--text-mid)' }}>VE.BUS Status</span>
-        </div>
-        <span className="mono" style={{ fontSize: 14, color: modeColor, fontWeight: 600 }}>
+      <div className="card" style={{ display: 'flex', alignItems: 'center', padding: '10px 14px', gap: 10 }}>
+        <ConnDot connected={inverter.connected} />
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label)', flex: 1 }}>VE.Bus Status</span>
+        <span style={{ fontSize: 13, fontWeight: 500, color: inverter.mode === 'Inverting' ? 'var(--brand)' : 'var(--sys-blue)' }}>
           {inverter.mode}
         </span>
       </div>

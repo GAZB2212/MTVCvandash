@@ -3,162 +3,151 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── FONTS ─────────────────────────────────────────────────── */
-/* Rajdhani + Share Tech Mono loaded via index.html */
+/* ══════════════════════════════════════
+   APPLE DESIGN SYSTEM — MTVC
+   ══════════════════════════════════════ */
 
-/* ─── DARK THEME (default) ───────────────────────────────────── */
 :root {
-  --bg-base:        #08090d;
-  --bg-grad:        linear-gradient(155deg, #09090f 0%, #0a0d13 50%, #0c0a15 100%);
-  --glass-heavy:    rgba(255,255,255,0.07);
-  --glass-mid:      rgba(255,255,255,0.045);
-  --glass-light:    rgba(255,255,255,0.025);
-  --glass-border:   rgba(255,255,255,0.09);
-  --glass-border-hi: rgba(255,255,255,0.14);
-  --brand:          #6DC82B;
-  --brand-glow:     rgba(109,200,43,0.35);
-  --brand-dim:      rgba(109,200,43,0.15);
-  --blue:           #38BDF8;
-  --blue-glow:      rgba(56,189,248,0.25);
-  --green:          #34D399;
-  --red:            #F87171;
-  --red-glow:       rgba(248,113,113,0.3);
-  --amber:          #FBB040;
-  --text-hi:        rgba(255,255,255,0.92);
-  --text-mid:       rgba(255,255,255,0.60);
-  --text-lo:        rgba(255,255,255,0.32);
-  --radius-card:    14px;
-  --radius-sm:      8px;
-  --radius-pill:    100px;
-  --shadow-card:    0 4px 24px rgba(0,0,0,0.5), 0 1px 0 var(--glass-border) inset;
-  --shadow-glow-brand: 0 0 20px var(--brand-glow);
-  --transition:     all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* True Apple dark palette */
+  --bg:          #000000;
+  --surface1:    #1C1C1E;
+  --surface2:    #2C2C2E;
+  --surface3:    #3A3A3C;
+  --sep:         rgba(84,84,88,0.65);
+  --sep-strong:  rgba(84,84,88,0.85);
+
+  /* Apple label hierarchy */
+  --label:       rgba(255,255,255,1.00);
+  --label2:      rgba(235,235,245,0.60);
+  --label3:      rgba(235,235,245,0.30);
+  --label4:      rgba(235,235,245,0.18);
+
+  /* Apple system colors */
+  --sys-green:   #30D158;
+  --sys-blue:    #0A84FF;
+  --sys-orange:  #FF9F0A;
+  --sys-red:     #FF453A;
+  --sys-yellow:  #FFD60A;
+  --sys-purple:  #BF5AF2;
+  --sys-teal:    #5AC8FA;
+
+  /* MTVC brand */
+  --brand:       #6DC82B;
+  --brand-dim:   rgba(109,200,43,0.18);
+  --brand-sep:   rgba(109,200,43,0.30);
+
+  /* Radius */
+  --r-card:  12px;
+  --r-sm:     8px;
+  --r-pill:  99px;
+
+  /* Easing */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─── LIGHT THEME ─────────────────────────────────────────────── */
 .light {
-  --bg-base:        #f2f4f7;
-  --bg-grad:        linear-gradient(155deg, #f0f2f8 0%, #edf0f7 100%);
-  --glass-heavy:    rgba(255,255,255,0.85);
-  --glass-mid:      rgba(255,255,255,0.70);
-  --glass-light:    rgba(255,255,255,0.50);
-  --glass-border:   rgba(0,0,0,0.08);
-  --glass-border-hi: rgba(0,0,0,0.13);
-  --brand:          #4A8A18;
-  --brand-glow:     rgba(74,138,24,0.2);
-  --brand-dim:      rgba(74,138,24,0.10);
-  --blue:           #0284C7;
-  --blue-glow:      rgba(2,132,199,0.15);
-  --green:          #059669;
-  --red:            #DC2626;
-  --red-glow:       rgba(220,38,38,0.15);
-  --amber:          #D97706;
-  --text-hi:        rgba(0,0,0,0.90);
-  --text-mid:       rgba(0,0,0,0.55);
-  --text-lo:        rgba(0,0,0,0.30);
-  --shadow-card:    0 2px 16px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.9) inset;
-  --shadow-glow-brand: 0 0 16px rgba(74,138,24,0.2);
+  --bg:         #F2F2F7;
+  --surface1:   #FFFFFF;
+  --surface2:   #F2F2F7;
+  --surface3:   #E5E5EA;
+  --sep:        rgba(60,60,67,0.29);
+  --label:      rgba(0,0,0,1.00);
+  --label2:     rgba(60,60,67,0.60);
+  --label3:     rgba(60,60,67,0.30);
+  --label4:     rgba(60,60,67,0.18);
+  --sys-green:  #34C759;
+  --sys-blue:   #007AFF;
+  --sys-orange: #FF9500;
+  --sys-red:    #FF3B30;
+  --brand:      #4A8A18;
+  --brand-dim:  rgba(74,138,24,0.12);
 }
 
-/* ─── BASE ────────────────────────────────────────────────────── */
+/* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-base);
-  color: var(--text-hi);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  font-feature-settings: 'tnum' on;
+  background: var(--bg);
+  color: var(--label);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   user-select: none;
 }
 
-* {
-  transition: var(--transition);
+/* ── APPLE CARD ── */
+.card {
+  background: var(--surface1);
+  border-radius: var(--r-card);
+  overflow: hidden;
 }
 
-/* ─── GLASS CARD ────────────────────────────────────────────────── */
-.glass-card {
-  background: var(--glass-heavy);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-}
-
-.glass-card-mid {
-  background: var(--glass-mid);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
-}
-
-/* ─── TYPOGRAPHY SYSTEM ─────────────────────────────────────────── */
-.label-caps {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-lo);
-}
-
-.label-mid {
-  font-family: 'Rajdhani', sans-serif;
+/* ── SECTION HEADER ── */
+.section-header {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-mid);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--label3);
+  padding: 0 4px 6px;
 }
 
-.mono {
-  font-family: 'Share Tech Mono', 'SF Mono', monospace;
+/* ── LIST ROW ── */
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--surface1);
+  border-bottom: 0.5px solid var(--sep);
+  min-height: 40px;
+}
+.list-row:last-child { border-bottom: none; }
+
+.list-row-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--label);
+}
+.list-row-value {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--label2);
   font-variant-numeric: tabular-nums;
 }
 
-/* ─── SCROLLBAR ─────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 3px; }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--glass-border-hi); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--sep-strong); border-radius: 2px; }
 
-/* ─── ANIMATIONS ─────────────────────────────────────────────────── */
-@keyframes spin-gear {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+/* ── ANIMATIONS ── */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.spin { animation: spin 1.4s linear infinite; display: inline-block; }
+
+@keyframes pulse-glow {
+  0%,100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  50%      { box-shadow: 0 0 8px 2px currentColor; opacity: 0.7; }
 }
-.spin-active { animation: spin-gear 1.2s linear infinite; }
+.live-dot { animation: pulse-glow 2.4s ease-in-out infinite; }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
-  50%       { opacity: 0.7; box-shadow: 0 0 6px 2px currentColor; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+.blink { animation: blink 0.85s ease-in-out infinite; }
+
+@keyframes emerg {
+  0%,100% { box-shadow: 0 0 40px rgba(255,69,58,0.40), 0 0 80px rgba(255,69,58,0.15); }
+  50%      { box-shadow: 0 0 70px rgba(255,69,58,0.70), 0 0 120px rgba(255,69,58,0.30); }
 }
-.pulse-dot { animation: pulse-dot 2.2s ease-in-out infinite; }
+.emerg-pulse { animation: emerg 1.1s ease-in-out infinite; }
 
-@keyframes emerg-pulse {
-  0%, 100% { box-shadow: 0 0 30px var(--red-glow), 0 0 80px var(--red-glow); }
-  50%       { box-shadow: 0 0 60px rgba(248,113,113,0.6), 0 0 120px rgba(248,113,113,0.3); }
+@keyframes slide-in {
+  from { opacity:0; transform: translateY(6px); }
+  to   { opacity:1; transform: translateY(0); }
 }
-.emerg-glow { animation: emerg-pulse 1s ease-in-out infinite; }
+.slide-in { animation: slide-in 0.22s var(--ease) both; }
 
-@keyframes warn-blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.2; }
-}
-.warn-blink { animation: warn-blink 0.9s ease-in-out infinite; }
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-in { animation: fade-in 0.2s ease forwards; }
-
-/* ─── BUTTON PRESS ─────────────────────────────────────────────── */
-button:active { transform: scale(0.96); }
-
-/* ─── BRAND GLOW HELPERS ────────────────────────────────────────── */
-.glow-brand  { box-shadow: var(--shadow-glow-brand); }
-.glow-blue   { box-shadow: 0 0 16px var(--blue-glow); }
-.glow-red    { box-shadow: 0 0 16px var(--red-glow); }
-.conn-green  { color: var(--green); box-shadow: 0 0 8px var(--green); }
-.conn-red    { color: var(--red);   box-shadow: 0 0 8px var(--red); }
+/* ── BUTTON STATES ── */
+button { -webkit-tap-highlight-color: transparent; }
+button:active { opacity: 0.75; }

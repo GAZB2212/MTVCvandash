@@ -1,13 +1,9 @@
-import { Card } from '../../components/Card';
+import { StatRow } from '../../components/StatRow';
 import { AlertData, BatteryData, InverterData, PressureData } from '../../hooks/useLiveData';
-import { useTheme } from '../../context/ThemeContext';
 
 interface Props {
-  inverter: InverterData;
-  battery: BatteryData;
-  pressure: PressureData;
-  alerts: AlertData[];
-  uptime: number;
+  inverter: InverterData; battery: BatteryData; pressure: PressureData;
+  alerts: AlertData[]; uptime: number;
 }
 
 function formatUptime(s: number) {
@@ -18,74 +14,57 @@ function formatUptime(s: number) {
 }
 
 export function StatusTab({ inverter, battery, pressure, alerts, uptime }: Props) {
-  const { isDark } = useTheme();
-  const brand = isDark ? '#6DC82B' : '#4A8A18';
-  const blue  = isDark ? '#38BDF8' : '#0284C7';
-  const green = isDark ? '#34D399' : '#059669';
-  const red   = isDark ? '#F87171' : '#DC2626';
-  const amber = isDark ? '#FBB040' : '#D97706';
-
-  const tiles = [
-    { label: 'VE.Bus',          value: inverter.connected       ? 'Online'      : 'Offline',      color: inverter.connected       ? green : red },
-    { label: 'BMS Bluetooth',   value: battery.connected        ? 'Connected'   : 'Disconnected', color: battery.connected        ? green : red },
-    { label: 'Pressure Sensor', value: pressure.connected       ? 'Online'      : 'Offline',      color: pressure.connected       ? green : red },
-    { label: 'Inverter Temp',   value: `${inverter.temp}°C`,                                      color: inverter.temp < 45 ? green : inverter.temp < 60 ? amber : red },
-    { label: 'Cell Delta',      value: `${battery.delta} mV`,                                     color: battery.delta < 10 ? green : amber },
-    { label: 'Battery SOC',     value: `${battery.soc}%`,                                         color: battery.soc > 60 ? green : battery.soc > 30 ? amber : red },
-  ];
-
-  const alertCfg = {
-    ok:    { color: green,  icon: '●' },
-    warn:  { color: amber,  icon: '▲' },
-    error: { color: red,    icon: '✕' },
-  };
-
+  const socC  = battery.soc > 60 ? 'var(--sys-green)' : battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
+  const tempC = inverter.temp < 45 ? 'var(--sys-green)' : inverter.temp < 60 ? 'var(--sys-orange)' : 'var(--sys-red)';
+  const deltaC = battery.delta > 10 ? 'var(--sys-red)' : battery.delta > 5 ? 'var(--sys-orange)' : 'var(--sys-green)';
   const energyKwh = ((inverter.outputKw * uptime) / 3600).toFixed(2);
 
+  const alertIcon = { ok: '●', warn: '▲', error: '✕' };
+  const alertColor = { ok: 'var(--sys-green)', warn: 'var(--sys-orange)', error: 'var(--sys-red)' };
+
   return (
-    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '100%' }}>
-      {/* Health grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-        {tiles.map(t => (
-          <div key={t.label} className="glass-card-mid" style={{ padding: '8px 10px', borderLeft: `2px solid ${t.color}` }}>
-            <div className="label-caps" style={{ marginBottom: 4 }}>{t.label}</div>
-            <div className="mono" style={{ fontSize: 13, color: t.color }}>{t.value}</div>
+    <div className="slide-in" style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%' }}>
+      {/* Uptime + Energy */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        {[
+          { label: 'Uptime',       value: formatUptime(uptime),     color: 'var(--brand)' },
+          { label: 'Energy Today', value: `${energyKwh} kWh`,       color: 'var(--sys-blue)' },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="card" style={{ flex: 1, padding: '14px 16px' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--label3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>{label}</div>
+            <div style={{ fontSize: 26, fontWeight: 200, color, letterSpacing: '-0.01em', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
           </div>
         ))}
       </div>
 
-      {/* Uptime + Energy */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        <Card accent={brand}>
-          <div className="label-caps" style={{ marginBottom: 6, marginTop: 4 }}>Uptime</div>
-          <div className="mono" style={{ fontSize: 26, color: brand }}>{formatUptime(uptime)}</div>
-        </Card>
-        <Card accent={blue}>
-          <div className="label-caps" style={{ marginBottom: 6, marginTop: 4 }}>Energy Today</div>
-          <div className="mono" style={{ fontSize: 26, color: blue }}>{energyKwh} <span style={{ fontSize: 14, opacity: 0.7 }}>kWh</span></div>
-        </Card>
+      {/* System health */}
+      <div>
+        <div className="section-header">System Health</div>
+        <div className="card">
+          <StatRow label="VE.Bus"          value={inverter.connected ? 'Online'      : 'Offline'}      valueColor={inverter.connected  ? 'var(--sys-green)' : 'var(--sys-red)'} />
+          <StatRow label="BMS Bluetooth"   value={battery.connected  ? 'Connected'   : 'Disconnected'} valueColor={battery.connected   ? 'var(--sys-green)' : 'var(--sys-red)'} />
+          <StatRow label="Pressure Sensor" value={pressure.connected ? 'Online'      : 'Offline'}      valueColor={pressure.connected  ? 'var(--sys-green)' : 'var(--sys-red)'} />
+          <StatRow label="Battery SOC"     value={`${battery.soc}%`}                                   valueColor={socC} />
+          <StatRow label="Cell Delta"      value={`${battery.delta} mV`}                               valueColor={deltaC} />
+          <StatRow label="Inverter Temp"   value={`${inverter.temp}°C`}                                valueColor={tempC} last />
+        </div>
       </div>
 
       {/* Event log */}
-      <Card title="Event Log">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {alerts.map(a => {
-            const cfg = alertCfg[a.type];
-            return (
-              <div key={a.id} style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '6px 10px', background: 'rgba(255,255,255,0.03)',
-                borderRadius: 8, border: '1px solid rgba(255,255,255,0.05)',
-                borderLeft: `2px solid ${cfg.color}`,
-              }}>
-                <span style={{ color: cfg.color, fontSize: 11, width: 14, textAlign: 'center' }}>{cfg.icon}</span>
-                <span style={{ flex: 1, fontSize: 11, color: 'var(--text-mid)' }}>{a.msg}</span>
-                <span className="mono" style={{ fontSize: 10, color: 'var(--text-lo)' }}>{a.time}</span>
-              </div>
-            );
-          })}
+      <div>
+        <div className="section-header">Event Log</div>
+        <div className="card">
+          {alerts.map((a, i) => (
+            <div key={a.id} className="list-row" style={{ borderBottom: i < alerts.length - 1 ? undefined : 'none', gap: 10 }}>
+              <span style={{ fontSize: 11, color: alertColor[a.type], width: 12, textAlign: 'center', flexShrink: 0 }}>
+                {alertIcon[a.type]}
+              </span>
+              <span className="list-row-label" style={{ flex: 1, color: 'var(--label2)', fontSize: 12 }}>{a.msg}</span>
+              <span style={{ fontSize: 11, color: 'var(--label3)', fontVariantNumeric: 'tabular-nums' }}>{a.time}</span>
+            </div>
+          ))}
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

@@ -1,81 +1,59 @@
 import { Toggle } from '../../components/Toggle';
 import { LightData } from '../../hooks/useLiveData';
-import { useTheme } from '../../context/ThemeContext';
 
-interface Props {
-  lights: LightData[];
-  setLights: (lights: LightData[]) => void;
-}
-
-const EMOJIS: Record<string, string> = {
-  'Cab': '🚗', 'Load Bay': '📦', 'Work': '🔦', 'Step': '👣',
-  'Exterior': '💡', 'Tools': '🔧', 'Rear': '🔴', 'Emergency': '🚨',
-};
+interface Props { lights: LightData[]; setLights: (lights: LightData[]) => void; }
 
 export function LightsTab({ lights, setLights }: Props) {
-  const { isDark } = useTheme();
-  const brand = isDark ? '#6DC82B' : '#4A8A18';
-  const red   = isDark ? '#F87171' : '#DC2626';
-
-  const activeCount = lights.filter(l => l.on).length;
-
-  const toggle = (id: number) => setLights(lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
-  const allOn  = () => setLights(lights.map(l => ({ ...l, on: true  })));
-  const allOff = () => setLights(lights.map(l => ({ ...l, on: false })));
+  const toggle  = (id: number) => setLights(lights.map(l => l.id === id ? { ...l, on: !l.on } : l));
+  const allOn   = () => setLights(lights.map(l => ({ ...l, on: true  })));
+  const allOff  = () => setLights(lights.map(l => ({ ...l, on: false })));
+  const active  = lights.filter(l => l.on).length;
 
   return (
-    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '100%' }}>
-      {/* Controls */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+    <div className="slide-in" style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%' }}>
+      {/* Quick actions */}
+      <div style={{ display: 'flex', gap: 10 }}>
         <button onClick={allOn} style={{
-          padding: '10px', borderRadius: 10,
-          background: `${brand}15`, border: `1px solid ${brand}40`,
-          color: brand, fontSize: 13, fontFamily: 'Rajdhani, sans-serif',
-          fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer',
-        }}>ALL ON</button>
+          flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer',
+          background: 'var(--brand-dim)',
+          fontSize: 13, fontWeight: 600, color: 'var(--brand)',
+        }}>All On</button>
         <button onClick={allOff} style={{
-          padding: '10px', borderRadius: 10,
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-          color: 'var(--text-mid)', fontSize: 13, fontFamily: 'Rajdhani, sans-serif',
-          fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer',
-        }}>ALL OFF</button>
+          flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer',
+          background: 'var(--surface1)',
+          fontSize: 13, fontWeight: 600, color: 'var(--label2)',
+        }}>All Off</button>
       </div>
 
       {/* Zone grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 7, flex: 1 }}>
-        {lights.map(light => {
-          const isEmerg = light.name === 'Emergency';
-          const accent  = isEmerg ? red : brand;
-          return (
-            <div key={light.id} onClick={() => toggle(light.id)} className="glass-card" style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              justifyContent: 'space-between', padding: '10px 6px', cursor: 'pointer',
-              borderTop: `2px solid ${light.on ? accent : 'transparent'}`,
-              background: light.on ? `${accent}0c` : 'var(--glass-heavy)',
-            }}>
-              <div style={{ fontSize: 24, opacity: light.on ? 1 : 0.2, filter: light.on ? 'none' : 'saturate(0)', transition: 'opacity 0.3s, filter 0.3s' }}>
-                {EMOJIS[light.name] || '💡'}
+      <div>
+        <div className="section-header">Zones — {active} of {lights.length} On</div>
+        <div className="card" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+          {lights.map((light, i) => {
+            const isEmerg = light.name === 'Emergency';
+            const accentC  = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
+            const isOdd = i % 2 === 1;
+            return (
+              <div key={light.id} onClick={() => toggle(light.id)} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '11px 14px', cursor: 'pointer',
+                borderBottom: i < lights.length - 2 ? '0.5px solid var(--sep)' : 'none',
+                borderRight: !isOdd ? '0.5px solid var(--sep)' : 'none',
+                background: light.on ? `color-mix(in srgb, ${isEmerg ? '#FF453A' : '#6DC82B'} 8%, transparent)` : 'transparent',
+              }}>
+                <div style={{
+                  width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
+                  background: light.on ? accentC : 'var(--surface3)',
+                  boxShadow: light.on ? `0 0 8px ${isEmerg ? 'rgba(255,69,58,0.6)' : 'rgba(109,200,43,0.6)'}` : 'none',
+                }} />
+                <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: light.on ? 'var(--label)' : 'var(--label2)' }}>
+                  {light.name}
+                </span>
+                <Toggle on={light.on} onToggle={() => toggle(light.id)} color={accentC} size="sm" />
               </div>
-              <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: light.on ? 'var(--text-hi)' : 'var(--text-lo)', textAlign: 'center', lineHeight: 1.3 }}>
-                {light.name}
-              </div>
-              <div style={{ fontSize: 10, color: light.on ? accent : 'var(--text-lo)' }}>
-                {light.on ? '● ON' : '○ OFF'}
-              </div>
-              <Toggle on={light.on} onToggle={() => toggle(light.id)} color={accent} size="sm" />
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Count bar */}
-      <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px' }}>
-        <span style={{ fontSize: 12, color: 'var(--text-mid)', fontWeight: 600 }}>
-          {activeCount} of {lights.length} zones active
-        </span>
-        <span style={{ fontSize: 12, fontWeight: 700, color: activeCount > 0 ? brand : 'var(--text-lo)' }}>
-          {activeCount > 0 ? '● LIGHTING ON' : '○ ALL OFF'}
-        </span>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

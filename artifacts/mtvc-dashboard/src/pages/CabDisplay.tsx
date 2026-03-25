@@ -291,7 +291,7 @@ export default function CabDisplay() {
         borderTop: '0.5px solid var(--sep)',
         flexShrink: 0,
       }}>
-        <img src="/gajo-tech-logo.png" alt="GAJO Technologies" style={{ height: 16, width: 'auto', objectFit: 'contain', opacity: 0.75 }} />
+        <img src="/gajo-tech-logo.png" alt="GAJO Technologies" style={{ height: 26, width: 'auto', objectFit: 'contain', opacity: 0.75 }} />
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', fontVariantNumeric: 'tabular-nums' }}>
           v1.0.0

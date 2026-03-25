@@ -27,14 +27,13 @@ function formatUptime(seconds: number) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-function HexLogo() {
+function MtvcLogo() {
   return (
-    <div
-      className="hex-clip"
-      style={{ width: 24, height: 24, background: 'var(--amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-    >
-      <span style={{ color: '#000', fontSize: 10, fontWeight: 900, fontFamily: 'Rajdhani, sans-serif' }}>M</span>
-    </div>
+    <img
+      src="/mtvc-logo.png"
+      alt="MTVC Logo"
+      style={{ width: 30, height: 30, objectFit: 'contain', flexShrink: 0 }}
+    />
   );
 }
 
@@ -46,7 +45,7 @@ const LIGHT_EMOJIS: Record<string, string> = {
 export default function CabDisplay() {
   const data = useLiveData();
   const { isDark } = useTheme();
-  const amber = isDark ? '#E8A020' : '#B45309';
+  const amber = isDark ? '#6DC82B' : '#4A8A18';
   const blue = isDark ? '#38BDF8' : '#0369A1';
   const green = isDark ? '#22C55E' : '#15803D';
   const red = isDark ? '#EF4444' : '#B91C1C';
@@ -92,7 +91,7 @@ export default function CabDisplay() {
           flexShrink: 0,
         }}
       >
-        <HexLogo />
+        <MtvcLogo />
         <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.15em', color: 'var(--text)', fontFamily: 'Rajdhani, sans-serif' }}>MTVC</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '2px 8px', borderRadius: 20, background: 'var(--surface2)', border: '1px solid var(--border-color)' }}>
           <ConnDot connected={data.inverter.connected && data.battery.connected} size={6} />

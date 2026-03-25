@@ -37,23 +37,13 @@ function Clock() {
   );
 }
 
-function HexLogo() {
-  const amber = 'var(--amber)';
+function MtvcLogo() {
   return (
-    <div
-      className="hex-clip"
-      style={{
-        width: 32,
-        height: 32,
-        background: amber,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
-    >
-      <span style={{ color: '#000', fontSize: 13, fontWeight: 900, fontFamily: 'Rajdhani, sans-serif' }}>M</span>
-    </div>
+    <img
+      src="/mtvc-logo.png"
+      alt="MTVC Logo"
+      style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0 }}
+    />
   );
 }
 
@@ -61,7 +51,7 @@ export default function MainPanel() {
   const [activeTab, setActiveTab] = useState('inverter');
   const data = useLiveData();
   const { isDark, toggleTheme } = useTheme();
-  const amber = isDark ? '#E8A020' : '#B45309';
+  const amber = isDark ? '#6DC82B' : '#4A8A18';
 
   const systemOnline = data.inverter.connected && data.battery.connected;
 
@@ -90,17 +80,9 @@ export default function MainPanel() {
           flexShrink: 0,
         }}
       >
-        {/* Left: Logo + Name */}
+        {/* Left: Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 10 }}>
-          <HexLogo />
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.15em', color: 'var(--text)', fontFamily: 'Rajdhani, sans-serif', lineHeight: 1.1 }}>
-              MTVC
-            </div>
-            <div style={{ fontSize: 9, color: amber, letterSpacing: '0.05em', fontFamily: 'Rajdhani, sans-serif', lineHeight: 1 }}>
-              Mobile Tyre Van City
-            </div>
-          </div>
+          <MtvcLogo />
         </div>
 
         {/* System Status Pill */}

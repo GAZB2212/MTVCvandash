@@ -11,7 +11,7 @@ interface Props {
 
 export function InverterTab({ inverter }: Props) {
   const { isDark } = useTheme();
-  const amber = isDark ? '#E8A020' : '#B45309';
+  const amber = isDark ? '#6DC82B' : '#4A8A18';
   const blue = isDark ? '#38BDF8' : '#0369A1';
   const green = isDark ? '#22C55E' : '#15803D';
   const red = isDark ? '#EF4444' : '#B91C1C';

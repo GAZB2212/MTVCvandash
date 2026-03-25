@@ -20,7 +20,7 @@ const LIGHT_EMOJIS: Record<string, string> = {
 
 export function LightsTab({ lights, setLights }: Props) {
   const { isDark } = useTheme();
-  const amber = isDark ? '#E8A020' : '#B45309';
+  const amber = isDark ? '#6DC82B' : '#4A8A18';
   const red = isDark ? '#EF4444' : '#B91C1C';
 
   const activeCount = lights.filter(l => l.on).length;

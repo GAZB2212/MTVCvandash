@@ -5,8 +5,8 @@ interface HBarProps {
 }
 
 const glowMap: Record<string, string> = {
-  '#E8A020': 'hbar-glow-amber',
-  '#B45309': 'hbar-glow-amber',
+  '#6DC82B': 'hbar-glow-amber',
+  '#4A8A18': 'hbar-glow-amber',
   '#38BDF8': 'hbar-glow-blue',
   '#0369A1': 'hbar-glow-blue',
   '#22C55E': 'hbar-glow-green',

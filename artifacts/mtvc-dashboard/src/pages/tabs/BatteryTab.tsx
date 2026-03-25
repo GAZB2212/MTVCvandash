@@ -10,7 +10,7 @@ interface Props {
 
 function getCellColor(v: number, isDark: boolean) {
   const green = isDark ? '#22C55E' : '#15803D';
-  const amber = isDark ? '#E8A020' : '#B45309';
+  const amber = isDark ? '#6DC82B' : '#4A8A18';
   const red = isDark ? '#EF4444' : '#B91C1C';
   if (v >= 3.25) return green;
   if (v >= 3.20) return amber;
@@ -19,7 +19,7 @@ function getCellColor(v: number, isDark: boolean) {
 
 export function BatteryTab({ battery }: Props) {
   const { isDark } = useTheme();
-  const amber = isDark ? '#E8A020' : '#B45309';
+  const amber = isDark ? '#6DC82B' : '#4A8A18';
   const green = isDark ? '#22C55E' : '#15803D';
   const blue = isDark ? '#38BDF8' : '#0369A1';
   const red = isDark ? '#EF4444' : '#B91C1C';

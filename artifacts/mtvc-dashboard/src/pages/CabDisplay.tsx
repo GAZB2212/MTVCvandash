@@ -176,41 +176,105 @@ export default function CabDisplay() {
 
         {VDIV}
 
-        {/* COL 4: Emergency (flex-1) */}
+        {/* COL 4: Emergency */}
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          padding: '12px 14px', gap: 14,
-          background: emergActive ? 'radial-gradient(ellipse at center, rgba(255,69,58,0.06) 0%, transparent 70%)' : 'transparent',
+          padding: '12px 14px', gap: 12, position: 'relative', overflow: 'hidden',
+          background: emergActive
+            ? 'radial-gradient(ellipse at 50% 55%, rgba(255,69,58,0.14) 0%, rgba(255,69,58,0.04) 50%, transparent 75%)'
+            : 'transparent',
+          transition: 'background 0.5s ease',
         }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: emergActive ? 'var(--sys-red)' : 'var(--label3)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            {emergActive ? 'ACTIVE' : 'Emergency'}
+          {/* Title */}
+          <div style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: emergActive ? 'var(--sys-red)' : 'var(--label3)',
+            transition: 'color 0.3s',
+          }}>
+            Emergency Lights
           </div>
 
+          {/* Button — layered ring design */}
           <button
             onClick={toggleEmerg}
-            className={emergActive ? 'emerg-pulse' : ''}
             style={{
-              width: 130, height: 130, borderRadius: '50%', cursor: 'pointer', border: 'none',
-              background: emergActive
-                ? 'radial-gradient(circle, #7F1D1D 0%, #3D0000 100%)'
-                : 'var(--surface1)',
-              outline: `2px solid ${emergActive ? 'var(--sys-red)' : 'var(--surface3)'}`,
-              outlineOffset: 3,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+              all: 'unset', cursor: 'pointer', position: 'relative',
+              width: 160, height: 160, flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
+            {/* Outer glow ring — only when active */}
+            {emergActive && (
+              <div className="emerg-pulse" style={{
+                position: 'absolute', inset: -8,
+                borderRadius: '50%',
+                border: '1.5px solid rgba(255,69,58,0.4)',
+                pointerEvents: 'none',
+              }} />
+            )}
+
+            {/* Ring 1 — outermost track */}
             <div style={{
-              width: 40, height: 40, borderRadius: '50%', border: `2px solid var(--sys-red)`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: emergActive ? 'rgba(255,69,58,0.2)' : 'transparent',
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              border: `1.5px solid ${emergActive ? 'rgba(255,69,58,0.5)' : 'rgba(255,255,255,0.08)'}`,
+              transition: 'border-color 0.4s',
+            }} />
+
+            {/* Ring 2 — middle track */}
+            <div style={{
+              position: 'absolute', inset: 14, borderRadius: '50%',
+              border: `1px solid ${emergActive ? 'rgba(255,69,58,0.35)' : 'rgba(255,255,255,0.06)'}`,
+              transition: 'border-color 0.4s',
+            }} />
+
+            {/* Main button face */}
+            <div style={{
+              width: 110, height: 110, borderRadius: '50%',
+              background: emergActive
+                ? 'radial-gradient(circle at 38% 35%, #c0392b 0%, #7f1d1d 45%, #3d0000 100%)'
+                : 'radial-gradient(circle at 38% 35%, #2c2c2e 0%, #1c1c1e 60%, #141414 100%)',
+              border: `2px solid ${emergActive ? 'rgba(255,120,100,0.5)' : 'rgba(255,69,58,0.25)'}`,
+              boxShadow: emergActive
+                ? '0 0 30px rgba(255,69,58,0.5), 0 0 60px rgba(255,69,58,0.2), inset 0 2px 4px rgba(255,180,160,0.15), inset 0 -2px 6px rgba(0,0,0,0.6)'
+                : 'inset 0 2px 4px rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.5), 0 4px 20px rgba(0,0,0,0.5)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+              transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
+              flexShrink: 0,
             }}>
-              <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--sys-red)' }} />
+              {/* Icon — lightning bolt */}
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"
+                  fill={emergActive ? 'rgba(255,200,180,0.9)' : 'rgba(255,69,58,0.6)'}
+                  stroke={emergActive ? 'rgba(255,140,120,0.4)' : 'none'}
+                  strokeWidth="0.5"
+                />
+              </svg>
+              <span style={{
+                fontSize: 9, fontWeight: 800, letterSpacing: '0.16em',
+                color: emergActive ? 'rgba(255,200,190,0.9)' : 'rgba(255,69,58,0.7)',
+                transition: 'color 0.3s',
+              }}>EMERG</span>
             </div>
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--sys-red)', letterSpacing: '0.12em' }}>EMERG</span>
           </button>
 
-          <div style={{ fontSize: 10, color: 'var(--label3)', fontWeight: 500, letterSpacing: '0.04em' }}>
-            Tap to {emergActive ? 'Deactivate' : 'Activate'}
+          {/* Status badge */}
+          <div style={{
+            padding: '5px 14px', borderRadius: 99,
+            background: emergActive ? 'rgba(255,69,58,0.15)' : 'var(--surface1)',
+            border: `1px solid ${emergActive ? 'rgba(255,69,58,0.35)' : 'var(--surface3)'}`,
+            transition: 'all 0.3s',
+          }}>
+            <span className={emergActive ? 'blink' : ''} style={{
+              fontSize: 10, fontWeight: 700, letterSpacing: '0.10em',
+              color: emergActive ? 'var(--sys-red)' : 'var(--label3)',
+              textTransform: 'uppercase',
+            }}>
+              {emergActive ? '● Lights Active' : '○ Standby'}
+            </span>
+          </div>
+
+          <div style={{ fontSize: 10, color: 'var(--label3)', fontWeight: 400, letterSpacing: '0.03em' }}>
+            Tap to {emergActive ? 'deactivate' : 'activate'}
           </div>
         </div>
       </div>

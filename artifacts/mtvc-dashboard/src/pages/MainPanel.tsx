@@ -7,15 +7,15 @@ import { AdminPanel } from './AdminPanel';
 import { calcTimeRemaining } from './tabs/BatteryTab';
 import { InverterTab } from './tabs/InverterTab';
 import { BatteryTab } from './tabs/BatteryTab';
-import { AirTab } from './tabs/AirTab';
+import { HomeTab } from './tabs/HomeTab';
 import { FansTab } from './tabs/FansTab';
 import { LightsTab } from './tabs/LightsTab';
 import { StatusTab } from './tabs/StatusTab';
 
 const TABS = [
+  { id: 'home',     label: 'Home'     },
   { id: 'inverter', label: 'Inverter' },
   { id: 'battery',  label: 'Battery'  },
-  { id: 'air',      label: 'Air'      },
   { id: 'fans',     label: 'Fans'     },
   { id: 'lights',   label: 'Lights'   },
   { id: 'status',   label: 'Status'   },
@@ -37,7 +37,7 @@ function Clock() {
 }
 
 export default function MainPanel() {
-  const [tab, setTab] = useState('inverter');
+  const [tab, setTab] = useState('home');
   const [adminOpen, setAdminOpen] = useState(false);
   const [holdPct, setHoldPct] = useState(0); // 0–100 progress while holding
   const data = useLiveData();
@@ -203,9 +203,9 @@ export default function MainPanel() {
             display: tab === t.id ? 'flex' : 'none',
             flexDirection: 'column',
           }}>
+            {t.id === 'home'     && <HomeTab battery={data.battery} powerKw={data.inverter.outputKw} lights={activeLights} setLights={setLightsProxy} />}
             {t.id === 'inverter' && <InverterTab inverter={data.inverter} />}
             {t.id === 'battery'  && <BatteryTab  battery={data.battery} powerKw={data.inverter.outputKw} />}
-            {t.id === 'air'      && <AirTab       pressure={data.pressure} />}
             {t.id === 'fans'     && (
               <FansTab
                 fans={activeFans}

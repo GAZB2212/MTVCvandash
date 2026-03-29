@@ -4,6 +4,7 @@ import { startVeDirectReader } from "./victron/veDirect.js";
 import { startMk3Reader } from "./victron/mk3.js";
 import { startDs18b20Reader } from "./sensors/ds18b20.js";
 import { startFanController } from "./fans/fanController.js";
+import { startLightController } from "./lights/lightController.js";
 
 const rawPort = process.env["PORT"];
 
@@ -23,6 +24,7 @@ startVeDirectReader();
 startMk3Reader();
 startDs18b20Reader();
 startFanController();
+startLightController();
 
 app.listen(port, (err) => {
   if (err) {

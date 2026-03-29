@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { store } from '../victron/dataStore.js';
+import { applyLightRelay } from '../lights/lightController.js';
 
 const router = Router();
 
@@ -21,6 +22,9 @@ router.post('/lights/:id', (req, res) => {
   } else {
     light.on = !light.on;
   }
+
+  // Drive the relay GPIO pin (no-op if pin not configured)
+  applyLightRelay(id, light.on);
 
   res.json(light);
 });

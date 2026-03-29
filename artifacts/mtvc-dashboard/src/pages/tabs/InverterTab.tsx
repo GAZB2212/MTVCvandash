@@ -146,7 +146,7 @@ function VConn({ active, color, animSpeed, pathId, reverse }: VConnProps) {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="24" height="100%" viewBox="0 0 24 36" preserveAspectRatio="xMidYMid none" overflow="visible">
+      <svg width="24" height="100%" viewBox="0 0 24 36" preserveAspectRatio="none" overflow="visible">
         <defs>
           <path id={pathId} d={path} />
         </defs>

@@ -144,7 +144,7 @@ export default function CabDisplay() {
             {activeLights.map(light => {
               const isEmerg = light.id === EMERGENCY_LIGHT_ID;
               const accentC = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
-              const glowC   = isEmerg ? 'rgba(255,69,58,0.10)' : 'rgba(109,200,43,0.08)';
+              const glowRgb = isEmerg ? '255,69,58' : '109,200,43';
               return (
                 <div
                   key={light.id}
@@ -152,17 +152,20 @@ export default function CabDisplay() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12, padding: '0 16px',
                     borderRadius: 12, cursor: 'pointer',
-                    background: light.on ? glowC : 'var(--surface1)',
+                    background: light.on ? `rgba(${glowRgb},0.09)` : 'rgba(255,255,255,0.04)',
                     border: `1px solid ${light.on
-                      ? (isEmerg ? 'rgba(255,69,58,0.28)' : 'rgba(109,200,43,0.22)')
-                      : 'transparent'}`,
-                    transition: 'background 0.2s, border-color 0.2s',
+                      ? `rgba(${glowRgb},0.25)`
+                      : 'rgba(255,255,255,0.07)'}`,
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    boxShadow: light.on ? `inset 0 1px 0 rgba(255,255,255,0.08)` : 'none',
+                    transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
                   }}
                 >
                   <div style={{
-                    width: 12, height: 12, borderRadius: '50%', flexShrink: 0,
-                    background: light.on ? accentC : 'var(--surface3)',
-                    boxShadow: light.on ? `0 0 10px ${isEmerg ? 'rgba(255,69,58,0.8)' : 'rgba(109,200,43,0.8)'}` : 'none',
+                    width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
+                    background: light.on ? accentC : 'rgba(255,255,255,0.18)',
+                    boxShadow: light.on ? `0 0 10px rgba(${glowRgb},0.8)` : 'none',
                     transition: 'background 0.2s, box-shadow 0.2s',
                   }} />
                   <span style={{

@@ -60,25 +60,6 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
           </div>
         </div>
 
-        {/* Pack stats */}
-        <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '8px 12px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--label3)' }}>Pack</div>
-          {[
-            { label: 'Voltage',   value: `${battery.voltage.toFixed(1)} V`,              color: 'var(--sys-blue)' },
-            { label: 'Current',   value: `${Math.abs(battery.current).toFixed(1)} A`,    color: undefined },
-            { label: 'Remaining', value: `${(battery.remaining / 1000).toFixed(1)} Ah`,  color: 'var(--sys-green)' },
-          ].map(({ label, value, color }, i, arr) => (
-            <div key={label} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '6px 12px',
-              borderBottom: i < arr.length - 1 ? '0.5px solid var(--sep)' : 'none',
-            }}>
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--label2)' }}>{label}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: color || 'var(--label)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
-            </div>
-          ))}
-        </div>
-
         {/* Inverter power toggle */}
         <button
           onClick={onToggleInverter}

@@ -98,8 +98,8 @@ export default function CabDisplay() {
           </span>
         </div>
         {emergActive && (
-          <div className="blink" style={{ padding: '3px 10px', borderRadius: 99, background: 'rgba(255,69,58,0.15)', fontSize: 10, fontWeight: 700, color: 'var(--sys-red)' }}>
-            ⚠ EMERGENCY ACTIVE
+          <div className="blink" style={{ padding: '3px 10px', borderRadius: 99, background: 'rgba(255,159,10,0.15)', border: '1px solid rgba(255,159,10,0.35)', fontSize: 10, fontWeight: 700, color: 'var(--sys-orange)', letterSpacing: '0.06em' }}>
+            ◈ BEACONS ACTIVE
           </div>
         )}
         <div style={{ flex: 1 }} />
@@ -203,25 +203,25 @@ export default function CabDisplay() {
 
         {VDIV}
 
-        {/* COL 4: Emergency */}
+        {/* COL 4: Emergency Beacon */}
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          padding: '12px 14px', gap: 12, position: 'relative', overflow: 'hidden',
+          padding: '12px 14px', gap: 10, position: 'relative', overflow: 'hidden',
           background: emergActive
-            ? 'radial-gradient(ellipse at 50% 55%, rgba(255,69,58,0.14) 0%, rgba(255,69,58,0.04) 50%, transparent 75%)'
+            ? 'radial-gradient(ellipse at 50% 45%, rgba(255,159,10,0.13) 0%, rgba(255,159,10,0.04) 50%, transparent 75%)'
             : 'transparent',
           transition: 'background 0.5s ease',
         }}>
           {/* Title */}
           <div style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: emergActive ? 'var(--sys-red)' : 'var(--label3)',
+            color: emergActive ? 'var(--sys-orange)' : 'var(--label3)',
             transition: 'color 0.3s',
           }}>
             Emergency Lights
           </div>
 
-          {/* Button — layered ring design */}
+          {/* Button */}
           <button
             onClick={toggleEmerg}
             style={{
@@ -230,73 +230,102 @@ export default function CabDisplay() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
-            {/* Outer glow ring — only when active */}
-            {emergActive && (
-              <div className="emerg-pulse" style={{
-                position: 'absolute', inset: -8,
-                borderRadius: '50%',
-                border: '1.5px solid rgba(255,69,58,0.4)',
-                pointerEvents: 'none',
-              }} />
-            )}
-
-            {/* Ring 1 — outermost track */}
-            <div style={{
-              position: 'absolute', inset: 0, borderRadius: '50%',
-              border: `1.5px solid ${emergActive ? 'rgba(255,69,58,0.5)' : 'rgba(255,255,255,0.08)'}`,
+            {/* Outer pulsing ring — active only */}
+            <div className={emergActive ? 'beacon-ring-pulse' : ''} style={{
+              position: 'absolute', inset: -6, borderRadius: '50%',
+              border: `1.5px solid ${emergActive ? 'rgba(255,159,10,0.5)' : 'rgba(255,255,255,0.06)'}`,
               transition: 'border-color 0.4s',
+              pointerEvents: 'none',
             }} />
 
-            {/* Ring 2 — middle track */}
+            {/* Mid ring */}
             <div style={{
-              position: 'absolute', inset: 14, borderRadius: '50%',
-              border: `1px solid ${emergActive ? 'rgba(255,69,58,0.35)' : 'rgba(255,255,255,0.06)'}`,
-              transition: 'border-color 0.4s',
+              position: 'absolute', inset: 10, borderRadius: '50%',
+              border: `1px solid ${emergActive ? 'rgba(255,159,10,0.28)' : 'rgba(255,255,255,0.05)'}`,
+              transition: 'border-color 0.5s',
             }} />
 
             {/* Main button face */}
-            <div style={{
-              width: 110, height: 110, borderRadius: '50%',
-              background: emergActive
-                ? 'radial-gradient(circle at 38% 35%, #c0392b 0%, #7f1d1d 45%, #3d0000 100%)'
-                : 'radial-gradient(circle at 38% 35%, #2c2c2e 0%, #1c1c1e 60%, #141414 100%)',
-              border: `2px solid ${emergActive ? 'rgba(255,120,100,0.5)' : 'rgba(255,69,58,0.25)'}`,
-              boxShadow: emergActive
-                ? '0 0 30px rgba(255,69,58,0.5), 0 0 60px rgba(255,69,58,0.2), inset 0 2px 4px rgba(255,180,160,0.15), inset 0 -2px 6px rgba(0,0,0,0.6)'
-                : 'inset 0 2px 4px rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.5), 0 4px 20px rgba(0,0,0,0.5)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
-              transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
-              flexShrink: 0,
-            }}>
-              {/* Icon — lightning bolt */}
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"
-                  fill={emergActive ? 'rgba(255,200,180,0.9)' : 'rgba(255,69,58,0.6)'}
-                  stroke={emergActive ? 'rgba(255,140,120,0.4)' : 'none'}
-                  strokeWidth="0.5"
-                />
+            <div
+              className={emergActive ? 'beacon-flash' : ''}
+              style={{
+                width: 114, height: 114, borderRadius: '50%', position: 'relative', overflow: 'hidden',
+                background: emergActive
+                  ? 'radial-gradient(circle at 38% 32%, #b87200 0%, #6b3f00 45%, #2d1a00 100%)'
+                  : 'radial-gradient(circle at 38% 32%, #282828 0%, #1a1a1a 60%, #111111 100%)',
+                border: `2px solid ${emergActive ? 'rgba(255,180,60,0.55)' : 'rgba(255,159,10,0.20)'}`,
+                boxShadow: emergActive
+                  ? 'inset 0 2px 6px rgba(255,200,80,0.18), inset 0 -2px 6px rgba(0,0,0,0.65)'
+                  : 'inset 0 2px 4px rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.5), 0 4px 20px rgba(0,0,0,0.5)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5,
+                transition: 'background 0.35s, border-color 0.35s',
+                flexShrink: 0,
+              }}
+            >
+              {/* Rotating sweep beam — active only */}
+              <div
+                className={emergActive ? 'beacon-sweep' : ''}
+                style={{
+                  position: 'absolute', inset: 0, borderRadius: '50%',
+                  background: 'conic-gradient(from 0deg, rgba(255,159,10,0.50) 0deg, rgba(255,159,10,0.12) 40deg, transparent 72deg, transparent 360deg)',
+                  opacity: emergActive ? 1 : 0,
+                  transition: 'opacity 0.3s',
+                  pointerEvents: 'none',
+                }}
+              />
+
+              {/* Beacon icon */}
+              <svg width="34" height="34" viewBox="0 0 34 34" fill="none" style={{ position: 'relative', zIndex: 1 }}>
+                {/* Base plate */}
+                <rect x="10" y="27" width="14" height="3.5" rx="1.75"
+                  fill={emergActive ? 'rgba(255,200,80,0.55)' : 'rgba(255,159,10,0.35)'} />
+                {/* Post */}
+                <rect x="15" y="20" width="4" height="7" rx="2"
+                  fill={emergActive ? 'rgba(255,200,80,0.65)' : 'rgba(255,159,10,0.40)'} />
+                {/* Dome body */}
+                <path d="M7 20 Q7 8 17 8 Q27 8 27 20 Z"
+                  fill={emergActive ? 'rgba(255,185,40,0.95)' : 'rgba(255,159,10,0.45)'} />
+                {/* Dome highlight */}
+                <ellipse cx="13" cy="13.5" rx="3.5" ry="2.5"
+                  fill="white" opacity={emergActive ? 0.35 : 0.12} />
+                {/* Light rays — left */}
+                <line x1="2" y1="14" x2="7.5" y2="16.5" stroke={emergActive ? 'rgba(255,200,60,0.85)' : 'rgba(255,159,10,0.25)'}
+                  strokeWidth="2" strokeLinecap="round" />
+                {/* Light rays — right */}
+                <line x1="32" y1="14" x2="26.5" y2="16.5" stroke={emergActive ? 'rgba(255,200,60,0.85)' : 'rgba(255,159,10,0.25)'}
+                  strokeWidth="2" strokeLinecap="round" />
+                {/* Light rays — top */}
+                <line x1="17" y1="2" x2="17" y2="6.5" stroke={emergActive ? 'rgba(255,200,60,0.85)' : 'rgba(255,159,10,0.25)'}
+                  strokeWidth="2" strokeLinecap="round" />
+                {/* Light rays — top-left */}
+                <line x1="5" y1="5" x2="9.5" y2="9.5" stroke={emergActive ? 'rgba(255,200,60,0.75)' : 'rgba(255,159,10,0.20)'}
+                  strokeWidth="1.5" strokeLinecap="round" />
+                {/* Light rays — top-right */}
+                <line x1="29" y1="5" x2="24.5" y2="9.5" stroke={emergActive ? 'rgba(255,200,60,0.75)' : 'rgba(255,159,10,0.20)'}
+                  strokeWidth="1.5" strokeLinecap="round" />
               </svg>
+
               <span style={{
-                fontSize: 9, fontWeight: 800, letterSpacing: '0.16em',
-                color: emergActive ? 'rgba(255,200,190,0.9)' : 'rgba(255,69,58,0.7)',
+                fontSize: 8, fontWeight: 800, letterSpacing: '0.18em', position: 'relative', zIndex: 1,
+                color: emergActive ? 'rgba(255,220,120,0.95)' : 'rgba(255,159,10,0.55)',
                 transition: 'color 0.3s',
-              }}>EMERG</span>
+              }}>BEACON</span>
             </div>
           </button>
 
           {/* Status badge */}
           <div style={{
             padding: '5px 14px', borderRadius: 99,
-            background: emergActive ? 'rgba(255,69,58,0.15)' : 'var(--surface1)',
-            border: `1px solid ${emergActive ? 'rgba(255,69,58,0.35)' : 'var(--surface3)'}`,
+            background: emergActive ? 'rgba(255,159,10,0.14)' : 'var(--surface1)',
+            border: `1px solid ${emergActive ? 'rgba(255,159,10,0.35)' : 'var(--surface3)'}`,
             transition: 'all 0.3s',
           }}>
             <span className={emergActive ? 'blink' : ''} style={{
               fontSize: 10, fontWeight: 700, letterSpacing: '0.10em',
-              color: emergActive ? 'var(--sys-red)' : 'var(--label3)',
+              color: emergActive ? 'var(--sys-orange)' : 'var(--label3)',
               textTransform: 'uppercase',
             }}>
-              {emergActive ? '● Lights Active' : '○ Standby'}
+              {emergActive ? '● Beacons Active' : '○ Standby'}
             </span>
           </div>
 

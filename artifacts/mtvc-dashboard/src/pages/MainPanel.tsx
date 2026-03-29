@@ -185,8 +185,8 @@ export default function MainPanel() {
             display: tab === t.id ? 'flex' : 'none',
             flexDirection: 'column',
           }}>
-            {t.id === 'home'     && <HomeTab battery={data.battery} powerKw={data.inverter.outputKw} lights={activeLights} setLights={setLightsProxy} />}
-            {t.id === 'inverter' && <InverterTab inverter={data.inverter} onToggle={data.toggleInverter} />}
+            {t.id === 'home'     && <HomeTab battery={data.battery} powerKw={data.inverter.outputKw} lights={activeLights} setLights={setLightsProxy} inverterOn={data.inverter.isOn} onToggleInverter={data.toggleInverter} />}
+            {t.id === 'inverter' && <InverterTab inverter={data.inverter} battery={data.battery} />}
             {t.id === 'battery'  && <BatteryTab  battery={data.battery} powerKw={data.inverter.outputKw} />}
             {t.id === 'status'   && (
               <StatusTab inverter={data.inverter} battery={data.battery}

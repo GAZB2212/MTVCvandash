@@ -10,9 +10,11 @@ interface Props {
   powerKw: number;
   lights: (LightData & { _enabled?: boolean })[];
   setLights: (lights: LightData[]) => void;
+  inverterOn: boolean;
+  onToggleInverter: () => void;
 }
 
-export function HomeTab({ battery, powerKw, lights, setLights }: Props) {
+export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onToggleInverter }: Props) {
   const socC     = battery.soc > 60 ? 'var(--sys-green)' : battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
   const timeLeft = calcTimeRemaining(battery.remaining, battery.voltage, powerKw);
   const onCount  = lights.filter(l => l.on).length;
@@ -59,8 +61,8 @@ export function HomeTab({ battery, powerKw, lights, setLights }: Props) {
         </div>
 
         {/* Pack stats */}
-        <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <div style={{ padding: '8px 12px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--label3)' }}>Pack</div>
+        <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '8px 12px 4px', fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--label3)' }}>Pack</div>
           {[
             { label: 'Voltage',   value: `${battery.voltage.toFixed(1)} V`,              color: 'var(--sys-blue)' },
             { label: 'Current',   value: `${Math.abs(battery.current).toFixed(1)} A`,    color: undefined },
@@ -68,7 +70,7 @@ export function HomeTab({ battery, powerKw, lights, setLights }: Props) {
           ].map(({ label, value, color }, i, arr) => (
             <div key={label} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '0 12px', flex: 1,
+              padding: '6px 12px',
               borderBottom: i < arr.length - 1 ? '0.5px solid var(--sep)' : 'none',
             }}>
               <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--label2)' }}>{label}</span>
@@ -76,6 +78,34 @@ export function HomeTab({ battery, powerKw, lights, setLights }: Props) {
             </div>
           ))}
         </div>
+
+        {/* Inverter power toggle */}
+        <button
+          onClick={onToggleInverter}
+          style={{
+            padding: '11px 14px', borderRadius: 12, flexShrink: 0,
+            border: `1px solid ${inverterOn ? 'rgba(109,200,43,0.30)' : 'rgba(255,255,255,0.08)'}`,
+            background: inverterOn ? 'rgba(109,200,43,0.09)' : 'rgba(255,255,255,0.04)',
+            backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+            boxShadow: inverterOn ? '0 0 24px rgba(109,200,43,0.12)' : 'none',
+            display: 'flex', alignItems: 'center', gap: 10,
+            cursor: 'pointer', width: '100%', fontFamily: 'inherit',
+            transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s',
+          }}
+        >
+          <div style={{
+            width: 9, height: 9, borderRadius: '50%', flexShrink: 0,
+            background: inverterOn ? 'var(--brand)' : 'rgba(255,255,255,0.25)',
+            boxShadow: inverterOn ? '0 0 8px rgba(109,200,43,0.9)' : 'none',
+            transition: 'background 0.3s, box-shadow 0.3s',
+          }} />
+          <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: inverterOn ? 'var(--label)' : 'var(--label3)', textAlign: 'left', transition: 'color 0.3s' }}>
+            Inverter
+          </span>
+          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', color: inverterOn ? 'var(--brand)' : 'var(--label3)', transition: 'color 0.3s' }}>
+            {inverterOn ? 'ON' : 'OFF'}
+          </span>
+        </button>
       </div>
 
       {/* RIGHT: Lighting snapshot */}

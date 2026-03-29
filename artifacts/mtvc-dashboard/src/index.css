@@ -4,25 +4,32 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ══════════════════════════════════════
-   APPLE DESIGN SYSTEM — MTVC
+   MTVC — GLASSMORPHISM DESIGN SYSTEM
    ══════════════════════════════════════ */
 
 :root {
-  /* True Apple dark palette */
-  --bg:          #000000;
-  --surface1:    #1C1C1E;
-  --surface2:    #2C2C2E;
-  --surface3:    #3A3A3C;
-  --sep:         rgba(84,84,88,0.65);
-  --sep-strong:  rgba(84,84,88,0.85);
+  /* Background gradient */
+  --bg: linear-gradient(160deg, #070b13 0%, #0a0e1a 55%, #080d12 100%);
 
-  /* Apple label hierarchy */
+  /* Glass surfaces — translucent layers */
+  --surface1:    rgba(255,255,255,0.055);
+  --surface2:    rgba(255,255,255,0.10);
+  --surface3:    rgba(255,255,255,0.17);
+  --glass-bg:    rgba(255,255,255,0.055);
+  --glass-hi:    rgba(255,255,255,0.09);
+  --glass-border: rgba(255,255,255,0.09);
+
+  /* Separators */
+  --sep:         rgba(255,255,255,0.08);
+  --sep-strong:  rgba(255,255,255,0.14);
+
+  /* Label hierarchy */
   --label:       rgba(255,255,255,1.00);
   --label2:      rgba(235,235,245,0.60);
-  --label3:      rgba(235,235,245,0.30);
+  --label3:      rgba(235,235,245,0.35);
   --label4:      rgba(235,235,245,0.18);
 
-  /* Apple system colors */
+  /* System colors */
   --sys-green:   #30D158;
   --sys-blue:    #0A84FF;
   --sys-orange:  #FF9F0A;
@@ -33,12 +40,12 @@
 
   /* MTVC brand */
   --brand:       #6DC82B;
-  --brand-dim:   rgba(109,200,43,0.18);
-  --brand-sep:   rgba(109,200,43,0.30);
+  --brand-dim:   rgba(109,200,43,0.15);
+  --brand-sep:   rgba(109,200,43,0.25);
 
   /* Radius */
-  --r-card:  12px;
-  --r-sm:     8px;
+  --r-card:  14px;
+  --r-sm:     9px;
   --r-pill:  99px;
 
   /* Easing */
@@ -46,21 +53,25 @@
 }
 
 .light {
-  --bg:         #F2F2F7;
-  --surface1:   #FFFFFF;
-  --surface2:   #F2F2F7;
-  --surface3:   #E5E5EA;
-  --sep:        rgba(60,60,67,0.29);
-  --label:      rgba(0,0,0,1.00);
-  --label2:     rgba(60,60,67,0.60);
-  --label3:     rgba(60,60,67,0.30);
-  --label4:     rgba(60,60,67,0.18);
-  --sys-green:  #34C759;
-  --sys-blue:   #007AFF;
-  --sys-orange: #FF9500;
-  --sys-red:    #FF3B30;
-  --brand:      #4A8A18;
-  --brand-dim:  rgba(74,138,24,0.12);
+  --bg:          linear-gradient(160deg, #e8edf7 0%, #edf0fa 55%, #e9f0ed 100%);
+  --surface1:    rgba(255,255,255,0.55);
+  --surface2:    rgba(255,255,255,0.75);
+  --surface3:    rgba(240,240,250,0.85);
+  --glass-bg:    rgba(255,255,255,0.55);
+  --glass-hi:    rgba(255,255,255,0.70);
+  --glass-border: rgba(255,255,255,0.70);
+  --sep:         rgba(0,0,0,0.07);
+  --sep-strong:  rgba(0,0,0,0.12);
+  --label:       rgba(0,0,0,1.00);
+  --label2:      rgba(60,60,67,0.60);
+  --label3:      rgba(60,60,67,0.36);
+  --label4:      rgba(60,60,67,0.18);
+  --sys-green:   #34C759;
+  --sys-blue:    #007AFF;
+  --sys-orange:  #FF9500;
+  --sys-red:     #FF3B30;
+  --brand:       #4A8A18;
+  --brand-dim:   rgba(74,138,24,0.12);
 }
 
 /* ── RESET ── */
@@ -77,18 +88,33 @@ body {
   user-select: none;
 }
 
-/* ── APPLE CARD ── */
+/* ── GLASS CARD ── */
 .card {
-  background: var(--surface1);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
   border-radius: var(--r-card);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.07);
+  overflow: hidden;
+}
+
+/* Elevated card variant */
+.card-hi {
+  background: var(--glass-hi);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border-radius: var(--r-card);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
   overflow: hidden;
 }
 
 /* ── SECTION HEADER ── */
 .section-header {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--label3);
   padding: 0 4px 6px;
@@ -100,7 +126,6 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 9px 14px;
-  background: var(--surface1);
   border-bottom: 0.5px solid var(--sep);
   min-height: 40px;
 }

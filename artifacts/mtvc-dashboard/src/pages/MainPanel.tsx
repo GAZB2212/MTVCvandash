@@ -97,15 +97,34 @@ export default function MainPanel() {
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden', position: 'relative',
     }}>
+      {/* ── AMBIENT GLOW BLOBS ── */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{
+          position: 'absolute', bottom: -120, left: -80, width: 480, height: 480,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(109,200,43,0.11) 0%, transparent 68%)',
+        }} />
+        <div style={{
+          position: 'absolute', top: -100, right: -60, width: 380, height: 380,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(10,132,255,0.09) 0%, transparent 68%)',
+        }} />
+        <div style={{
+          position: 'absolute', top: '40%', left: '38%', width: 260, height: 260,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(109,200,43,0.04) 0%, transparent 70%)',
+        }} />
+      </div>
+
       {/* ── HEADER ── */}
       <div style={{
         height: 52, display: 'flex', alignItems: 'center', gap: 10,
         padding: '0 16px',
-        background: 'rgba(28,28,30,0.92)',
-        backdropFilter: 'blur(40px) saturate(1.8)',
-        WebkitBackdropFilter: 'blur(40px) saturate(1.8)',
-        borderBottom: '0.5px solid var(--sep)',
-        flexShrink: 0,
+        background: 'rgba(7,11,19,0.65)',
+        backdropFilter: 'blur(40px) saturate(1.6)',
+        WebkitBackdropFilter: 'blur(40px) saturate(1.6)',
+        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        flexShrink: 0, zIndex: 10, position: 'relative',
       }}>
         {/* Logo — long-press target */}
         <div
@@ -157,7 +176,7 @@ export default function MainPanel() {
       </div>
 
       {/* ── CONTENT ── */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', zIndex: 5 }}>
         {TABS.map(t => (
           <div key={t.id} style={{
             position: 'absolute', inset: 0,
@@ -185,27 +204,31 @@ export default function MainPanel() {
 
       {/* ── TAB BAR ── */}
       <div style={{
-        height: 48,
-        background: 'rgba(28,28,30,0.92)',
-        backdropFilter: 'blur(40px) saturate(1.8)',
-        WebkitBackdropFilter: 'blur(40px) saturate(1.8)',
-        borderTop: '0.5px solid var(--sep)',
-        display: 'flex', alignItems: 'center', padding: '0 8px', gap: 2,
-        flexShrink: 0,
+        height: 50,
+        background: 'rgba(7,11,19,0.60)',
+        backdropFilter: 'blur(40px) saturate(1.6)',
+        WebkitBackdropFilter: 'blur(40px) saturate(1.6)',
+        borderTop: '1px solid rgba(255,255,255,0.07)',
+        display: 'flex', alignItems: 'center', padding: '6px 8px', gap: 4,
+        flexShrink: 0, zIndex: 10, position: 'relative',
       }}>
         {TABS.map(t => {
           const active = tab === t.id;
           return (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
-              flex: 1, height: 36, border: 'none', cursor: 'pointer', borderRadius: 9,
-              background: active ? 'var(--surface2)' : 'transparent',
+              flex: 1, height: '100%', border: 'none', cursor: 'pointer',
+              borderRadius: 10,
+              background: active ? 'rgba(255,255,255,0.10)' : 'transparent',
+              boxShadow: active
+                ? 'inset 0 1px 0 rgba(255,255,255,0.13), 0 1px 8px rgba(0,0,0,0.25)'
+                : 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background 0.2s',
+              transition: 'background 0.22s, box-shadow 0.22s',
             }}>
               <span style={{
-                fontSize: 11, fontWeight: active ? 600 : 500, letterSpacing: '0.01em',
+                fontSize: 12, fontWeight: active ? 600 : 500, letterSpacing: '0.01em',
                 color: active ? 'var(--brand)' : 'var(--label3)',
-                transition: 'color 0.2s',
+                transition: 'color 0.22s',
               }}>{t.label}</span>
             </button>
           );

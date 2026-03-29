@@ -20,6 +20,22 @@ function buildFrame(command: number, ...data: number[]): Buffer {
   return Buffer.from([length, ...payload, checksum]);
 }
 
+let activePort: SerialPort | null = null;
+let simulationMode = false;
+
+export function setInverterMode(on: boolean) {
+  store.inverter.isOn = on;
+  store.inverter.mode = on ? 'Inverting' : 'Off';
+
+  if (simulationMode) return;
+
+  if (activePort?.isOpen) {
+    const modeByte = on ? 0x04 : 0x00;
+    const frame = buildFrame(0xFF, 0x37, modeByte);
+    activePort.write(frame);
+  }
+}
+
 export function startMk3Reader() {
   let port: SerialPort;
 
@@ -47,6 +63,7 @@ export function startMk3Reader() {
       return;
     }
     logger.info({ path: PORT_PATH }, 'MK3: port open');
+    activePort = port;
     store.inverter.connected = true;
     pollMk3(port);
   });
@@ -100,9 +117,21 @@ function parseRxBuffer(buf: number[]) {
 }
 
 function startSimulation() {
+  simulationMode = true;
   logger.info('MK3: simulation mode active');
 
   setInterval(() => {
+    store.inverter.connected = true;
+
+    if (!store.inverter.isOn) {
+      store.inverter.acVoltage = 0;
+      store.inverter.acHz = 0;
+      store.inverter.outputKw = 0;
+      store.inverter.loadPct = 0;
+      store.inverter.mode = 'Off';
+      return;
+    }
+
     const acVoltage = parseFloat((229 + Math.random() * 3).toFixed(1));
     const acHz = parseFloat((49.8 + Math.random() * 0.4).toFixed(1));
     const outputKw = parseFloat((1.6 + Math.random() * 0.4).toFixed(2));
@@ -114,6 +143,5 @@ function startSimulation() {
     store.inverter.outputKw = outputKw;
     store.inverter.loadPct = Math.round((outputKw / 5) * 100);
     store.inverter.mode = 'Inverting';
-    store.inverter.connected = true;
   }, 2000);
 }

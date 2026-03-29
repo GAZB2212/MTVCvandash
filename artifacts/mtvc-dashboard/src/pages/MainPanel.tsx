@@ -184,7 +184,7 @@ export default function MainPanel() {
             flexDirection: 'column',
           }}>
             {t.id === 'home'     && <HomeTab battery={data.battery} powerKw={data.inverter.outputKw} lights={activeLights} setLights={setLightsProxy} />}
-            {t.id === 'inverter' && <InverterTab inverter={data.inverter} />}
+            {t.id === 'inverter' && <InverterTab inverter={data.inverter} onToggle={data.toggleInverter} />}
             {t.id === 'battery'  && <BatteryTab  battery={data.battery} powerKw={data.inverter.outputKw} />}
             {t.id === 'status'   && (
               <StatusTab inverter={data.inverter} battery={data.battery}

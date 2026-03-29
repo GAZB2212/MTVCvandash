@@ -10,6 +10,7 @@ export interface InverterData {
   mode: string;
   temp: number;
   connected: boolean;
+  isOn: boolean;
 }
 
 export interface BatteryData {
@@ -68,6 +69,7 @@ export interface LiveData {
   setFans: (fans: FanData[]) => void;
   setFanThreshold: (v: number) => void;
   setLights: (lights: LightData[]) => void;
+  toggleInverter: () => void;
 }
 
 const LIGHT_NAMES = ['Cab', 'Load Bay', 'Work', 'Step', 'Exterior', 'Tools', 'Rear', 'Emergency'];
@@ -108,6 +110,7 @@ const SIM_INVERTER: InverterData = {
   mode: 'Inverting',
   temp: 42,
   connected: true,
+  isOn: true,
 };
 
 function apiBatteryToData(api: Record<string, number | boolean>, prev: BatteryData): BatteryData {
@@ -133,6 +136,7 @@ function apiInverterToData(api: Record<string, number | boolean | string>, prev:
     loadPct: (api['loadPct'] as number) ?? prev.loadPct,
     mode: (api['mode'] as string) ?? prev.mode,
     connected: (api['connected'] as boolean) ?? prev.connected,
+    isOn: (api['isOn'] as boolean) ?? prev.isOn,
   };
 }
 
@@ -240,6 +244,22 @@ export function useLiveData(): LiveData {
     };
   }, [startSimulation, stopSimulation]);
 
+  const toggleInverter = useCallback(() => {
+    setInverter(prev => {
+      const newIsOn = !prev.isOn;
+      fetch('/api/inverter/toggle', { method: 'POST' }).catch(() => {});
+      return {
+        ...prev,
+        isOn: newIsOn,
+        mode: newIsOn ? 'Inverting' : 'Off',
+        acVoltage: newIsOn ? prev.acVoltage : 0,
+        acHz: newIsOn ? prev.acHz : 0,
+        outputKw: newIsOn ? prev.outputKw : 0,
+        loadPct: newIsOn ? prev.loadPct : 0,
+      };
+    });
+  }, []);
+
   const setLights = useCallback((newLights: LightData[]) => {
     const changed = newLights.find((l, i) => l.on !== lights[i]?.on);
     if (!changed) {
@@ -270,5 +290,6 @@ export function useLiveData(): LiveData {
     setFans,
     setFanThreshold,
     setLights,
+    toggleInverter,
   };
 }

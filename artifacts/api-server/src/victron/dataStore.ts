@@ -8,6 +8,7 @@ export interface InverterState {
   mode: string;
   temp: number;
   connected: boolean;
+  isOn: boolean;
 }
 
 export interface BatteryState {
@@ -48,9 +49,10 @@ export const store = {
     dcCurrent: 0,
     outputKw: 0,
     loadPct: 0,
-    mode: 'Off',
+    mode: 'Inverting',
     temp: 0,
     connected: false,
+    isOn: true,
   } as InverterState,
 
   lights: LIGHT_NAMES.map((name, id) => ({ id, name, on: false })) as LightState[],

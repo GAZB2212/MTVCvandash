@@ -1,78 +1,123 @@
-import { HBar } from '../../components/HBar';
-import { ConnDot } from '../../components/ConnDot';
 import { InverterData } from '../../hooks/useLiveData';
 
-interface Props { inverter: InverterData }
-
-function Row({ label, value, color, last }: { label: string; value: string; color?: string; last?: boolean }) {
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 14px', flex: 1,
-      borderBottom: last ? 'none' : '0.5px solid var(--sep)',
-    }}>
-      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label)' }}>{label}</span>
-      <span style={{ fontSize: 13, fontWeight: 400, color: color || 'var(--label2)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
-    </div>
-  );
+interface Props {
+  inverter: InverterData;
+  onToggle: () => void;
 }
 
-function MetricCard({ label, value, unit, sub, subValue, color, pct, flex }: {
-  label: string; value: string; unit: string;
-  sub: string; subValue: string; color: string; pct: number; flex?: number;
+function InfoCard({ label, top, bottom, color }: {
+  label: string; top: string; bottom: string; color: string;
 }) {
   return (
-    <div className="card" style={{ padding: '12px 16px', flex: flex ?? 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <div className="card" style={{ flex: 1, padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--label3)' }}>
         {label}
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4 }}>
-        <span style={{ fontSize: 38, fontWeight: 200, color: 'var(--label)', lineHeight: 1, letterSpacing: '-0.03em' }}>{value}</span>
-        <span style={{ fontSize: 16, fontWeight: 300, color: 'var(--label2)', paddingBottom: 4 }}>{unit}</span>
+      <div style={{ fontSize: 26, fontWeight: 200, color, letterSpacing: '-0.02em', lineHeight: 1 }}>
+        {top}
       </div>
-      <div>
-        <HBar pct={pct} color={color} height={3} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
-          <span style={{ fontSize: 11, color: 'var(--label3)', fontWeight: 500 }}>{sub}</span>
-          <span style={{ fontSize: 11, color, fontWeight: 600 }}>{subValue}</span>
-        </div>
+      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--label3)' }}>
+        {bottom}
       </div>
     </div>
   );
 }
 
-export function InverterTab({ inverter }: Props) {
-  const tempC = inverter.temp < 45 ? 'var(--sys-green)' : inverter.temp < 60 ? 'var(--sys-orange)' : 'var(--sys-red)';
+function PowerIcon({ size, color }: { size: number; color: string }) {
+  const s = size;
+  const cx = s / 2;
+  const cy = s / 2;
+  const r = s * 0.34;
+  const gapDeg = 60;
+  const startRad = ((gapDeg / 2 - 90) * Math.PI) / 180;
+  const endRad = ((360 - gapDeg / 2 - 90) * Math.PI) / 180;
+  const x1 = cx + r * Math.cos(startRad);
+  const y1 = cy + r * Math.sin(startRad);
+  const x2 = cx + r * Math.cos(endRad);
+  const y2 = cy + r * Math.sin(endRad);
+  const lineLen = s * 0.24;
+
+  return (
+    <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} fill="none">
+      <path
+        d={`M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`}
+        stroke={color} strokeWidth={s * 0.08} strokeLinecap="round"
+      />
+      <line
+        x1={cx} y1={cy - lineLen * 0.3}
+        x2={cx} y2={cy - r - s * 0.01}
+        stroke={color} strokeWidth={s * 0.08} strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function InverterTab({ inverter, onToggle }: Props) {
+  const isOn = inverter.isOn;
+  const btnColor = isOn ? 'var(--brand)' : 'var(--label3)';
+  const btnGlow = isOn
+    ? '0 0 48px rgba(109,200,43,0.35), 0 0 96px rgba(109,200,43,0.15)'
+    : 'none';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '100%' }}>
-      {/* Top metric cards */}
-      <div style={{ display: 'flex', gap: 8, height: 108, flexShrink: 0 }}>
-        <MetricCard label="AC Output" value={inverter.acVoltage.toFixed(1)} unit="V"
-          sub="Load" subValue={`${inverter.loadPct}%`}
-          color="var(--brand)" pct={inverter.loadPct} />
-        <MetricCard label="DC Input" value={inverter.dcVoltage.toFixed(1)} unit="V"
-          sub="Current" subValue={`${inverter.dcCurrent.toFixed(1)} A`}
-          color="var(--sys-blue)" pct={Math.min(100, (inverter.dcCurrent / 60) * 100)} />
+
+      {/* Info cards row */}
+      <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+        <InfoCard
+          label="AC Output"
+          top={isOn ? `${inverter.acVoltage.toFixed(0)} V` : '— V'}
+          bottom={isOn ? `${inverter.acHz.toFixed(1)} Hz · ${inverter.outputKw.toFixed(2)} kW` : 'Inverter off'}
+          color={isOn ? 'var(--brand)' : 'var(--label3)'}
+        />
+        <InfoCard
+          label="DC Battery"
+          top={`${inverter.dcVoltage.toFixed(1)} V`}
+          bottom={`${inverter.dcCurrent.toFixed(1)} A draw`}
+          color="var(--sys-blue)"
+        />
+        <InfoCard
+          label="Load"
+          top={isOn ? `${inverter.loadPct}%` : '—%'}
+          bottom={isOn ? 'of rated capacity' : 'Inverter off'}
+          color={inverter.loadPct > 80 ? 'var(--sys-red)' : inverter.loadPct > 60 ? 'var(--sys-orange)' : 'var(--label)'}
+        />
       </div>
 
-      {/* System data — grows to fill remaining height */}
-      <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <div style={{ padding: '8px 14px 0', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--label3)' }}>
-          System Data
-        </div>
-        <Row label="Output Power" value={`${inverter.outputKw.toFixed(2)} kW`} />
-        <Row label="DC Current"   value={`${inverter.dcCurrent.toFixed(1)} A`} />
-        <Row label="Temperature"  value={`${inverter.temp}°C`}  color={tempC} />
-        <div style={{
-          display: 'flex', alignItems: 'center', padding: '0 14px', flex: 1,
-          borderTop: '0.5px solid var(--sep)', gap: 10,
-        }}>
-          <ConnDot connected={inverter.connected} />
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label)', flex: 1 }}>VE.Bus Status</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: inverter.mode === 'Inverting' ? 'var(--brand)' : 'var(--sys-blue)' }}>
-            {inverter.mode}
+      {/* Power button — fills remaining space */}
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', gap: 16,
+      }}>
+        <button
+          onClick={onToggle}
+          style={{
+            width: 160, height: 160, borderRadius: '50%',
+            border: `3px solid ${btnColor}`,
+            background: isOn ? 'rgba(109,200,43,0.10)' : 'var(--surface1)',
+            cursor: 'pointer',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: 10,
+            boxShadow: btnGlow,
+            transition: 'box-shadow 0.4s ease, background 0.3s ease, border-color 0.3s ease',
+          }}
+        >
+          <PowerIcon size={56} color={btnColor} />
+          <span style={{
+            fontSize: 15, fontWeight: 700, letterSpacing: '0.08em',
+            color: btnColor, transition: 'color 0.3s ease',
+          }}>
+            {isOn ? 'ON' : 'OFF'}
           </span>
+        </button>
+
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--label2)' }}>
+            {inverter.mode}
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--label3)', marginTop: 3 }}>
+            {isOn ? 'Tap to switch off' : 'Tap to switch on'}
+          </div>
         </div>
       </div>
     </div>

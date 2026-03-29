@@ -14,7 +14,7 @@ const TABS = [
   {
     id: 'home', label: 'Home',
     icon: (c: string) => (
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
         <path d="M9 21V12h6v9"/>
       </svg>
@@ -23,7 +23,7 @@ const TABS = [
   {
     id: 'inverter', label: 'Power',
     icon: (c: string) => (
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="13,2 13,9 20,9 11,22 11,15 4,15"/>
       </svg>
     ),
@@ -31,7 +31,7 @@ const TABS = [
   {
     id: 'battery', label: 'Battery',
     icon: (c: string) => (
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="7" width="17" height="10" rx="2"/>
         <path d="M22 11v2"/>
         <line x1="6" y1="12" x2="12" y2="12"/>
@@ -41,7 +41,7 @@ const TABS = [
   {
     id: 'status', label: 'Status',
     icon: (c: string) => (
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
       </svg>
     ),
@@ -66,7 +66,7 @@ function Clock() {
       }}>
         {time}
       </span>
-      <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', lineHeight: 1, letterSpacing: '0.03em' }}>
+      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label3)', lineHeight: 1, letterSpacing: '0.03em' }}>
         {date}
       </span>
     </div>
@@ -121,7 +121,7 @@ export default function MainPanel() {
 
   return (
     <div style={{
-      width: 800, height: 480,
+      width: 1250, height: 720,
       background: 'var(--bg)',
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden', position: 'relative',
@@ -206,7 +206,7 @@ export default function MainPanel() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <ConnDot connected={online} size={5} />
             <span style={{
-              fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+              fontSize: 13, fontWeight: 600, letterSpacing: '0.06em',
               color: online ? 'var(--sys-green)' : 'var(--sys-red)',
             }}>
               {online ? 'ONLINE' : 'FAULT'}
@@ -280,7 +280,7 @@ export default function MainPanel() {
             }}>
               {t.icon(iconColor)}
               <span style={{
-                fontSize: 9, fontWeight: active ? 700 : 500,
+                fontSize: 12, fontWeight: active ? 700 : 500,
                 letterSpacing: '0.07em', textTransform: 'uppercase',
                 color: iconColor,
                 transition: 'color 0.22s',

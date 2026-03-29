@@ -96,8 +96,8 @@ function HConn({ active, color, label, sublabel, animSpeed, pathId, reverse }: H
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 0 }}>
       <div style={{ textAlign: 'center', marginBottom: 5, lineHeight: 1.2 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: active ? color : 'var(--label3)', fontVariantNumeric: 'tabular-nums', transition: 'color 0.4s' }}>{label}</div>
-        <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 1 }}>{sublabel}</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: active ? color : 'var(--label3)', fontVariantNumeric: 'tabular-nums', transition: 'color 0.4s' }}>{label}</div>
+        <div style={{ fontSize: 12, color: 'var(--label3)', marginTop: 2 }}>{sublabel}</div>
       </div>
       <div style={{ width: '100%', height: 24 }}>
         <svg width="100%" height="24" viewBox="0 0 100 24" preserveAspectRatio="none" overflow="visible">
@@ -237,15 +237,15 @@ function Node({ accent, icon, title, subtitle, primary, primaryColor, rows, acti
           {icon}
         </div>
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: active ? 'var(--label)' : 'var(--label3)', letterSpacing: '0.01em', lineHeight: 1.2 }}>{title}</div>
-          {subtitle && <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 1, lineHeight: 1.2 }}>{subtitle}</div>}
+          <div style={{ fontSize: 14, fontWeight: 700, color: active ? 'var(--label)' : 'var(--label3)', letterSpacing: '0.01em', lineHeight: 1.2 }}>{title}</div>
+          {subtitle && <div style={{ fontSize: 13, color: 'var(--label3)', marginTop: 2, lineHeight: 1.2 }}>{subtitle}</div>}
         </div>
       </div>
 
       {/* Primary headline */}
       {primary !== undefined && (
         <div style={{
-          fontSize: tall ? 28 : 22, fontWeight: 200,
+          fontSize: tall ? 32 : 26, fontWeight: 200,
           color: primaryColor || 'var(--label)',
           letterSpacing: '-0.02em', lineHeight: 1, flexShrink: 0,
           fontVariantNumeric: 'tabular-nums',
@@ -262,8 +262,8 @@ function Node({ accent, icon, title, subtitle, primary, primaryColor, rows, acti
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 5, flex: 1, justifyContent: 'center' }}>
         {rows.map(r => (
           <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--label3)' }}>{r.label}</span>
-            <span style={{ fontSize: 11, fontWeight: 600, color: r.color || 'var(--label)', fontVariantNumeric: 'tabular-nums' }}>{r.value}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label3)' }}>{r.label}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: r.color || 'var(--label)', fontVariantNumeric: 'tabular-nums' }}>{r.value}</span>
           </div>
         ))}
       </div>

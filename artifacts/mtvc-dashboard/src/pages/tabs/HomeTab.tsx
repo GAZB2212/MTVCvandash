@@ -16,7 +16,7 @@ interface Props {
 /* Lightbulb icon for normal zones */
 function BulbIcon({ on, color }: { on: boolean; color: string }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
       <path
         d="M9 21h6M12 3a6 6 0 0 1 4.243 10.243C15.368 14.12 15 15.03 15 16v1H9v-1c0-.97-.368-1.88-1.243-2.757A6 6 0 0 1 12 3z"
         fill={on ? `${color}40` : 'none'}
@@ -33,7 +33,7 @@ function BulbIcon({ on, color }: { on: boolean; color: string }) {
 /* Warning icon for Emergency zone */
 function AlertIcon({ on, color }: { on: boolean; color: string }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
       <path
         d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
         fill={on ? `${color}35` : 'none'}
@@ -81,7 +81,7 @@ function ZoneTile({ light, onToggle }: {
         : <BulbIcon  on={light.on} color={accent} />
       }
       <span style={{
-        fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
+        fontSize: 13, fontWeight: 700, letterSpacing: '0.05em',
         textTransform: 'uppercase', textAlign: 'center',
         color: light.on ? 'var(--label)' : 'var(--label3)',
         lineHeight: 1.2, transition: 'color 0.2s',
@@ -89,7 +89,7 @@ function ZoneTile({ light, onToggle }: {
         {light.name}
       </span>
       <span style={{
-        fontSize: 8, fontWeight: 800, letterSpacing: '0.14em',
+        fontSize: 12, fontWeight: 800, letterSpacing: '0.12em',
         color: light.on ? accent : 'rgba(255,255,255,0.16)',
         transition: 'color 0.22s',
       }}>
@@ -114,33 +114,33 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
     <div style={{ display: 'flex', gap: 10, height: '100%', minHeight: 0 }}>
 
       {/* ── LEFT: Battery Instrument ── */}
-      <div style={{ width: 214, display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
+      <div style={{ width: 290, display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
 
         {/* Battery card */}
         <div className="card" style={{
-          flex: 1, padding: '14px 14px 12px',
+          flex: 1, padding: '18px 18px 14px',
           display: 'flex', flexDirection: 'column', gap: 0,
           background: 'linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.035) 100%)',
         }}>
           <div style={{
-            fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
-            textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 10,
+            fontSize: 13, fontWeight: 700, letterSpacing: '0.12em',
+            textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 12,
           }}>Battery</div>
 
           {/* Arc gauge */}
           <div style={{ display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-            <ArcGauge value={battery.soc} max={100} size={114} color={socC} strokeWidth={8}>
+            <ArcGauge value={battery.soc} max={100} size={150} color={socC} strokeWidth={9}>
               <div style={{ textAlign: 'center', lineHeight: 1 }}>
-                <div style={{ fontSize: 44, fontWeight: 200, color: socC, letterSpacing: '-0.03em' }}>
+                <div style={{ fontSize: 56, fontWeight: 200, color: socC, letterSpacing: '-0.03em' }}>
                   {battery.soc}
                 </div>
-                <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--label3)', marginTop: 3, letterSpacing: '0.08em', textTransform: 'uppercase' }}>SOC %</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--label3)', marginTop: 4, letterSpacing: '0.08em', textTransform: 'uppercase' }}>SOC %</div>
               </div>
             </ArcGauge>
           </div>
 
           {/* Voltage / Amps pills */}
-          <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
             {[
               { val: battery.voltage.toFixed(1), unit: 'V', color: 'var(--sys-blue)' },
               { val: Math.abs(battery.current).toFixed(1), unit: 'A', color: 'var(--sys-teal)' },
@@ -148,12 +148,12 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
               <div key={p.unit} style={{
                 flex: 1, background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: 10, padding: '6px 8px', textAlign: 'center',
+                borderRadius: 12, padding: '8px 10px', textAlign: 'center',
               }}>
-                <div style={{ fontSize: 15, fontWeight: 300, color: p.color, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                <div style={{ fontSize: 20, fontWeight: 300, color: p.color, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
                   {p.val}
                 </div>
-                <div style={{ fontSize: 9, color: 'var(--label3)', fontWeight: 700, letterSpacing: '0.06em', marginTop: 3 }}>
+                <div style={{ fontSize: 12, color: 'var(--label3)', fontWeight: 700, letterSpacing: '0.06em', marginTop: 4 }}>
                   {p.unit}
                 </div>
               </div>
@@ -161,19 +161,19 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
           </div>
 
           {/* Time remaining */}
-          <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--sep)' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--sep)' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--label3)' }}>
               Time Remaining
             </div>
             <div style={{
-              fontSize: 38, fontWeight: 200, color: timeLeft.color,
-              lineHeight: 1, letterSpacing: '-0.03em', marginTop: 4,
+              fontSize: 52, fontWeight: 200, color: timeLeft.color,
+              lineHeight: 1, letterSpacing: '-0.03em', marginTop: 6,
               fontVariantNumeric: 'tabular-nums',
-              textShadow: `0 0 30px ${timeLeft.color}55`,
+              textShadow: `0 0 36px ${timeLeft.color}55`,
             }}>
               {timeLeft.label}
             </div>
-            <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 4, fontWeight: 500 }}>
+            <div style={{ fontSize: 12, color: 'var(--label3)', marginTop: 6, fontWeight: 500 }}>
               @ {(powerKw * 1000).toFixed(0)} W draw
             </div>
           </div>
@@ -181,7 +181,7 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
 
         {/* Inverter button */}
         <button onClick={onToggleInverter} style={{
-          padding: '13px 14px', borderRadius: 'var(--r-card)', flexShrink: 0,
+          padding: '16px 18px', borderRadius: 'var(--r-card)', flexShrink: 0,
           border: `1px solid ${inverterOn ? 'rgba(109,200,43,0.38)' : 'rgba(255,255,255,0.09)'}`,
           borderTopColor: inverterOn ? 'rgba(109,200,43,0.55)' : 'rgba(255,255,255,0.14)',
           background: inverterOn
@@ -190,19 +190,18 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
           boxShadow: inverterOn
             ? '0 0 24px rgba(109,200,43,0.15), inset 0 1px 0 rgba(255,255,255,0.09), 0 4px 16px rgba(0,0,0,0.4)'
             : 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.35)',
-          display: 'flex', alignItems: 'center', gap: 10,
+          display: 'flex', alignItems: 'center', gap: 12,
           cursor: 'pointer', width: '100%', fontFamily: 'inherit',
           transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
         }}>
-          {/* Power dot */}
           <div style={{
-            width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
+            width: 12, height: 12, borderRadius: '50%', flexShrink: 0,
             background: inverterOn ? 'var(--brand)' : 'rgba(255,255,255,0.20)',
-            boxShadow: inverterOn ? '0 0 10px rgba(109,200,43,1), 0 0 20px rgba(109,200,43,0.5)' : 'none',
+            boxShadow: inverterOn ? '0 0 10px rgba(109,200,43,1), 0 0 22px rgba(109,200,43,0.5)' : 'none',
             transition: 'all 0.3s',
           }} />
           <span style={{
-            flex: 1, fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
+            flex: 1, fontSize: 14, fontWeight: 700, letterSpacing: '0.08em',
             textTransform: 'uppercase',
             color: inverterOn ? 'var(--label)' : 'var(--label3)',
             textAlign: 'left', transition: 'color 0.3s',
@@ -210,7 +209,7 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
             Inverter
           </span>
           <span style={{
-            fontSize: 11, fontWeight: 800, letterSpacing: '0.10em',
+            fontSize: 13, fontWeight: 800, letterSpacing: '0.10em',
             color: inverterOn ? 'var(--brand)' : 'var(--label3)',
             transition: 'color 0.3s',
           }}>
@@ -225,11 +224,11 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <span style={{
-            fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
+            fontSize: 13, fontWeight: 700, letterSpacing: '0.10em',
             textTransform: 'uppercase', color: 'var(--label3)',
           }}>Lighting</span>
           <div style={{
-            padding: '2px 10px', borderRadius: 99, fontSize: 10, fontWeight: 800,
+            padding: '3px 12px', borderRadius: 99, fontSize: 13, fontWeight: 800,
             background: onCount > 0 ? 'var(--brand-dim)' : 'rgba(255,255,255,0.06)',
             border: `1px solid ${onCount > 0 ? 'rgba(109,200,43,0.28)' : 'rgba(255,255,255,0.09)'}`,
             color: onCount > 0 ? 'var(--brand)' : 'var(--label3)',
@@ -242,10 +241,10 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
             <button
               onClick={() => setLights(lights.map(l => ({ ...l, on: false })))}
               style={{
-                padding: '4px 14px', borderRadius: 8,
+                padding: '6px 16px', borderRadius: 10,
                 border: '1px solid rgba(255,255,255,0.10)',
                 cursor: 'pointer', background: 'rgba(255,255,255,0.06)',
-                fontSize: 10, fontWeight: 700, color: 'var(--label3)',
+                fontSize: 13, fontWeight: 700, color: 'var(--label3)',
                 fontFamily: 'inherit', letterSpacing: '0.06em',
               }}>
               All Off

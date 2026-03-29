@@ -61,44 +61,21 @@ export function BatteryTab({ battery, powerKw }: Props) {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
 
-      {/* Top row: gauge + big stats */}
+      {/* Top row: time | SOC hero | voltage */}
       <div style={{ flex: 1, display: 'flex', gap: 8, minHeight: 0 }}>
 
-        {/* SOC Gauge card */}
-        <div className="card" style={{
-          width: 200, flexShrink: 0,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          padding: '16px 18px', gap: 10,
-          background: 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
-        }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--label3)' }}>
-            State of Charge
-          </div>
-          <ArcGauge value={battery.soc} max={100} size={130} color={socC} strokeWidth={9}>
-            <div style={{ textAlign: 'center', lineHeight: 1 }}>
-              <div style={{ fontSize: 44, fontWeight: 200, color: socC, letterSpacing: '-0.03em', textShadow: `0 0 30px ${socC}55` }}>
-                {battery.soc}
-              </div>
-              <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--label3)', marginTop: 4 }}>%</div>
-            </div>
-          </ArcGauge>
-          <div style={{ fontSize: 10, color: 'var(--label3)', fontWeight: 500, textAlign: 'center' }}>
-            Fogstar Drift 48V · 125Ah
-          </div>
-        </div>
-
-        {/* Time remaining — hero */}
+        {/* LEFT: Time remaining */}
         <div style={{
-          flex: 1,
+          width: 290, flexShrink: 0,
           background: `linear-gradient(145deg, color-mix(in srgb, ${timeLeft.color} 14%, rgba(255,255,255,0.05)) 0%, rgba(255,255,255,0.03) 100%)`,
           border: `1px solid color-mix(in srgb, ${timeLeft.color} 30%, rgba(255,255,255,0.07))`,
           borderTopColor: `color-mix(in srgb, ${timeLeft.color} 50%, rgba(255,255,255,0.10))`,
           borderRadius: 'var(--r-card)',
-          padding: '20px 24px',
-          display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6,
+          padding: '24px 28px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10,
           boxShadow: `0 0 40px color-mix(in srgb, ${timeLeft.color} 10%, transparent), inset 0 1px 0 rgba(255,255,255,0.09), 0 8px 32px rgba(0,0,0,0.45)`,
         }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--label3)' }}>
             Time Remaining
           </div>
           <div style={{
@@ -108,32 +85,77 @@ export function BatteryTab({ battery, powerKw }: Props) {
           }}>
             {timeLeft.label}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--label3)', fontWeight: 500 }}>
-            @ {(powerKw * 1000).toFixed(0)} W current draw
+          <div style={{ fontSize: 14, color: 'var(--label3)', fontWeight: 500 }}>
+            @ {(powerKw * 1000).toFixed(0)} W draw
+          </div>
+          {/* V + A pills */}
+          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            {[
+              { val: battery.voltage.toFixed(1), unit: 'V', color: 'var(--sys-blue)' },
+              { val: Math.abs(battery.current).toFixed(1), unit: 'A', color: 'var(--sys-teal)' },
+            ].map(p => (
+              <div key={p.unit} style={{
+                flex: 1, background: 'rgba(0,0,0,0.20)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 10, padding: '7px 10px', textAlign: 'center',
+              }}>
+                <div style={{ fontSize: 20, fontWeight: 300, color: p.color, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{p.val}</div>
+                <div style={{ fontSize: 12, color: 'var(--label3)', fontWeight: 700, letterSpacing: '0.06em', marginTop: 3 }}>{p.unit}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Voltage card */}
+        {/* CENTRE: SOC Gauge — hero */}
         <div className="card" style={{
-          width: 160, flexShrink: 0,
+          flex: 1,
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          padding: '16px 18px', gap: 8,
+          padding: '24px 28px', gap: 14,
+          background: `linear-gradient(145deg, color-mix(in srgb, ${socC} 10%, rgba(255,255,255,0.07)) 0%, rgba(255,255,255,0.03) 100%)`,
+          border: `1px solid color-mix(in srgb, ${socC} 25%, rgba(255,255,255,0.07))`,
+          borderTopColor: `color-mix(in srgb, ${socC} 40%, rgba(255,255,255,0.10))`,
+          boxShadow: `0 0 50px color-mix(in srgb, ${socC} 12%, transparent), inset 0 1px 0 rgba(255,255,255,0.09), 0 8px 32px rgba(0,0,0,0.45)`,
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+            State of Charge
+          </div>
+          <ArcGauge value={battery.soc} max={100} size={240} color={socC} strokeWidth={12}>
+            <div style={{ textAlign: 'center', lineHeight: 1 }}>
+              <div style={{ fontSize: 88, fontWeight: 200, color: socC, letterSpacing: '-0.04em', textShadow: `0 0 50px ${socC}66` }}>
+                {battery.soc}
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 400, color: 'var(--label3)', marginTop: 6 }}>%</div>
+            </div>
+          </ArcGauge>
+          <div style={{ fontSize: 14, color: 'var(--label3)', fontWeight: 500, textAlign: 'center' }}>
+            Fogstar Drift 48V · 125Ah
+          </div>
+          <div style={{ fontSize: 14, color: 'var(--label3)', fontWeight: 500, textAlign: 'center' }}>
+            {(battery.remaining / 1000).toFixed(1)} Ah remaining
+          </div>
+        </div>
+
+        {/* RIGHT: Voltage card */}
+        <div className="card" style={{
+          width: 210, flexShrink: 0,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: '20px 22px', gap: 10,
           background: 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
         }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--label3)' }}>
             Pack Voltage
           </div>
           <div style={{ textAlign: 'center', lineHeight: 1 }}>
             <div style={{
-              fontSize: 52, fontWeight: 200, color: voltC,
+              fontSize: 64, fontWeight: 200, color: voltC,
               letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums',
-              textShadow: `0 0 30px ${voltC}55`,
+              textShadow: `0 0 36px ${voltC}55`,
             }}>
               {battery.voltage.toFixed(1)}
             </div>
-            <div style={{ fontSize: 18, fontWeight: 300, color: 'var(--label3)', marginTop: 4 }}>V</div>
+            <div style={{ fontSize: 22, fontWeight: 300, color: 'var(--label3)', marginTop: 6 }}>V</div>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--label3)', fontWeight: 500, textAlign: 'center', lineHeight: 1.4 }}>
+          <div style={{ fontSize: 13, color: 'var(--label3)', fontWeight: 500, textAlign: 'center', lineHeight: 1.6 }}>
             {Math.abs(battery.current).toFixed(1)} A
             <br />
             {(battery.remaining / 1000).toFixed(1)} Ah left
@@ -153,14 +175,14 @@ export function BatteryTab({ battery, powerKw }: Props) {
             flex: 1,
             background: 'linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%)',
             border: '1px solid rgba(255,255,255,0.08)', borderTopColor: 'rgba(255,255,255,0.12)',
-            borderRadius: 12, padding: '10px 12px',
+            borderRadius: 14, padding: '14px 16px',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.35)',
           }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--label3)' }}>
               {s.label}
             </div>
-            <div style={{ fontSize: 22, fontWeight: 300, color: s.color, fontVariantNumeric: 'tabular-nums', marginTop: 4, lineHeight: 1 }}>
-              {s.value} <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label3)' }}>{s.unit}</span>
+            <div style={{ fontSize: 28, fontWeight: 300, color: s.color, fontVariantNumeric: 'tabular-nums', marginTop: 6, lineHeight: 1 }}>
+              {s.value} <span style={{ fontSize: 16, fontWeight: 500, color: 'var(--label3)' }}>{s.unit}</span>
             </div>
           </div>
         ))}

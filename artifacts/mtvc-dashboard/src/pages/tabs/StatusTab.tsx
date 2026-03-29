@@ -22,13 +22,13 @@ function StatTile({ label, value, color, sub }: { label: string; value: string; 
       borderRadius: 14,
       boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 20px rgba(0,0,0,0.4)',
     }}>
-      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 6 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--label3)', marginBottom: 6 }}>
         {label}
       </div>
-      <div style={{ fontSize: 22, fontWeight: 300, color, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+      <div style={{ fontSize: 24, fontWeight: 300, color, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
         {value}
       </div>
-      {sub && <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 4 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 13, color: 'var(--label3)', marginTop: 5 }}>{sub}</div>}
     </div>
   );
 }
@@ -37,11 +37,11 @@ function DataRow({ label, value, color, last }: { label: string; value: string; 
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '9px 14px', minHeight: 36,
+      padding: '11px 16px', minHeight: 44,
       borderBottom: last ? 'none' : '0.5px solid var(--sep)',
     }}>
-      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--label3)' }}>{label}</span>
-      <span style={{ fontSize: 12, fontWeight: 600, color: color || 'var(--label)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
+      <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--label3)' }}>{label}</span>
+      <span style={{ fontSize: 15, fontWeight: 600, color: color || 'var(--label)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
     </div>
   );
 }
@@ -62,7 +62,7 @@ export function StatusTab({ inverter, battery, pressure, temps, fans, alerts, up
     <div style={{ display: 'flex', gap: 8, height: '100%', minHeight: 0 }}>
 
       {/* LEFT column */}
-      <div style={{ width: 240, display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
+      <div style={{ width: 340, display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
 
         {/* Uptime + Energy tiles */}
         <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
@@ -75,7 +75,7 @@ export function StatusTab({ inverter, battery, pressure, temps, fans, alerts, up
           flexShrink: 0,
           background: 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
         }}>
-          <div style={{ padding: '8px 14px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+          <div style={{ padding: '10px 14px 0', fontSize: 13, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--label3)' }}>
             Temperatures
           </div>
           <DataRow label="Cabinet"  value={temps.cabinet  > 0 ? `${temps.cabinet.toFixed(1)} °C`  : '—'} color={tempColor(temps.cabinet)} />
@@ -88,7 +88,7 @@ export function StatusTab({ inverter, battery, pressure, temps, fans, alerts, up
           flexShrink: 0,
           background: 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
         }}>
-          <div style={{ padding: '8px 14px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+          <div style={{ padding: '10px 14px 0', fontSize: 13, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--label3)' }}>
             Fans — {activeFans}/{fans.length} active
           </div>
           {fans.map((f, i) => (
@@ -107,7 +107,7 @@ export function StatusTab({ inverter, battery, pressure, temps, fans, alerts, up
           flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
           background: 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
         }}>
-          <div style={{ padding: '8px 14px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase', color: 'var(--label3)' }}>
+          <div style={{ padding: '10px 14px 0', fontSize: 13, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--label3)' }}>
             Connections
           </div>
           <DataRow label="VE.Bus"     value={inverter.connected  ? 'Online'    : 'Offline'}      color={inverter.connected  ? 'var(--sys-green)' : 'var(--sys-red)'} />
@@ -123,7 +123,7 @@ export function StatusTab({ inverter, battery, pressure, temps, fans, alerts, up
           flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
           background: 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
         }}>
-          <div style={{ padding: '10px 14px 6px', fontSize: 9, fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase', color: 'var(--label3)', flexShrink: 0, borderBottom: '0.5px solid var(--sep)' }}>
+          <div style={{ padding: '10px 14px 8px', fontSize: 13, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--label3)', flexShrink: 0, borderBottom: '0.5px solid var(--sep)' }}>
             Event Log
           </div>
           <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
@@ -137,11 +137,11 @@ export function StatusTab({ inverter, battery, pressure, temps, fans, alerts, up
                 padding: '0 14px', minHeight: 38,
                 borderBottom: i < alerts.length - 1 ? '0.5px solid var(--sep)' : 'none',
               }}>
-                <span style={{ fontSize: 11, color: ALERT_COLOR[a.type], width: 12, textAlign: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 14, color: ALERT_COLOR[a.type], width: 14, textAlign: 'center', flexShrink: 0 }}>
                   {ALERT_ICON[a.type]}
                 </span>
-                <span style={{ flex: 1, fontSize: 12, fontWeight: 400, color: 'var(--label2)' }}>{a.msg}</span>
-                <span style={{ fontSize: 11, color: 'var(--label3)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{a.time}</span>
+                <span style={{ flex: 1, fontSize: 15, fontWeight: 400, color: 'var(--label2)' }}>{a.msg}</span>
+                <span style={{ fontSize: 14, color: 'var(--label3)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{a.time}</span>
               </div>
             ))}
           </div>

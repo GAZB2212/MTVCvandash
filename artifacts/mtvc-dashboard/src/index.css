@@ -8,26 +8,26 @@
    ══════════════════════════════════════ */
 
 :root {
-  /* Background gradient */
-  --bg: linear-gradient(160deg, #070b13 0%, #0a0e1a 55%, #080d12 100%);
+  /* Background gradient — deep automotive navy */
+  --bg: linear-gradient(160deg, #030710 0%, #060c1a 55%, #040810 100%);
 
   /* Glass surfaces — translucent layers */
-  --surface1:    rgba(255,255,255,0.055);
-  --surface2:    rgba(255,255,255,0.10);
-  --surface3:    rgba(255,255,255,0.17);
-  --glass-bg:    rgba(255,255,255,0.055);
-  --glass-hi:    rgba(255,255,255,0.09);
-  --glass-border: rgba(255,255,255,0.09);
+  --surface1:    rgba(255,255,255,0.06);
+  --surface2:    rgba(255,255,255,0.11);
+  --surface3:    rgba(255,255,255,0.18);
+  --glass-bg:    rgba(14,22,44,0.75);
+  --glass-hi:    rgba(20,32,60,0.80);
+  --glass-border: rgba(255,255,255,0.10);
 
   /* Separators */
   --sep:         rgba(255,255,255,0.08);
-  --sep-strong:  rgba(255,255,255,0.14);
+  --sep-strong:  rgba(255,255,255,0.15);
 
   /* Label hierarchy */
   --label:       rgba(255,255,255,1.00);
-  --label2:      rgba(235,235,245,0.60);
-  --label3:      rgba(235,235,245,0.35);
-  --label4:      rgba(235,235,245,0.18);
+  --label2:      rgba(220,230,255,0.65);
+  --label3:      rgba(190,210,255,0.38);
+  --label4:      rgba(190,210,255,0.20);
 
   /* System colors */
   --sys-green:   #30D158;
@@ -40,12 +40,13 @@
 
   /* MTVC brand */
   --brand:       #6DC82B;
-  --brand-dim:   rgba(109,200,43,0.15);
-  --brand-sep:   rgba(109,200,43,0.25);
+  --brand-dim:   rgba(109,200,43,0.12);
+  --brand-sep:   rgba(109,200,43,0.22);
+  --brand-glow:  rgba(109,200,43,0.35);
 
   /* Radius */
-  --r-card:  14px;
-  --r-sm:     9px;
+  --r-card:  18px;
+  --r-sm:    11px;
   --r-pill:  99px;
 
   /* Easing */
@@ -88,25 +89,33 @@ body {
   user-select: none;
 }
 
-/* ── GLASS CARD ── */
+/* ── GLASS CARD — automotive deep-panel style ── */
 .card {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
   border-radius: var(--r-card);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 2px 20px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-top-color: rgba(255,255,255,0.15);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.09) inset,
+    0 8px 40px rgba(0,0,0,0.55),
+    0 2px 10px rgba(0,0,0,0.40);
   overflow: hidden;
 }
 
 /* Elevated card variant */
 .card-hi {
   background: var(--glass-hi);
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
   border-radius: var(--r-card);
-  border: 1px solid rgba(255,255,255,0.14);
-  box-shadow: 0 4px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-top-color: rgba(255,255,255,0.20);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.12) inset,
+    0 12px 48px rgba(0,0,0,0.65),
+    0 4px 16px rgba(0,0,0,0.45);
   overflow: hidden;
 }
 

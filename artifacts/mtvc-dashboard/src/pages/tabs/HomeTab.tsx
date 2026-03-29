@@ -64,7 +64,7 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
         <button
           onClick={onToggleInverter}
           style={{
-            padding: '11px 14px', borderRadius: 12, flexShrink: 0,
+            padding: '11px 14px', borderRadius: 'var(--r-card)', flexShrink: 0,
             border: `1px solid ${inverterOn ? 'rgba(109,200,43,0.30)' : 'rgba(255,255,255,0.08)'}`,
             background: inverterOn ? 'rgba(109,200,43,0.09)' : 'rgba(255,255,255,0.04)',
             backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
@@ -133,16 +133,19 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
                 onClick={() => toggle(light.id)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px',
-                  borderRadius: 12, cursor: 'pointer',
+                  borderRadius: 'var(--r-card)', cursor: 'pointer',
                   background: light.on
-                    ? `rgba(${glowRgb},0.09)`
-                    : 'rgba(255,255,255,0.04)',
+                    ? `rgba(${glowRgb},0.10)`
+                    : 'rgba(14,22,44,0.72)',
                   border: `1px solid ${light.on
-                    ? `rgba(${glowRgb},0.25)`
-                    : 'rgba(255,255,255,0.07)'}`,
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  boxShadow: light.on ? `inset 0 1px 0 rgba(255,255,255,0.08)` : 'none',
+                    ? `rgba(${glowRgb},0.28)`
+                    : 'rgba(255,255,255,0.08)'}`,
+                  borderTopColor: light.on ? `rgba(${glowRgb},0.40)` : 'rgba(255,255,255,0.13)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  boxShadow: light.on
+                    ? `0 0 20px rgba(${glowRgb},0.12), inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 16px rgba(0,0,0,0.4)`
+                    : 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.4)',
                   transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
                 }}
               >

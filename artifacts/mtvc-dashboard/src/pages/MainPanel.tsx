@@ -9,11 +9,43 @@ import { BatteryTab } from './tabs/BatteryTab';
 import { HomeTab } from './tabs/HomeTab';
 import { StatusTab } from './tabs/StatusTab';
 
+/* ── Tab definitions with SVG icons ── */
 const TABS = [
-  { id: 'home',     label: 'Home'     },
-  { id: 'inverter', label: 'Inverter' },
-  { id: 'battery',  label: 'Battery'  },
-  { id: 'status',   label: 'Status'   },
+  {
+    id: 'home', label: 'Home',
+    icon: (c: string) => (
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+        <path d="M9 21V12h6v9"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'inverter', label: 'Power',
+    icon: (c: string) => (
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="13,2 13,9 20,9 11,22 11,15 4,15"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'battery', label: 'Battery',
+    icon: (c: string) => (
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="7" width="17" height="10" rx="2"/>
+        <path d="M22 11v2"/>
+        <line x1="6" y1="12" x2="12" y2="12"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'status', label: 'Status',
+    icon: (c: string) => (
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+      </svg>
+    ),
+  },
 ];
 
 const HOLD_MS = 2000;
@@ -27,11 +59,14 @@ function Clock() {
   const time = now.toLocaleTimeString('en-GB', { hour12: false });
   const date = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--label)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+      <span style={{
+        fontSize: 22, fontWeight: 300, color: 'var(--label)',
+        fontVariantNumeric: 'tabular-nums', lineHeight: 1, letterSpacing: '-0.02em',
+      }}>
         {time}
       </span>
-      <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', lineHeight: 1 }}>
+      <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', lineHeight: 1, letterSpacing: '0.03em' }}>
         {date}
       </span>
     </div>
@@ -41,13 +76,12 @@ function Clock() {
 export default function MainPanel() {
   const [tab, setTab] = useState('home');
   const [adminOpen, setAdminOpen] = useState(false);
-  const [holdPct, setHoldPct] = useState(0); // 0–100 progress while holding
+  const [holdPct, setHoldPct] = useState(0);
   const data = useLiveData();
   const vanConfig = useVanConfig();
   const { isDark, toggleTheme } = useTheme();
   const online = data.inverter.connected && data.battery.connected;
 
-  // Long-press on logo
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const holdStartRef = useRef<number>(0);
 
@@ -63,14 +97,10 @@ export default function MainPanel() {
       const elapsed = Date.now() - holdStartRef.current;
       const pct = Math.min(100, (elapsed / HOLD_MS) * 100);
       setHoldPct(pct);
-      if (pct >= 100) {
-        cancelHold();
-        setAdminOpen(true);
-      }
+      if (pct >= 100) { cancelHold(); setAdminOpen(true); }
     }, 30);
   }, [cancelHold]);
 
-  // Merge live light/fan data with config names and enabled state
   const activeLights = data.lights
     .map(l => {
       const cfg = vanConfig.config.lights.find(c => c.id === l.id);
@@ -85,9 +115,8 @@ export default function MainPanel() {
     }));
   };
 
-  // Logo hold indicator — SVG ring
-  const LOGO_SIZE = 42;
-  const R = 22;
+  const LOGO_SIZE = 40;
+  const R = 21;
   const CIRC = 2 * Math.PI * R;
 
   return (
@@ -97,35 +126,50 @@ export default function MainPanel() {
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden', position: 'relative',
     }}>
-      {/* ── AMBIENT GLOW BLOBS ── */}
+
+      {/* ── AMBIENT GLOW BLOBS — blue-biased automotive ── */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        {/* Centre glow — deep blue, like dashboard ambient light */}
         <div style={{
-          position: 'absolute', bottom: -120, left: -80, width: 480, height: 480,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(109,200,43,0.11) 0%, transparent 68%)',
+          position: 'absolute', top: '45%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 720, height: 420, borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(20,60,180,0.10) 0%, transparent 70%)',
         }} />
+        {/* Top-right — cool teal */}
         <div style={{
-          position: 'absolute', top: -100, right: -60, width: 380, height: 380,
+          position: 'absolute', top: -80, right: -60, width: 420, height: 420,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(10,132,255,0.09) 0%, transparent 68%)',
+          background: 'radial-gradient(circle, rgba(10,100,220,0.09) 0%, transparent 68%)',
         }} />
+        {/* Bottom-left — brand green, muted */}
         <div style={{
-          position: 'absolute', top: '40%', left: '38%', width: 260, height: 260,
+          position: 'absolute', bottom: -100, left: -60, width: 380, height: 380,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(109,200,43,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(109,200,43,0.07) 0%, transparent 68%)',
         }} />
       </div>
 
+      {/* ── AUTOMOTIVE SCAN-LINE TEXTURE OVERLAY ── */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
+        backgroundImage: [
+          'repeating-linear-gradient(0deg, transparent 0px, transparent 29px, rgba(120,160,255,0.022) 30px)',
+        ].join(','),
+      }} />
+
       {/* ── HEADER ── */}
       <div style={{
-        height: 52, display: 'flex', alignItems: 'center', gap: 10,
-        padding: '0 16px',
-        background: 'rgba(7,11,19,0.65)',
-        backdropFilter: 'blur(40px) saturate(1.6)',
-        WebkitBackdropFilter: 'blur(40px) saturate(1.6)',
+        height: 56, display: 'flex', alignItems: 'center', gap: 12,
+        padding: '0 18px',
+        background: 'rgba(4,8,16,0.80)',
+        backdropFilter: 'blur(48px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(48px) saturate(1.8)',
         borderBottom: '1px solid rgba(255,255,255,0.07)',
+        boxShadow: '0 1px 0 rgba(109,200,43,0.08), 0 4px 24px rgba(0,0,0,0.4)',
         flexShrink: 0, zIndex: 10, position: 'relative',
       }}>
+
         {/* Logo — long-press target */}
         <div
           onPointerDown={startHold}
@@ -137,12 +181,12 @@ export default function MainPanel() {
             position: 'absolute', top: 2, left: 2,
             width: LOGO_SIZE, height: LOGO_SIZE, objectFit: 'contain',
           }} />
-          {/* Progress ring */}
           {holdPct > 0 && (
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox={`0 0 ${LOGO_SIZE + 4} ${LOGO_SIZE + 4}`}>
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+              viewBox={`0 0 ${LOGO_SIZE + 4} ${LOGO_SIZE + 4}`}>
               <circle
                 cx={(LOGO_SIZE + 4) / 2} cy={(LOGO_SIZE + 4) / 2} r={R}
-                fill="none" stroke="var(--brand)" strokeWidth="2"
+                fill="none" stroke="var(--brand)" strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeDasharray={`${(holdPct / 100) * CIRC} ${CIRC}`}
                 transform={`rotate(-90 ${(LOGO_SIZE + 4) / 2} ${(LOGO_SIZE + 4) / 2})`}
@@ -152,26 +196,37 @@ export default function MainPanel() {
         </div>
 
         {/* Van name + status */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--label)' }}>{vanConfig.config.vanName}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{
+            fontSize: 13, fontWeight: 700, color: 'var(--label)',
+            letterSpacing: '0.04em', textTransform: 'uppercase',
+          }}>
+            {vanConfig.config.vanName}
+          </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <ConnDot connected={online} size={5} />
-            <span style={{ fontSize: 10, fontWeight: 500, color: online ? 'var(--sys-green)' : 'var(--sys-red)' }}>
-              {online ? 'Online' : 'Fault'}
+            <span style={{
+              fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+              color: online ? 'var(--sys-green)' : 'var(--sys-red)',
+            }}>
+              {online ? 'ONLINE' : 'FAULT'}
             </span>
           </div>
         </div>
 
         <div style={{ flex: 1 }} />
 
-        {/* Theme */}
+        {/* Theme toggle — subtle icon button */}
         <button onClick={toggleTheme} style={{
-          width: 32, height: 32, borderRadius: 8, border: 'none',
-          background: 'var(--surface2)', cursor: 'pointer',
-          fontSize: 15, color: 'var(--label)',
+          width: 34, height: 34, borderRadius: 10, border: '1px solid rgba(255,255,255,0.09)',
+          background: 'rgba(255,255,255,0.05)',
+          backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+          cursor: 'pointer', fontSize: 14, color: 'var(--label2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
         }}>{isDark ? '☀' : '●'}</button>
 
+        {/* Clock — hero element */}
         <Clock />
       </div>
 
@@ -180,7 +235,7 @@ export default function MainPanel() {
         {TABS.map(t => (
           <div key={t.id} style={{
             position: 'absolute', inset: 0,
-            padding: '12px 14px',
+            padding: '12px 14px 10px',
             overflow: 'hidden',
             display: tab === t.id ? 'flex' : 'none',
             flexDirection: 'column',
@@ -196,40 +251,49 @@ export default function MainPanel() {
           </div>
         ))}
 
-        {/* Admin overlay */}
-        {adminOpen && (
-          <AdminPanel api={vanConfig} onClose={() => setAdminOpen(false)} />
-        )}
+        {adminOpen && <AdminPanel api={vanConfig} onClose={() => setAdminOpen(false)} />}
       </div>
 
-      {/* ── TAB BAR ── */}
+      {/* ── AUTOMOTIVE TAB BAR ── */}
       <div style={{
-        height: 50,
-        background: 'rgba(7,11,19,0.60)',
-        backdropFilter: 'blur(40px) saturate(1.6)',
-        WebkitBackdropFilter: 'blur(40px) saturate(1.6)',
-        borderTop: '1px solid rgba(255,255,255,0.07)',
-        display: 'flex', alignItems: 'center', padding: '6px 8px', gap: 4,
+        height: 56,
+        background: 'rgba(4,8,16,0.88)',
+        backdropFilter: 'blur(48px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(48px) saturate(1.8)',
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+        boxShadow: '0 -1px 0 rgba(109,200,43,0.06), 0 -4px 24px rgba(0,0,0,0.4)',
+        display: 'flex', alignItems: 'stretch', padding: '6px 8px', gap: 4,
         flexShrink: 0, zIndex: 10, position: 'relative',
       }}>
         {TABS.map(t => {
           const active = tab === t.id;
+          const iconColor = active ? 'var(--brand)' : 'var(--label3)';
           return (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
-              flex: 1, height: '100%', border: 'none', cursor: 'pointer',
-              borderRadius: 10,
-              background: active ? 'rgba(255,255,255,0.10)' : 'transparent',
-              boxShadow: active
-                ? 'inset 0 1px 0 rgba(255,255,255,0.13), 0 1px 8px rgba(0,0,0,0.25)'
-                : 'none',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background 0.22s, box-shadow 0.22s',
+              flex: 1, border: active ? '1px solid rgba(109,200,43,0.20)' : '1px solid transparent',
+              cursor: 'pointer', borderRadius: 12,
+              background: active ? 'rgba(109,200,43,0.09)' : 'transparent',
+              boxShadow: active ? '0 0 16px rgba(109,200,43,0.08), inset 0 1px 0 rgba(255,255,255,0.06)' : 'none',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
+              transition: 'background 0.22s, border-color 0.22s, box-shadow 0.22s',
+              fontFamily: 'inherit', padding: 0,
             }}>
+              {t.icon(iconColor)}
               <span style={{
-                fontSize: 12, fontWeight: active ? 600 : 500, letterSpacing: '0.01em',
-                color: active ? 'var(--brand)' : 'var(--label3)',
+                fontSize: 9, fontWeight: active ? 700 : 500,
+                letterSpacing: '0.07em', textTransform: 'uppercase',
+                color: iconColor,
                 transition: 'color 0.22s',
               }}>{t.label}</span>
+              {/* Active indicator dot */}
+              {active && (
+                <div style={{
+                  width: 16, height: 2, borderRadius: 2,
+                  background: 'var(--brand)',
+                  boxShadow: '0 0 6px var(--brand-glow)',
+                  marginTop: -1,
+                }} />
+              )}
             </button>
           );
         })}

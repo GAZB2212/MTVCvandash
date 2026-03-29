@@ -44,20 +44,22 @@ function PlugIcon({ size, color }: { size: number; color: string }) {
   );
 }
 
-/* ── Flow connector with animated dashes ── */
+/* ── Flow connector with travelling bulges ── */
 interface ConnectorProps {
   active: boolean;
   color: string;
   label: string;
   sublabel: string;
-  animSpeed: number; /* seconds per cycle, 0 = no anim */
+  animSpeed: number; /* seconds per bulge cycle, 0 = no anim */
+  pathId: string;
 }
 
-function FlowConnector({ active, color, label, sublabel, animSpeed }: ConnectorProps) {
+function FlowConnector({ active, color, label, sublabel, animSpeed, pathId }: ConnectorProps) {
+  const half = animSpeed / 2;
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', minWidth: 0 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 0 }}>
       {/* Label above */}
-      <div style={{ textAlign: 'center', marginBottom: 6, lineHeight: 1.2 }}>
+      <div style={{ textAlign: 'center', marginBottom: 8, lineHeight: 1.2 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: active ? color : 'var(--label3)', fontVariantNumeric: 'tabular-nums', transition: 'color 0.4s' }}>
           {label}
         </div>
@@ -66,33 +68,50 @@ function FlowConnector({ active, color, label, sublabel, animSpeed }: ConnectorP
         </div>
       </div>
 
-      {/* Animated line — viewBox 0 0 100 20, preserveAspectRatio none so it stretches to fill width */}
-      <div style={{ width: '100%', height: 20 }}>
-        <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none" overflow="visible">
-          {/* Base track */}
-          <line x1="2" y1="10" x2="94" y2="10"
-            stroke="rgba(255,255,255,0.08)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-          {/* Animated flow dashes */}
-          {active && animSpeed > 0 && (
-            <line
-              x1="2" y1="10" x2="94" y2="10"
-              stroke={color} strokeWidth="2.5" strokeLinecap="round"
-              strokeDasharray="9 7"
-              vectorEffect="non-scaling-stroke"
-              style={{ animation: `flow-right ${animSpeed}s linear infinite`, opacity: 0.9 }}
-            />
-          )}
-          {!active && (
-            <line x1="2" y1="10" x2="94" y2="10"
-              stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" strokeDasharray="4 8"
-              vectorEffect="non-scaling-stroke" />
-          )}
+      {/* Pipe + travelling bulges */}
+      <div style={{ width: '100%', height: 24, overflow: 'visible' }}>
+        <svg width="100%" height="24" viewBox="0 0 100 24" preserveAspectRatio="none" overflow="visible">
+          <defs>
+            {/* Path along which bulges travel */}
+            <path id={pathId} d="M 3 12 H 97" />
+            {/* Glow filter for active bulges */}
+            <filter id={`glow-${pathId}`} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+          </defs>
+
+          {/* Solid base pipe */}
+          <line x1="3" y1="12" x2="97" y2="12"
+            stroke={active ? color : 'rgba(255,255,255,0.10)'}
+            strokeWidth={active ? 2.5 : 1.5}
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+            opacity={active ? 0.30 : 1}
+            style={{ transition: 'stroke 0.4s, opacity 0.4s' }}
+          />
+
           {/* Arrowhead */}
           <polygon
-            points="100,10 91,6 91,14"
-            fill={active ? color : 'rgba(255,255,255,0.15)'}
+            points="100,12 91,7 91,17"
+            fill={active ? color : 'rgba(255,255,255,0.12)'}
+            opacity={active ? 0.8 : 1}
             style={{ transition: 'fill 0.4s' }}
           />
+
+          {/* Two staggered oval bulges */}
+          {active && animSpeed > 0 && (<>
+            <ellipse rx="10" ry="5" fill={color} opacity="0.95" filter={`url(#glow-${pathId})`}>
+              <animateMotion dur={`${animSpeed}s`} repeatCount="indefinite" rotate="none">
+                <mpath href={`#${pathId}`} />
+              </animateMotion>
+            </ellipse>
+            <ellipse rx="10" ry="5" fill={color} opacity="0.95" filter={`url(#glow-${pathId})`}>
+              <animateMotion dur={`${animSpeed}s`} begin={`-${half}s`} repeatCount="indefinite" rotate="none">
+                <mpath href={`#${pathId}`} />
+              </animateMotion>
+            </ellipse>
+          </>)}
         </svg>
       </div>
     </div>
@@ -166,14 +185,6 @@ export function InverterTab({ inverter, battery }: Props) {
 
   return (
     <>
-      {/* Inline keyframes for flow animation */}
-      <style>{`
-        @keyframes flow-right {
-          from { stroke-dashoffset: 16; }
-          to   { stroke-dashoffset: 0; }
-        }
-      `}</style>
-
       <div style={{ display: 'flex', alignItems: 'center', height: '100%', gap: 0, padding: '0 4px' }}>
 
         {/* ── Battery Node ── */}
@@ -198,6 +209,7 @@ export function InverterTab({ inverter, battery }: Props) {
           label={`${dcPower > 0 ? dcPower.toFixed(0) : '—'} W`}
           sublabel="DC"
           animSpeed={flowSpeed}
+          pathId="dc-flow"
         />
 
         {/* ── Inverter Node ── */}
@@ -221,6 +233,7 @@ export function InverterTab({ inverter, battery }: Props) {
           label={isOn ? `${inverter.outputKw.toFixed(2)} kW` : '—'}
           sublabel="AC 230V"
           animSpeed={flowSpeed}
+          pathId="ac-flow"
         />
 
         {/* ── AC Load Node ── */}

@@ -89,7 +89,9 @@ interface HConnProps {
 function HConn({ active, color, label, sublabel, animSpeed, pathId, reverse }: HConnProps) {
   const t = (animSpeed / 3).toFixed(2);
   const t2 = ((animSpeed / 3) * 2).toFixed(2);
-  const path = reverse ? `M 97 12 H 3` : `M 3 12 H 97`;
+  /* Path now matches the line exactly at y=10 so pulses ride the centre */
+  const path = reverse ? `M 97 10 H 3` : `M 3 10 H 97`;
+  const filterId = `glow-h-${pathId}`;
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 0 }}>
@@ -97,30 +99,38 @@ function HConn({ active, color, label, sublabel, animSpeed, pathId, reverse }: H
         <div style={{ fontSize: 11, fontWeight: 600, color: active ? color : 'var(--label3)', fontVariantNumeric: 'tabular-nums', transition: 'color 0.4s' }}>{label}</div>
         <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 1 }}>{sublabel}</div>
       </div>
-      <div style={{ width: '100%', height: 20 }}>
-        <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none" overflow="visible">
+      <div style={{ width: '100%', height: 24 }}>
+        <svg width="100%" height="24" viewBox="0 0 100 24" preserveAspectRatio="none" overflow="visible">
           <defs>
             <path id={pathId} d={path} />
+            <filter id={filterId} x="-80%" y="-300%" width="260%" height="700%">
+              <feGaussianBlur stdDeviation="2.2" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
           </defs>
-          <line x1="3" y1="10" x2="97" y2="10"
+
+          {/* Base track */}
+          <line x1="3" y1="12" x2="97" y2="12"
             stroke={active ? color : 'rgba(255,255,255,0.09)'}
-            strokeWidth={active ? 2 : 1.5} strokeLinecap="round"
+            strokeWidth={active ? 1.5 : 1.5} strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
-            opacity={active ? 0.35 : 1}
-            style={{ transition: 'stroke 0.4s' }}
+            opacity={active ? 0.30 : 0.6}
+            style={{ transition: 'stroke 0.4s, opacity 0.4s' }}
           />
+          {/* Arrowhead */}
           {!reverse
-            ? <polygon points="100,10 91,5.5 91,14.5" fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
-            : <polygon points="0,10 9,5.5 9,14.5"    fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
+            ? <polygon points="100,12 91,7.5 91,16.5" fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.70 : 1} />
+            : <polygon points="0,12 9,7.5 9,16.5"    fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.70 : 1} />
           }
+          {/* Glowing pulses — 3 evenly phased, centred on the line */}
           {active && animSpeed > 0 && (<>
-            <ellipse rx="5" ry="2" fill={color} opacity="0.7">
+            <ellipse rx="5.5" ry="2.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
               <animateMotion dur={`${animSpeed}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
             </ellipse>
-            <ellipse rx="5" ry="2" fill={color} opacity="0.7">
+            <ellipse rx="5.5" ry="2.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
               <animateMotion dur={`${animSpeed}s`} begin={`-${t}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
             </ellipse>
-            <ellipse rx="5" ry="2" fill={color} opacity="0.7">
+            <ellipse rx="5.5" ry="2.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
               <animateMotion dur={`${animSpeed}s`} begin={`-${t2}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
             </ellipse>
           </>)}
@@ -143,31 +153,39 @@ function VConn({ active, color, animSpeed, pathId, reverse }: VConnProps) {
   const t = (animSpeed / 3).toFixed(2);
   const t2 = ((animSpeed / 3) * 2).toFixed(2);
   const path = reverse ? `M 12 34 V 2` : `M 12 2 V 34`;
+  const filterId = `glow-v-${pathId}`;
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width="24" height="100%" viewBox="0 0 24 36" preserveAspectRatio="none" overflow="visible">
         <defs>
           <path id={pathId} d={path} />
+          <filter id={filterId} x="-300%" y="-80%" width="700%" height="260%">
+            <feGaussianBlur stdDeviation="2.2" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
         </defs>
+        {/* Base track */}
         <line x1="12" y1="2" x2="12" y2="34"
           stroke={active ? color : 'rgba(255,255,255,0.09)'}
-          strokeWidth={active ? 2 : 1.5} strokeLinecap="round"
-          opacity={active ? 0.35 : 1}
-          style={{ transition: 'stroke 0.4s' }}
+          strokeWidth={active ? 1.5 : 1.5} strokeLinecap="round"
+          opacity={active ? 0.30 : 0.6}
+          style={{ transition: 'stroke 0.4s, opacity 0.4s' }}
         />
+        {/* Arrowhead */}
         {reverse
-          ? <polygon points="12,0 7,9 17,9"    fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
-          : <polygon points="12,36 7,27 17,27" fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
+          ? <polygon points="12,0 7,9 17,9"    fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.70 : 1} />
+          : <polygon points="12,36 7,27 17,27" fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.70 : 1} />
         }
+        {/* Glowing pulses — centred on the track */}
         {active && animSpeed > 0 && (<>
-          <ellipse rx="2" ry="5" fill={color} opacity="0.7">
+          <ellipse rx="2.5" ry="5.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
             <animateMotion dur={`${animSpeed}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
           </ellipse>
-          <ellipse rx="2" ry="5" fill={color} opacity="0.7">
+          <ellipse rx="2.5" ry="5.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
             <animateMotion dur={`${animSpeed}s`} begin={`-${t}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
           </ellipse>
-          <ellipse rx="2" ry="5" fill={color} opacity="0.7">
+          <ellipse rx="2.5" ry="5.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
             <animateMotion dur={`${animSpeed}s`} begin={`-${t2}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
           </ellipse>
         </>)}
@@ -278,8 +296,8 @@ export function InverterTab({ inverter, battery }: Props) {
   const hubCol = shoreConn ? 'var(--sys-orange)' : isOn ? 'var(--brand)' : 'var(--label3)';
   const batDir = batToMulti ? 'var(--sys-blue)' : 'var(--sys-orange)';
 
-  /* Animation speeds */
-  const spd = (kw: number) => kw > 0.05 ? Math.max(0.5, 1.5 - kw * 0.18) : 0;
+  /* Animation speeds — slow, deliberate flow (4 – 9 s per cycle) */
+  const spd = (kw: number) => kw > 0.05 ? Math.max(4.0, 9.0 - kw * 1.2) : 0;
   const shoreSpd  = shoreConn ? spd(shoreKw) : 0;
   const batSpd    = (isOn || shoreConn || dcActive) ? spd(batKw || 0.5) : 0;
   const invSpd    = isOn ? spd(inverter.outputKw) : 0;

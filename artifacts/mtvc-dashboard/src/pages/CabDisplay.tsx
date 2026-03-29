@@ -24,7 +24,7 @@ function Clock({ offset }: { offset: number }) {
 }
 
 
-const VDIV = <div style={{ width: '0.5px', background: 'var(--sep)', alignSelf: 'stretch', margin: '10px 0' }} />;
+const VDIV = <div style={{ width: '1px', background: 'rgba(255,255,255,0.07)', alignSelf: 'stretch', margin: '10px 0' }} />;
 
 const EMERGENCY_LIGHT_ID = 7;
 
@@ -60,16 +60,35 @@ export default function CabDisplay() {
   );
 
   return (
-    <div style={{ width: 1280, height: 400, background: 'var(--bg)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ width: 1280, height: 400, background: 'var(--bg)', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+
+      {/* ── AMBIENT GLOW BLOBS ── */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{
+          position: 'absolute', bottom: -140, left: -100, width: 560, height: 560,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(109,200,43,0.10) 0%, transparent 65%)',
+        }} />
+        <div style={{
+          position: 'absolute', top: -120, right: -80, width: 480, height: 480,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(10,132,255,0.08) 0%, transparent 65%)',
+        }} />
+        <div style={{
+          position: 'absolute', top: '30%', left: '42%', width: 380, height: 380,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(109,200,43,0.04) 0%, transparent 70%)',
+        }} />
+      </div>
 
       {/* ── HEADER (56px) ── */}
       <div style={{
         height: 56, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12,
-        background: 'rgba(28,28,30,0.92)',
-        backdropFilter: 'blur(40px)',
-        WebkitBackdropFilter: 'blur(40px)',
-        borderBottom: '0.5px solid var(--sep)',
-        flexShrink: 0,
+        background: 'rgba(7,11,19,0.65)',
+        backdropFilter: 'blur(40px) saturate(1.6)',
+        WebkitBackdropFilter: 'blur(40px) saturate(1.6)',
+        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        flexShrink: 0, zIndex: 10, position: 'relative',
       }}>
         <img src="/mtvc-logo.png" alt="MTVC" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderRadius: 99, background: online ? 'rgba(48,209,88,0.10)' : 'rgba(255,69,58,0.10)' }}>
@@ -88,7 +107,7 @@ export default function CabDisplay() {
       </div>
 
       {/* ── COLUMNS (334px) ── */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative', zIndex: 5 }}>
 
         {/* COL 1: Battery */}
         <div style={{ flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0, position: 'relative' }}>
@@ -290,9 +309,11 @@ export default function CabDisplay() {
       {/* ── FOOTER ── */}
       <div style={{
         height: 26, display: 'flex', alignItems: 'center', padding: '0 16px',
-        background: 'var(--surface1)',
-        borderTop: '0.5px solid var(--sep)',
-        flexShrink: 0,
+        background: 'rgba(7,11,19,0.60)',
+        backdropFilter: 'blur(40px) saturate(1.6)',
+        WebkitBackdropFilter: 'blur(40px) saturate(1.6)',
+        borderTop: '1px solid rgba(255,255,255,0.07)',
+        flexShrink: 0, zIndex: 10, position: 'relative',
       }}>
         <img src="/gajo-tech-logo.png" alt="GAJO Technologies" style={{ height: 26, width: 'auto', objectFit: 'contain', opacity: 0.75 }} />
         <div style={{ flex: 1 }} />

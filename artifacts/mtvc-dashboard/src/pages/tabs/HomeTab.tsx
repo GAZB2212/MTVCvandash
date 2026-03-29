@@ -41,13 +41,13 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
 
         {/* Time remaining — hero stat */}
         <div style={{
-          padding: '14px 16px', borderRadius: 'var(--r-card)', flexShrink: 0,
+          padding: '14px 16px', borderRadius: 'var(--r-card)', flex: 1,
           background: `color-mix(in srgb, ${timeLeft.color} 9%, rgba(255,255,255,0.04))`,
           border: `1px solid color-mix(in srgb, ${timeLeft.color} 28%, rgba(255,255,255,0.06))`,
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           boxShadow: `0 0 32px color-mix(in srgb, ${timeLeft.color} 8%, transparent), 0 2px 12px rgba(0,0,0,0.25)`,
-          display: 'flex', flexDirection: 'column', gap: 3,
+          display: 'flex', flexDirection: 'column', gap: 3, justifyContent: 'center',
         }}>
           <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--label3)' }}>
             Time Remaining

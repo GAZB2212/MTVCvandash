@@ -311,14 +311,15 @@ export function InverterTab({ inverter, battery }: Props) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: '144px 1fr 186px 1fr 144px',
+      gridTemplateColumns: '2fr 1.4fr 2.6fr 1.4fr 2fr',
       gridTemplateRows: '1fr 36px 1fr',
       gap: '7px',
       height: '100%',
+      minWidth: 0,
     }}>
 
       {/* ── Shore Power — full left column ── */}
-      <div style={{ gridColumn: 1, gridRow: '1 / span 3' }}>
+      <div style={{ gridColumn: 1, gridRow: '1 / span 3', minWidth: 0 }}>
         <Node
           tall
           accent="var(--sys-orange)"
@@ -344,7 +345,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── Shore → Multiplus connector ── */}
-      <div style={{ gridColumn: 2, gridRow: 1, display: 'flex', alignItems: 'center' }}>
+      <div style={{ gridColumn: 2, gridRow: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
         <HConn
           active={shoreConn}
           color="var(--sys-orange)"
@@ -356,7 +357,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── Multiplus 2 — top-centre ── */}
-      <div style={{ gridColumn: 3, gridRow: 1 }}>
+      <div style={{ gridColumn: 3, gridRow: 1, minWidth: 0 }}>
         <Node
           accent={hubCol}
           active={isOn || shoreConn}
@@ -381,7 +382,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── Multiplus → AC Loads connector ── */}
-      <div style={{ gridColumn: 4, gridRow: 1, display: 'flex', alignItems: 'center' }}>
+      <div style={{ gridColumn: 4, gridRow: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
         <HConn
           active={isOn}
           color="var(--brand)"
@@ -393,7 +394,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── AC Loads — top-right ── */}
-      <div style={{ gridColumn: 5, gridRow: 1 }}>
+      <div style={{ gridColumn: 5, gridRow: 1, minWidth: 0 }}>
         <Node
           accent={isOn ? 'var(--brand)' : 'var(--label3)'}
           active={isOn}
@@ -410,7 +411,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── Vertical connector: Multiplus ↔ Battery ── */}
-      <div style={{ gridColumn: 3, gridRow: 2 }}>
+      <div style={{ gridColumn: 3, gridRow: 2, minWidth: 0 }}>
         <VConn
           active={isOn || shoreConn || dcActive}
           color={batDir}
@@ -421,7 +422,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── Battery — bottom-centre ── */}
-      <div style={{ gridColumn: 3, gridRow: 3 }}>
+      <div style={{ gridColumn: 3, gridRow: 3, minWidth: 0 }}>
         <Node
           accent="var(--sys-blue)"
           active={true}
@@ -439,7 +440,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── Battery → DC Loads connector ── */}
-      <div style={{ gridColumn: 4, gridRow: 3, display: 'flex', alignItems: 'center' }}>
+      <div style={{ gridColumn: 4, gridRow: 3, display: 'flex', alignItems: 'center', minWidth: 0 }}>
         <HConn
           active={dcActive}
           color="var(--sys-blue)"
@@ -451,7 +452,7 @@ export function InverterTab({ inverter, battery }: Props) {
       </div>
 
       {/* ── DC Loads — bottom-right ── */}
-      <div style={{ gridColumn: 5, gridRow: 3 }}>
+      <div style={{ gridColumn: 5, gridRow: 3, minWidth: 0 }}>
         <Node
           accent={dcActive ? 'var(--sys-blue)' : 'var(--label3)'}
           active={dcActive}

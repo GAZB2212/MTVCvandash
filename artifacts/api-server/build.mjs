@@ -89,6 +89,7 @@ async function buildAll() {
       "sass-embedded",
       "sequelize",
       "serialport",
+      "pigpio",
       "snappy",
       "tinypool",
       "usb",

@@ -7,6 +7,7 @@ router.get('/data', (_req, res) => {
   res.json({
     battery: store.battery,
     inverter: store.inverter,
+    temps: store.temps,
     uptime: Math.floor(process.uptime()),
   });
 });

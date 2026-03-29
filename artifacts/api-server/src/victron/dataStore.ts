@@ -19,7 +19,23 @@ export interface BatteryState {
   remaining: number;
   fullCap: number;
   ttgMinutes: number;
+  temp: number;
   connected: boolean;
+}
+
+export interface TempState {
+  cabinet: number;
+  battery: number;
+  inverter: number;
+}
+
+export interface FanState {
+  id: number;
+  name: string;
+  on: boolean;
+  auto: boolean;
+  speed: number;
+  gpioPin: number;
 }
 
 export interface LightState {
@@ -30,6 +46,12 @@ export interface LightState {
 
 const LIGHT_NAMES = ['Cab', 'Load Bay', 'Work', 'Step', 'Exterior', 'Tools', 'Rear', 'Emergency'];
 
+const FAN_DEFS = [
+  { id: 0, name: 'Cabinet',  gpioPin: 18 },
+  { id: 1, name: 'Exhaust',  gpioPin: 19 },
+  { id: 2, name: 'Aux',      gpioPin: 12 },
+];
+
 export const store = {
   battery: {
     soc: 0,
@@ -39,6 +61,7 @@ export const store = {
     remaining: 0,
     fullCap: 125000,
     ttgMinutes: -1,
+    temp: 0,
     connected: false,
   } as BatteryState,
 
@@ -54,6 +77,14 @@ export const store = {
     connected: false,
     isOn: true,
   } as InverterState,
+
+  temps: {
+    cabinet: 28,
+    battery: 0,
+    inverter: 0,
+  } as TempState,
+
+  fans: FAN_DEFS.map(f => ({ ...f, on: false, auto: true, speed: 0 })) as FanState[],
 
   lights: LIGHT_NAMES.map((name, id) => ({ id, name, on: false })) as LightState[],
 };

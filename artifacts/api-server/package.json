@@ -17,6 +17,7 @@
     "cors": "^2",
     "drizzle-orm": "catalog:",
     "express": "^5",
+    "pigpio": "^3.3.1",
     "pino": "^9",
     "pino-http": "^10",
     "serialport": "^13.0.0"

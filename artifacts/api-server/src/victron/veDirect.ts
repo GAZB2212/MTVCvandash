@@ -16,6 +16,7 @@ function processBlock(kv: Record<string, string>) {
   const soc = parseFloat(kv['SOC'] ?? '-1');
   const ttg = parseInt(kv['TTG'] ?? '-1', 10);
   const ce = parseFloat(kv['CE'] ?? '0');
+  const tempRaw = kv['T'];
 
   if (soc >= 0) {
     store.battery.soc = Math.round(soc / 10);
@@ -28,6 +29,15 @@ function processBlock(kv: Record<string, string>) {
   store.battery.ttgMinutes = ttg;
   store.battery.remaining = Math.max(0, FULL_CAP_MAH - Math.abs(ce));
   store.battery.connected = true;
+
+  // Battery temperature via Victron temperature sensor on SmartShunt aux input (°C)
+  if (tempRaw !== undefined) {
+    const tempC = parseFloat(tempRaw);
+    if (!isNaN(tempC)) {
+      store.battery.temp = tempC;
+      store.temps.battery = tempC;
+    }
+  }
 }
 
 export function startVeDirectReader() {
@@ -92,11 +102,13 @@ function startSimulation() {
 
   let soc = 74;
   let current = -34.2;
+  let battTemp = 22;
 
   setInterval(() => {
     current = parseFloat((current + (Math.random() - 0.5) * 0.5).toFixed(1));
     const voltage = parseFloat((51.2 + Math.random() * 1.2).toFixed(1));
     const power = Math.round(voltage * Math.abs(current));
+    battTemp = parseFloat((battTemp + (Math.random() - 0.48) * 0.2).toFixed(1));
 
     store.battery.soc = soc;
     store.battery.voltage = voltage;
@@ -104,6 +116,8 @@ function startSimulation() {
     store.battery.power = -power;
     store.battery.ttgMinutes = Math.round((soc / 100) * 6400 * 1000 / power * 60);
     store.battery.remaining = Math.round((soc / 100) * FULL_CAP_MAH);
+    store.battery.temp = battTemp;
     store.battery.connected = true;
+    store.temps.battery = battTemp;
   }, 2000);
 }

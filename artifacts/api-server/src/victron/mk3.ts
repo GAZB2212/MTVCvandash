@@ -113,6 +113,15 @@ function parseRxBuffer(buf: number[]) {
       store.inverter.outputKw = parseFloat((acVoltage * acCurrentOut / 1000).toFixed(2));
       store.inverter.loadPct = Math.min(100, Math.round((acCurrentOut / 16) * 100));
     }
+
+    // MK3 temperature frame (0x20 = device info, byte index 5 = temp in °C)
+    if (command === 0x20 && frame.length >= 6) {
+      const tempC = frame[5] ?? 0;
+      if (tempC > 0 && tempC < 120) {
+        store.inverter.temp = tempC;
+        store.temps.inverter = tempC;
+      }
+    }
   }
 }
 
@@ -120,8 +129,13 @@ function startSimulation() {
   simulationMode = true;
   logger.info('MK3: simulation mode active');
 
+  let invTemp = 35;
+
   setInterval(() => {
     store.inverter.connected = true;
+    invTemp = parseFloat((invTemp + (Math.random() - 0.48) * 0.3).toFixed(1));
+    store.inverter.temp = invTemp;
+    store.temps.inverter = invTemp;
 
     if (!store.inverter.isOn) {
       store.inverter.acVoltage = 0;

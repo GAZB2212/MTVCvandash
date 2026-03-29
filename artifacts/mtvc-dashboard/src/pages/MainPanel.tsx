@@ -188,7 +188,8 @@ export default function MainPanel() {
             {t.id === 'battery'  && <BatteryTab  battery={data.battery} powerKw={data.inverter.outputKw} />}
             {t.id === 'status'   && (
               <StatusTab inverter={data.inverter} battery={data.battery}
-                pressure={data.pressure} alerts={data.alerts} uptime={data.uptime} />
+                pressure={data.pressure} temps={data.temps} fans={data.fans}
+                alerts={data.alerts} uptime={data.uptime} />
             )}
           </div>
         ))}

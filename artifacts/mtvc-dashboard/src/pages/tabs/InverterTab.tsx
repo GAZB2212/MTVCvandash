@@ -293,24 +293,27 @@ export function InverterTab({ inverter, battery }: Props) {
       padding: '0 4px',
     }}>
 
-      {/* ── Shore Power — top-left ── */}
-      <div style={{ gridColumn: 1, gridRow: 1 }}>
+      {/* ── Shore Power — full left column ── */}
+      <div style={{ gridColumn: 1, gridRow: '1 / span 3' }}>
         <Node
+          tall
           accent="var(--sys-orange)"
           active={shoreConn}
-          icon={<ShoreIcon size={18} color={shoreConn ? 'var(--sys-orange)' : 'var(--label3)'} />}
+          icon={<ShoreIcon size={22} color={shoreConn ? 'var(--sys-orange)' : 'var(--label3)'} />}
           title="Shore Power"
           subtitle="AC Mains Input"
-          primary={shoreConn ? `${shoreKw.toFixed(1)} kW` : undefined}
-          primaryColor="var(--sys-orange)"
+          primary={shoreConn ? `${shoreKw.toFixed(1)} kW` : 'Off'}
+          primaryColor={shoreConn ? 'var(--sys-orange)' : 'var(--label3)'}
           rows={shoreConn
             ? [
                 { label: 'Voltage', value: `${inverter.acVoltage.toFixed(0)} V`,  color: 'var(--sys-orange)' },
                 { label: 'Freq',    value: `${inverter.acHz.toFixed(1)} Hz` },
+                { label: 'Status',  value: 'Connected',    color: 'var(--sys-green)' },
               ]
             : [
                 { label: 'Status',  value: 'Disconnected', color: 'var(--label3)' },
                 { label: 'Voltage', value: '—',            color: 'var(--label3)' },
+                { label: 'Freq',    value: '—',            color: 'var(--label3)' },
               ]
           }
         />

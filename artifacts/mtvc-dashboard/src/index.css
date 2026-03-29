@@ -15,8 +15,8 @@
   --surface1:    rgba(255,255,255,0.06);
   --surface2:    rgba(255,255,255,0.11);
   --surface3:    rgba(255,255,255,0.18);
-  --glass-bg:    rgba(14,22,44,0.75);
-  --glass-hi:    rgba(20,32,60,0.80);
+  --glass-bg:    rgba(255,255,255,0.065);
+  --glass-hi:    rgba(255,255,255,0.10);
   --glass-border: rgba(255,255,255,0.10);
 
   /* Separators */

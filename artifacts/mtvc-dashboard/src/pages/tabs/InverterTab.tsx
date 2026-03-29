@@ -191,14 +191,21 @@ interface NodeProps {
 
 function Node({ accent, icon, title, subtitle, primary, primaryColor, rows, active = true, tall }: NodeProps) {
   return (
-    <div className="card" style={{
+    <div style={{
       width: '100%', height: '100%',
       padding: tall ? '16px 14px' : '12px 12px',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: tall ? 10 : 6,
-      border: `1px solid ${active ? `color-mix(in srgb, ${accent} 30%, rgba(255,255,255,0.08))` : 'rgba(255,255,255,0.07)'}`,
-      boxShadow: active ? `0 0 28px color-mix(in srgb, ${accent} 12%, transparent), 0 2px 16px rgba(0,0,0,0.3)` : '0 2px 12px rgba(0,0,0,0.25)',
-      transition: 'border-color 0.4s, box-shadow 0.4s',
+      borderRadius: 'var(--r-card)', overflow: 'hidden',
+      background: active
+        ? `linear-gradient(145deg, color-mix(in srgb, ${accent} 12%, rgba(255,255,255,0.08)) 0%, rgba(255,255,255,0.03) 100%)`
+        : 'linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%)',
+      border: `1px solid ${active ? `color-mix(in srgb, ${accent} 35%, rgba(255,255,255,0.08))` : 'rgba(255,255,255,0.08)'}`,
+      borderTopColor: active ? `color-mix(in srgb, ${accent} 50%, rgba(255,255,255,0.12))` : 'rgba(255,255,255,0.13)',
+      boxShadow: active
+        ? `0 0 30px color-mix(in srgb, ${accent} 12%, transparent), inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.45)`
+        : 'inset 0 1px 0 rgba(255,255,255,0.06), 0 6px 24px rgba(0,0,0,0.4)',
+      transition: 'border-color 0.4s, box-shadow 0.4s, background 0.4s',
     }}>
       {/* Icon + title row */}
       <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>

@@ -1,10 +1,52 @@
 import { useState, useEffect } from 'react';
 import { VanConfigAPI } from '../hooks/useVanConfig';
 import { Toggle } from '../components/Toggle';
+import { TouchKeyboard } from '../components/TouchKeyboard';
+import { KeyboardProvider, useKeyboard } from '../context/KeyboardContext';
+
+const KB_HEIGHT = 248; // approximate keyboard panel height in px
 
 interface Props {
   api: VanConfigAPI;
   onClose: () => void;
+}
+
+/* ── Touch-friendly text input — opens the on-screen keyboard ── */
+function TouchInput({
+  id, value, onChange, onDone, width, align,
+}: {
+  id: string; value: string;
+  onChange: (v: string) => void; onDone?: () => void;
+  width?: number | string; align?: 'left' | 'right';
+}) {
+  const { openKeyboard, activeId, isOpen } = useKeyboard();
+  const isActive = isOpen && activeId === id;
+
+  return (
+    <div
+      onClick={() => openKeyboard(id, value, onChange, onDone)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 4,
+        background: isActive ? 'rgba(109,200,43,0.08)' : 'var(--surface2)',
+        border: `1px solid ${isActive ? 'var(--brand)' : 'var(--sep)'}`,
+        borderRadius: 7, padding: '5px 10px',
+        fontSize: 13, fontWeight: 500,
+        color: value ? 'var(--label)' : 'var(--label3)',
+        cursor: 'text', userSelect: 'none', WebkitUserSelect: 'none',
+        width, minWidth: 0,
+        justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
+        transition: 'border-color 0.2s, background 0.2s',
+      }}
+    >
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {value || <span style={{ color: 'var(--label3)' }}>Tap to edit</span>}
+      </span>
+      {isActive
+        ? <span style={{ animation: 'cursor-blink 1s step-end infinite', color: 'var(--brand)', flexShrink: 0 }}>|</span>
+        : <span style={{ fontSize: 10, color: 'var(--label3)', flexShrink: 0, marginLeft: 4 }}>✎</span>
+      }
+    </div>
+  );
 }
 
 function SectionHead({ children }: { children: string }) {
@@ -20,69 +62,27 @@ function SectionHead({ children }: { children: string }) {
 }
 
 function EditRow({
-  label, name, enabled,
-  onName, onToggle, accent,
+  id, label, name, enabled, onName, onToggle, accent,
 }: {
-  label: string; name: string; enabled: boolean;
-  onName: (v: string) => void; onToggle: () => void;
-  accent?: string;
+  id: string; label: string; name: string; enabled: boolean;
+  onName: (v: string) => void; onToggle: () => void; accent?: string;
 }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(name);
-
-  const commit = () => {
-    const trimmed = draft.trim();
-    if (trimmed) onName(trimmed);
-    else setDraft(name);
-    setEditing(false);
-  };
-
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 10,
       padding: '9px 16px', borderBottom: '0.5px solid var(--sep)',
-      background: enabled ? 'transparent' : 'rgba(255,255,255,0.01)',
       opacity: enabled ? 1 : 0.5,
     }}>
-      {/* Colour dot */}
       <div style={{
         width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
         background: enabled ? (accent || 'var(--brand)') : 'var(--surface3)',
       }} />
-
-      {/* Default label */}
-      <span style={{
-        fontSize: 11, color: 'var(--label3)', fontWeight: 500,
-        minWidth: 54, flexShrink: 0,
-      }}>{label}</span>
-
-      {/* Editable name */}
-      {editing ? (
-        <input
-          autoFocus
-          value={draft}
-          onChange={e => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setDraft(name); setEditing(false); } }}
-          style={{
-            flex: 1, background: 'var(--surface2)', border: '1px solid var(--brand)',
-            borderRadius: 7, padding: '4px 10px', fontSize: 13, fontWeight: 500,
-            color: 'var(--label)', outline: 'none', fontFamily: 'inherit',
-          }}
-        />
-      ) : (
-        <button onClick={() => { setDraft(name); setEditing(true); }} style={{
-          flex: 1, textAlign: 'left', background: 'var(--surface2)',
-          border: '1px solid transparent', borderRadius: 7, padding: '5px 10px',
-          fontSize: 13, fontWeight: 500, color: 'var(--label)', cursor: 'text',
-          fontFamily: 'inherit',
-        }}>
-          {name}
-          <span style={{ fontSize: 10, color: 'var(--label3)', marginLeft: 8 }}>✎</span>
-        </button>
-      )}
-
-      {/* Enable / disable */}
+      <span style={{ fontSize: 11, color: 'var(--label3)', fontWeight: 500, minWidth: 54, flexShrink: 0 }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <TouchInput id={id} value={name} onChange={onName} />
+      </div>
       <Toggle on={enabled} onToggle={onToggle} color="var(--brand)" size="sm" />
     </div>
   );
@@ -91,15 +91,17 @@ function EditRow({
 function toLocalInputs(ms: number) {
   const d = new Date(ms);
   const pad = (n: number) => String(n).padStart(2, '0');
-  const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-  return { date, time };
+  return {
+    date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+    time: `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
+  };
 }
 
-export function AdminPanel({ api, onClose }: Props) {
+function AdminContent({ api, onClose }: Props) {
   const { config, setVanName, setLightConfig, setFanConfig, setDateTimeOffset, resetConfig } = api;
   const [vanDraft, setVanDraft] = useState(config.vanName);
   const [confirmReset, setConfirmReset] = useState(false);
+  const { isOpen: kbOpen } = useKeyboard();
 
   const currentDisplayMs = Date.now() + (config.dateTimeOffset ?? 0);
   const [dtDate, setDtDate] = useState(() => toLocalInputs(currentDisplayMs).date);
@@ -117,16 +119,10 @@ export function AdminPanel({ api, onClose }: Props) {
     setDtTime(time);
   };
 
-  const commitVanName = () => {
-    const t = vanDraft.trim();
-    if (t) setVanName(t);
-    else setVanDraft(config.vanName);
-  };
-
   return (
     <div style={{
       position: 'absolute', inset: 0, zIndex: 100,
-      background: 'rgba(0,0,0,0.88)',
+      background: 'rgba(0,0,0,0.90)',
       backdropFilter: 'blur(40px) saturate(1.4)',
       WebkitBackdropFilter: 'blur(40px) saturate(1.4)',
       display: 'flex', flexDirection: 'column',
@@ -144,27 +140,27 @@ export function AdminPanel({ api, onClose }: Props) {
         <button onClick={onClose} style={{
           padding: '6px 18px', borderRadius: 99, border: 'none', cursor: 'pointer',
           background: 'var(--brand)', color: '#000', fontSize: 13, fontWeight: 700,
+          fontFamily: 'inherit',
         }}>Done</button>
       </div>
 
-      {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      {/* Scrollable content — shrinks when keyboard is open */}
+      <div style={{
+        flex: 1, overflowY: 'auto',
+        paddingBottom: kbOpen ? KB_HEIGHT + 8 : 8,
+        transition: 'padding-bottom 0.18s ease',
+      }}>
         {/* Van Name */}
         <SectionHead>Van Identity</SectionHead>
         <div style={{ background: 'var(--surface1)', borderRadius: 12, margin: '0 12px 4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px' }}>
             <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label)', flex: 1 }}>Name</span>
-            <input
+            <TouchInput
+              id="van-name"
               value={vanDraft}
-              onChange={e => setVanDraft(e.target.value)}
-              onBlur={commitVanName}
-              onKeyDown={e => e.key === 'Enter' && commitVanName()}
-              style={{
-                background: 'var(--surface2)', border: '1px solid var(--sep)',
-                borderRadius: 7, padding: '5px 10px', fontSize: 13, fontWeight: 500,
-                color: 'var(--label)', outline: 'none', fontFamily: 'inherit', width: 180,
-                textAlign: 'right',
-              }}
+              onChange={v => { setVanDraft(v); setVanName(v || config.vanName); }}
+              width={180}
+              align="right"
             />
           </div>
         </div>
@@ -182,10 +178,7 @@ export function AdminPanel({ api, onClose }: Props) {
             }}>
               <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label)', flex: 1 }}>{label}</span>
               <input
-                type={type}
-                value={value}
-                onChange={e => onChange(e.target.value)}
-                {...(extra || {})}
+                type={type} value={value} onChange={e => onChange(e.target.value)} {...(extra || {})}
                 style={{
                   background: 'var(--surface2)', border: '1px solid var(--sep)',
                   borderRadius: 7, padding: '5px 10px', fontSize: 13, fontWeight: 500,
@@ -211,6 +204,7 @@ export function AdminPanel({ api, onClose }: Props) {
           {config.lights.map((light, i) => (
             <EditRow
               key={light.id}
+              id={`light-${light.id}`}
               label={`Zone ${i + 1}`}
               name={light.name}
               enabled={light.enabled}
@@ -219,7 +213,7 @@ export function AdminPanel({ api, onClose }: Props) {
               onToggle={() => setLightConfig(light.id, { enabled: !light.enabled })}
             />
           ))}
-          <div style={{ borderBottom: 'none', padding: '6px 16px 10px' }}>
+          <div style={{ padding: '6px 16px 10px' }}>
             <span style={{ fontSize: 11, color: 'var(--label3)' }}>
               Disabled zones are hidden from the dashboard and cab display.
             </span>
@@ -232,6 +226,7 @@ export function AdminPanel({ api, onClose }: Props) {
           {config.fans.map((fan, i) => (
             <EditRow
               key={fan.id}
+              id={`fan-${fan.id}`}
               label={`Fan ${i + 1}`}
               name={fan.name}
               enabled={fan.enabled}
@@ -241,7 +236,7 @@ export function AdminPanel({ api, onClose }: Props) {
           ))}
           <div style={{ padding: '6px 16px 10px' }}>
             <span style={{ fontSize: 11, color: 'var(--label3)' }}>
-              Disabled fans are hidden from the dashboard and cab display.
+              Disabled fans are hidden from the dashboard.
             </span>
           </div>
         </div>
@@ -262,18 +257,29 @@ export function AdminPanel({ api, onClose }: Props) {
               <span style={{ fontSize: 13, color: 'var(--label2)', flex: 1 }}>Reset all names and re-enable all outputs?</span>
               <button onClick={() => setConfirmReset(false)} style={{
                 padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
-                background: 'var(--surface2)', fontSize: 12, fontWeight: 600, color: 'var(--label2)',
-                fontFamily: 'inherit',
+                background: 'var(--surface2)', fontSize: 12, fontWeight: 600,
+                color: 'var(--label2)', fontFamily: 'inherit',
               }}>Cancel</button>
               <button onClick={() => { resetConfig(); setVanDraft('Van 01'); setConfirmReset(false); }} style={{
                 padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
-                background: 'var(--sys-red)', fontSize: 12, fontWeight: 700, color: '#fff',
-                fontFamily: 'inherit',
+                background: 'var(--sys-red)', fontSize: 12, fontWeight: 700,
+                color: '#fff', fontFamily: 'inherit',
               }}>Reset</button>
             </div>
           )}
         </div>
       </div>
+
+      {/* On-screen keyboard */}
+      <TouchKeyboard />
     </div>
+  );
+}
+
+export function AdminPanel({ api, onClose }: Props) {
+  return (
+    <KeyboardProvider>
+      <AdminContent api={api} onClose={onClose} />
+    </KeyboardProvider>
   );
 }

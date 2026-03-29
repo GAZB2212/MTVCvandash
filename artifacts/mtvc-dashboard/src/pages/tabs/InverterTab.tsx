@@ -5,7 +5,7 @@ interface Props {
   battery: BatteryData;
 }
 
-/* ── Icons ── */
+/* ───────────────── Icons ───────────────── */
 function BatteryIcon({ size, soc, color }: { size: number; soc: number; color: string }) {
   const bw = size * 0.48, bh = size * 0.72;
   const bx = (size - bw) / 2, by = (size - bh) / 2 + size * 0.04;
@@ -53,67 +53,75 @@ function LightbulbIcon({ size, color }: { size: number; color: string }) {
   );
 }
 
-/* ── Flow connector — solid pipe with travelling bulges ── */
-interface ConnectorProps {
+function ShoreIcon({ size, color }: { size: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <rect x={3} y={4} width={18} height={16} rx={3} stroke={color} strokeWidth={1.6} />
+      <rect x={7} y={9.5} width={2.2} height={5} rx={1.1} fill={color} opacity={0.8} />
+      <rect x={14.8} y={9.5} width={2.2} height={5} rx={1.1} fill={color} opacity={0.8} />
+      <path d="M8 16.5 Q9.5 15 11 16.5 Q12.5 18 14 16.5 Q15.5 15 17 16.5"
+        stroke={color} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" opacity={0.6} />
+    </svg>
+  );
+}
+
+/* ───────────────── Shared glow defs (injected once) ───────────────── */
+const GLOW_DEFS = `
+  <defs>
+    <filter id="fg" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="1.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+`;
+
+/* ───────────────── Horizontal flow connector ───────────────── */
+interface HConnProps {
   active: boolean;
   color: string;
   label: string;
   sublabel: string;
   animSpeed: number;
   pathId: string;
+  reverse?: boolean;
 }
 
-function FlowConnector({ active, color, label, sublabel, animSpeed, pathId }: ConnectorProps) {
-  const half = animSpeed > 0 ? animSpeed / 2 : 0;
+function HConn({ active, color, label, sublabel, animSpeed, pathId, reverse }: HConnProps) {
+  const t = (animSpeed / 3).toFixed(2);
+  const t2 = ((animSpeed / 3) * 2).toFixed(2);
+  const path = reverse ? `M 97 12 H 3` : `M 3 12 H 97`;
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 0 }}>
-      <div style={{ textAlign: 'center', marginBottom: 6, lineHeight: 1.2 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: active ? color : 'var(--label3)', fontVariantNumeric: 'tabular-nums', transition: 'color 0.4s' }}>
-          {label}
-        </div>
-        <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', marginTop: 1 }}>
-          {sublabel}
-        </div>
+      <div style={{ textAlign: 'center', marginBottom: 5, lineHeight: 1.2 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: active ? color : 'var(--label3)', fontVariantNumeric: 'tabular-nums', transition: 'color 0.4s' }}>{label}</div>
+        <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 1 }}>{sublabel}</div>
       </div>
-
-      <div style={{ width: '100%', height: 24 }}>
-        <svg width="100%" height="24" viewBox="0 0 100 24" preserveAspectRatio="none" overflow="visible">
+      <div style={{ width: '100%', height: 20 }}>
+        <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none" overflow="visible">
           <defs>
-            <path id={pathId} d="M 3 12 H 97" />
-            <filter id={`glow-${pathId}`} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2.5" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
+            <path id={pathId} d={path} />
           </defs>
-
-          {/* Solid base pipe */}
-          <line x1="3" y1="12" x2="97" y2="12"
-            stroke={active ? color : 'rgba(255,255,255,0.10)'}
-            strokeWidth={active ? 2.5 : 1.5}
-            strokeLinecap="round"
+          <line x1="3" y1="10" x2="97" y2="10"
+            stroke={active ? color : 'rgba(255,255,255,0.09)'}
+            strokeWidth={active ? 2 : 1.5} strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
-            opacity={active ? 0.30 : 1}
-            style={{ transition: 'stroke 0.4s, opacity 0.4s' }}
+            opacity={active ? 0.35 : 1}
+            style={{ transition: 'stroke 0.4s' }}
           />
-
-          {/* Arrowhead */}
-          <polygon points="100,12 91,7 91,17"
-            fill={active ? color : 'rgba(255,255,255,0.12)'}
-            opacity={active ? 0.8 : 1}
-            style={{ transition: 'fill 0.4s' }}
-          />
-
-          {/* Two staggered oval bulges */}
+          {!reverse
+            ? <polygon points="100,10 91,5.5 91,14.5" fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
+            : <polygon points="0,10 9,5.5 9,14.5"    fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
+          }
           {active && animSpeed > 0 && (<>
-            <ellipse rx="10" ry="5" fill={color} opacity="0.95" filter={`url(#glow-${pathId})`}>
-              <animateMotion dur={`${animSpeed}s`} repeatCount="indefinite" rotate="none">
-                <mpath href={`#${pathId}`} />
-              </animateMotion>
+            <ellipse rx="5" ry="2" fill={color} opacity="0.7">
+              <animateMotion dur={`${animSpeed}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
             </ellipse>
-            <ellipse rx="10" ry="5" fill={color} opacity="0.95" filter={`url(#glow-${pathId})`}>
-              <animateMotion dur={`${animSpeed}s`} begin={`-${half}s`} repeatCount="indefinite" rotate="none">
-                <mpath href={`#${pathId}`} />
-              </animateMotion>
+            <ellipse rx="5" ry="2" fill={color} opacity="0.7">
+              <animateMotion dur={`${animSpeed}s`} begin={`-${t}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
+            </ellipse>
+            <ellipse rx="5" ry="2" fill={color} opacity="0.7">
+              <animateMotion dur={`${animSpeed}s`} begin={`-${t2}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
             </ellipse>
           </>)}
         </svg>
@@ -122,54 +130,115 @@ function FlowConnector({ active, color, label, sublabel, animSpeed, pathId }: Co
   );
 }
 
-/* ── Flow node card ── */
+/* ───────────────── Vertical flow connector ───────────────── */
+interface VConnProps {
+  active: boolean;
+  color: string;
+  animSpeed: number;
+  pathId: string;
+  reverse?: boolean; /* reverse = bottom-to-top (inverting: bat→multi) */
+}
+
+function VConn({ active, color, animSpeed, pathId, reverse }: VConnProps) {
+  const t = (animSpeed / 3).toFixed(2);
+  const t2 = ((animSpeed / 3) * 2).toFixed(2);
+  const path = reverse ? `M 12 34 V 2` : `M 12 2 V 34`;
+
+  return (
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <svg width="24" height="100%" viewBox="0 0 24 36" preserveAspectRatio="xMidYMid none" overflow="visible">
+        <defs>
+          <path id={pathId} d={path} />
+        </defs>
+        <line x1="12" y1="2" x2="12" y2="34"
+          stroke={active ? color : 'rgba(255,255,255,0.09)'}
+          strokeWidth={active ? 2 : 1.5} strokeLinecap="round"
+          opacity={active ? 0.35 : 1}
+          style={{ transition: 'stroke 0.4s' }}
+        />
+        {reverse
+          ? <polygon points="12,0 7,9 17,9"    fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
+          : <polygon points="12,36 7,27 17,27" fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.75 : 1} />
+        }
+        {active && animSpeed > 0 && (<>
+          <ellipse rx="2" ry="5" fill={color} opacity="0.7">
+            <animateMotion dur={`${animSpeed}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
+          </ellipse>
+          <ellipse rx="2" ry="5" fill={color} opacity="0.7">
+            <animateMotion dur={`${animSpeed}s`} begin={`-${t}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
+          </ellipse>
+          <ellipse rx="2" ry="5" fill={color} opacity="0.7">
+            <animateMotion dur={`${animSpeed}s`} begin={`-${t2}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
+          </ellipse>
+        </>)}
+      </svg>
+    </div>
+  );
+}
+
+/* ───────────────── Node card ───────────────── */
 interface NodeProps {
   accent: string;
   icon: React.ReactNode;
   title: string;
   subtitle?: string;
+  primary?: string;         /* big headline value */
+  primaryColor?: string;
   rows: { label: string; value: string; color?: string }[];
   active?: boolean;
-  nodeWidth: number;
-  compact?: boolean;
+  tall?: boolean;           /* spans full left column height */
 }
 
-function FlowNode({ accent, icon, title, subtitle, rows, active = true, nodeWidth, compact }: NodeProps) {
-  const pad = compact ? '12px 12px' : '16px 14px';
-  const iconSize = compact ? 42 : 52;
-  const iconR = compact ? 11 : 14;
-  const fontSize = compact ? 11 : 12;
-  const titleSize = compact ? 11 : 12;
+function Node({ accent, icon, title, subtitle, primary, primaryColor, rows, active = true, tall }: NodeProps) {
   return (
     <div className="card" style={{
-      width: nodeWidth, flexShrink: 0, height: '100%',
-      padding: pad, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: compact ? 7 : 10,
+      width: '100%', height: '100%',
+      padding: tall ? '16px 14px' : '12px 12px',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      gap: tall ? 10 : 6,
       border: `1px solid ${active ? `color-mix(in srgb, ${accent} 30%, rgba(255,255,255,0.08))` : 'rgba(255,255,255,0.07)'}`,
-      boxShadow: active ? `0 0 28px color-mix(in srgb, ${accent} 10%, transparent), 0 2px 16px rgba(0,0,0,0.3)` : '0 2px 12px rgba(0,0,0,0.25)',
+      boxShadow: active ? `0 0 28px color-mix(in srgb, ${accent} 12%, transparent), 0 2px 16px rgba(0,0,0,0.3)` : '0 2px 12px rgba(0,0,0,0.25)',
       transition: 'border-color 0.4s, box-shadow 0.4s',
     }}>
-      <div style={{
-        width: iconSize, height: iconSize, borderRadius: iconR,
-        background: active ? `color-mix(in srgb, ${accent} 15%, rgba(255,255,255,0.04))` : 'rgba(255,255,255,0.04)',
-        border: `1px solid ${active ? `color-mix(in srgb, ${accent} 22%, rgba(255,255,255,0.08))` : 'rgba(255,255,255,0.07)'}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        transition: 'background 0.4s, border-color 0.4s', flexShrink: 0,
-      }}>
-        {icon}
+      {/* Icon + title row */}
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <div style={{
+          width: tall ? 36 : 30, height: tall ? 36 : 30, borderRadius: tall ? 10 : 8, flexShrink: 0,
+          background: active ? `color-mix(in srgb, ${accent} 14%, rgba(255,255,255,0.04))` : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${active ? `color-mix(in srgb, ${accent} 20%, rgba(255,255,255,0.07))` : 'rgba(255,255,255,0.06)'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.4s',
+        }}>
+          {icon}
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: active ? 'var(--label)' : 'var(--label3)', letterSpacing: '0.01em', lineHeight: 1.2 }}>{title}</div>
+          {subtitle && <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 1, lineHeight: 1.2 }}>{subtitle}</div>}
+        </div>
       </div>
 
-      <div style={{ textAlign: 'center', lineHeight: 1.2, flexShrink: 0 }}>
-        <div style={{ fontSize: titleSize, fontWeight: 700, color: active ? 'var(--label)' : 'var(--label3)', letterSpacing: '0.01em' }}>{title}</div>
-        {subtitle && <div style={{ fontSize: 10, color: 'var(--label3)', marginTop: 2 }}>{subtitle}</div>}
-      </div>
+      {/* Primary headline */}
+      {primary !== undefined && (
+        <div style={{
+          fontSize: tall ? 28 : 22, fontWeight: 200,
+          color: primaryColor || 'var(--label)',
+          letterSpacing: '-0.02em', lineHeight: 1, flexShrink: 0,
+          fontVariantNumeric: 'tabular-nums',
+          textShadow: active ? `0 0 20px color-mix(in srgb, ${primaryColor || accent} 40%, transparent)` : 'none',
+          transition: 'color 0.4s, text-shadow 0.4s',
+        }}>
+          {primary}
+        </div>
+      )}
 
       <div style={{ width: '100%', height: 1, background: 'var(--sep)', flexShrink: 0 }} />
 
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: compact ? 5 : 7, flex: 1, justifyContent: 'center' }}>
+      {/* Data rows */}
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 5, flex: 1, justifyContent: 'center' }}>
         {rows.map(r => (
           <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize, fontWeight: 500, color: 'var(--label3)' }}>{r.label}</span>
-            <span style={{ fontSize, fontWeight: 600, color: r.color || 'var(--label)', fontVariantNumeric: 'tabular-nums' }}>{r.value}</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--label3)' }}>{r.label}</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: r.color || 'var(--label)', fontVariantNumeric: 'tabular-nums' }}>{r.value}</span>
           </div>
         ))}
       </div>
@@ -177,121 +246,196 @@ function FlowNode({ accent, icon, title, subtitle, rows, active = true, nodeWidt
   );
 }
 
+/* ───────────────── Shore mode detection ───────────────── */
+const SHORE_MODES = new Set(['Bulk', 'Absorption', 'Float', 'Storage', 'Equalize', 'Passthrough', 'Charger Only']);
+
+/* ───────────────── Main component ───────────────── */
 export function InverterTab({ inverter, battery }: Props) {
-  const isOn    = inverter.isOn;
-  const socC    = battery.soc > 60 ? 'var(--sys-green)' : battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
-  const loadC   = inverter.loadPct > 80 ? 'var(--sys-red)' : inverter.loadPct > 60 ? 'var(--sys-orange)' : 'var(--label)';
-  const tempC   = inverter.temp > 55 ? 'var(--sys-red)' : inverter.temp > 40 ? 'var(--sys-orange)' : 'var(--sys-green)';
+  const isOn          = inverter.isOn;
+  const shoreConn     = SHORE_MODES.has(inverter.mode);
+  const isCharging    = shoreConn && battery.current < 0;
+  const batToMulti    = !shoreConn;          // true = inverting (bat→multi), false = charging (multi→bat)
 
-  /* DC load = total battery discharge minus inverter's own DC draw */
-  const dcLoadAmps  = Math.max(0, battery.current - inverter.dcCurrent);
-  const dcLoadWatts = dcLoadAmps * battery.voltage;
-  const dcActive    = dcLoadAmps > 0.5;
+  /* Power calcs */
+  const batKw         = inverter.dcVoltage * Math.abs(inverter.dcCurrent) / 1000;
+  const chargeKw      = isCharging ? Math.abs(battery.current) * battery.voltage / 1000 : 0;
+  const shoreKw       = shoreConn ? (inverter.outputKw + chargeKw) : 0;
+  const dcLoadAmps    = Math.max(0, battery.current - (batToMulti ? inverter.dcCurrent : 0));
+  const dcLoadWatts   = dcLoadAmps * battery.voltage;
+  const dcActive      = dcLoadAmps > 0.5;
 
-  /* Animation speeds: faster = more power */
-  const speed = (kw: number) => kw > 0.05 ? Math.max(0.45, 1.4 - kw * 0.18) : 0;
-  const invSpeed    = isOn ? speed(inverter.outputKw) : 0;
-  const dcLoadSpeed = dcActive ? speed(dcLoadWatts / 1000) : 0;
-  const dcBatSpeed  = isOn ? speed(inverter.dcVoltage * inverter.dcCurrent / 1000) : (dcLoadSpeed || 0.9);
+  /* Colour helpers */
+  const socC   = battery.soc > 60 ? 'var(--sys-green)' : battery.soc > 30 ? 'var(--sys-orange)' : 'var(--sys-red)';
+  const loadC  = inverter.loadPct > 80 ? 'var(--sys-red)' : inverter.loadPct > 60 ? 'var(--sys-orange)' : 'var(--label)';
+  const tempC  = inverter.temp > 55 ? 'var(--sys-red)' : inverter.temp > 40 ? 'var(--sys-orange)' : 'var(--sys-green)';
+  const hubCol = shoreConn ? 'var(--sys-orange)' : isOn ? 'var(--brand)' : 'var(--label3)';
+  const batDir = batToMulti ? 'var(--sys-blue)' : 'var(--sys-orange)';
+
+  /* Animation speeds */
+  const spd = (kw: number) => kw > 0.05 ? Math.max(0.5, 1.5 - kw * 0.18) : 0;
+  const shoreSpd  = shoreConn ? spd(shoreKw) : 0;
+  const batSpd    = (isOn || shoreConn || dcActive) ? spd(batKw || 0.5) : 0;
+  const invSpd    = isOn ? spd(inverter.outputKw) : 0;
+  const dcSpd     = dcActive ? spd(dcLoadWatts / 1000) : 0;
+
+  /* Time remaining string */
+  const remH = Math.floor(battery.remaining / 1000 / 3600);
+  const remM = Math.floor((battery.remaining / 1000 % 3600) / 60);
+  const remStr = battery.remaining > 0 ? `${remH}h ${remM}m` : '—';
 
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: '190px 1fr',
-      gridTemplateRows: '1fr 1fr',
+      gridTemplateColumns: '155px 1fr 200px 1fr 155px',
+      gridTemplateRows: '1fr 38px 1fr',
+      gap: '8px',
       height: '100%',
-      gap: 8,
       padding: '0 4px',
     }}>
 
-      {/* ── Battery — spans both rows ── */}
-      <div style={{ gridColumn: 1, gridRow: '1 / span 2', display: 'flex' }}>
-        <FlowNode
-          nodeWidth={190}
-          accent="var(--sys-blue)"
-          active={true}
-          title="Battery Pack"
-          subtitle="Fogstar Drift 48V · 125Ah"
-          icon={<BatteryIcon size={32} soc={battery.soc} color="var(--sys-blue)" />}
-          rows={[
-            { label: 'Voltage',   value: `${battery.voltage.toFixed(1)} V`,             color: 'var(--sys-blue)' },
-            { label: 'SOC',       value: `${battery.soc}%`,                             color: socC },
-            { label: 'Current',   value: `${Math.abs(battery.current).toFixed(1)} A`,   color: 'var(--label)' },
-            { label: 'Remaining', value: `${(battery.remaining / 1000).toFixed(1)} Ah`, color: 'var(--label2)' },
-          ]}
+      {/* ── Shore Power — top-left ── */}
+      <div style={{ gridColumn: 1, gridRow: 1 }}>
+        <Node
+          accent="var(--sys-orange)"
+          active={shoreConn}
+          icon={<ShoreIcon size={18} color={shoreConn ? 'var(--sys-orange)' : 'var(--label3)'} />}
+          title="Shore Power"
+          subtitle="AC Mains Input"
+          primary={shoreConn ? `${shoreKw.toFixed(1)} kW` : undefined}
+          primaryColor="var(--sys-orange)"
+          rows={shoreConn
+            ? [
+                { label: 'Voltage', value: `${inverter.acVoltage.toFixed(0)} V`,  color: 'var(--sys-orange)' },
+                { label: 'Freq',    value: `${inverter.acHz.toFixed(1)} Hz` },
+              ]
+            : [
+                { label: 'Status',  value: 'Disconnected', color: 'var(--label3)' },
+                { label: 'Voltage', value: '—',            color: 'var(--label3)' },
+              ]
+          }
         />
       </div>
 
-      {/* ── Row 1: Battery → DC Loads ── */}
+      {/* ── Shore → Multiplus connector ── */}
       <div style={{ gridColumn: 2, gridRow: 1, display: 'flex', alignItems: 'center' }}>
-        <FlowConnector
-          active={dcActive}
-          color="var(--sys-blue)"
-          label={dcLoadWatts > 1 ? `${dcLoadWatts.toFixed(0)} W` : '—'}
-          sublabel="DC Direct"
-          animSpeed={dcLoadSpeed}
-          pathId="dc-load-flow"
-        />
-        <FlowNode
-          nodeWidth={190}
-          compact
-          accent="var(--sys-blue)"
-          active={dcActive}
-          title="DC Loads"
-          subtitle="Lighting · Fans · Pi"
-          icon={<LightbulbIcon size={24} color={dcActive ? 'var(--sys-blue)' : 'var(--label3)'} />}
-          rows={[
-            { label: 'Power',   value: dcLoadWatts > 1 ? `${dcLoadWatts.toFixed(0)} W`   : '—', color: dcActive ? 'var(--sys-blue)' : 'var(--label3)' },
-            { label: 'Current', value: dcActive        ? `${dcLoadAmps.toFixed(1)} A`     : '—', color: 'var(--label)' },
-            { label: 'Voltage', value: `${battery.voltage.toFixed(1)} V`,                        color: 'var(--label2)' },
-          ]}
+        <HConn
+          active={shoreConn}
+          color="var(--sys-orange)"
+          label={shoreConn ? `${shoreKw.toFixed(2)} kW` : '—'}
+          sublabel="AC Input"
+          animSpeed={shoreSpd}
+          pathId="shore-h"
         />
       </div>
 
-      {/* ── Row 2: Battery → Inverter → AC Loads ── */}
-      <div style={{ gridColumn: 2, gridRow: 2, display: 'flex', alignItems: 'center' }}>
-        <FlowConnector
-          active={isOn || dcActive}
-          color="var(--sys-blue)"
-          label={`${(inverter.dcVoltage * inverter.dcCurrent).toFixed(0)} W`}
-          sublabel="DC"
-          animSpeed={dcBatSpeed}
-          pathId="dc-inv-flow"
-        />
-        <FlowNode
-          nodeWidth={158}
-          compact
-          accent={isOn ? 'var(--brand)' : 'var(--label3)'}
-          active={isOn}
+      {/* ── Multiplus 2 — top-centre ── */}
+      <div style={{ gridColumn: 3, gridRow: 1 }}>
+        <Node
+          accent={hubCol}
+          active={isOn || shoreConn}
+          icon={<BoltIcon size={18} color={(isOn || shoreConn) ? hubCol : 'var(--label3)'} />}
           title="Multiplus 2"
           subtitle="48/5000/70-50"
-          icon={<BoltIcon size={22} color={isOn ? 'var(--brand)' : 'var(--label3)'} />}
-          rows={[
-            { label: 'Mode', value: inverter.mode,                                                     color: isOn ? 'var(--brand)' : 'var(--label3)' },
-            { label: 'Temp', value: inverter.temp > 0 ? `${inverter.temp.toFixed(0)}°C` : '—',        color: tempC },
-            { label: 'Status', value: inverter.connected ? 'Online' : 'Offline',                      color: inverter.connected ? 'var(--sys-green)' : 'var(--sys-red)' },
-          ]}
+          primary={inverter.mode}
+          primaryColor={hubCol}
+          rows={shoreConn
+            ? [
+                { label: 'AC In',  value: `${inverter.acVoltage.toFixed(0)} V · ${inverter.acHz.toFixed(1)} Hz` },
+                { label: 'Load',   value: isOn ? `${inverter.loadPct}%` : '—', color: isOn ? loadC : 'var(--label3)' },
+                { label: 'Temp',   value: `${inverter.temp.toFixed(0)}°C`,     color: tempC },
+              ]
+            : [
+                { label: 'AC Out', value: isOn ? `${inverter.acVoltage.toFixed(0)} V · ${inverter.acHz.toFixed(1)} Hz` : '—' },
+                { label: 'Load',   value: isOn ? `${inverter.loadPct}%` : '—', color: isOn ? loadC : 'var(--label3)' },
+                { label: 'Temp',   value: `${inverter.temp.toFixed(0)}°C`,     color: tempC },
+              ]
+          }
         />
-        <FlowConnector
+      </div>
+
+      {/* ── Multiplus → AC Loads connector ── */}
+      <div style={{ gridColumn: 4, gridRow: 1, display: 'flex', alignItems: 'center' }}>
+        <HConn
           active={isOn}
           color="var(--brand)"
           label={isOn ? `${inverter.outputKw.toFixed(2)} kW` : '—'}
-          sublabel="AC 230V"
-          animSpeed={invSpeed}
-          pathId="ac-flow"
+          sublabel="AC Output"
+          animSpeed={invSpd}
+          pathId="ac-h"
         />
-        <FlowNode
-          nodeWidth={158}
-          compact
+      </div>
+
+      {/* ── AC Loads — top-right ── */}
+      <div style={{ gridColumn: 5, gridRow: 1 }}>
+        <Node
           accent={isOn ? 'var(--brand)' : 'var(--label3)'}
           active={isOn}
+          icon={<PlugIcon size={18} color={isOn ? 'var(--brand)' : 'var(--label3)'} />}
           title="AC Loads"
           subtitle="Van systems"
-          icon={<PlugIcon size={22} color={isOn ? 'var(--brand)' : 'var(--label3)'} />}
+          primary={isOn ? `${inverter.outputKw.toFixed(2)} kW` : '—'}
+          primaryColor="var(--brand)"
           rows={[
-            { label: 'Voltage', value: isOn ? `${inverter.acVoltage.toFixed(0)} V`  : '—', color: isOn ? 'var(--label)' : 'var(--label3)' },
-            { label: 'Power',   value: isOn ? `${inverter.outputKw.toFixed(2)} kW`  : '—', color: isOn ? 'var(--brand)' : 'var(--label3)' },
+            { label: 'Voltage', value: isOn ? `${inverter.acVoltage.toFixed(0)} V` : '—', color: isOn ? 'var(--label)' : 'var(--label3)' },
             { label: 'Load',    value: isOn ? `${inverter.loadPct}%`                : '—', color: isOn ? loadC          : 'var(--label3)' },
+          ]}
+        />
+      </div>
+
+      {/* ── Vertical connector: Multiplus ↔ Battery ── */}
+      <div style={{ gridColumn: 3, gridRow: 2 }}>
+        <VConn
+          active={isOn || shoreConn || dcActive}
+          color={batDir}
+          animSpeed={batSpd}
+          pathId="bat-v"
+          reverse={batToMulti}
+        />
+      </div>
+
+      {/* ── Battery — bottom-centre ── */}
+      <div style={{ gridColumn: 3, gridRow: 3 }}>
+        <Node
+          accent="var(--sys-blue)"
+          active={true}
+          icon={<BatteryIcon size={18} soc={battery.soc} color="var(--sys-blue)" />}
+          title="Battery Pack"
+          subtitle="Fogstar 48V · 125Ah"
+          primary={`${battery.soc}%`}
+          primaryColor={socC}
+          rows={[
+            { label: batToMulti ? 'Discharging' : 'Charging', value: remStr,                             color: batToMulti ? 'var(--label2)' : 'var(--sys-orange)' },
+            { label: 'Voltage',                               value: `${battery.voltage.toFixed(1)} V`,  color: 'var(--sys-blue)' },
+            { label: 'Current',                               value: `${Math.abs(battery.current).toFixed(1)} A` },
+          ]}
+        />
+      </div>
+
+      {/* ── Battery → DC Loads connector ── */}
+      <div style={{ gridColumn: 4, gridRow: 3, display: 'flex', alignItems: 'center' }}>
+        <HConn
+          active={dcActive}
+          color="var(--sys-blue)"
+          label={dcLoadWatts > 1 ? `${dcLoadWatts.toFixed(0)} W` : '—'}
+          sublabel="DC Bus · 48V"
+          animSpeed={dcSpd}
+          pathId="dc-h"
+        />
+      </div>
+
+      {/* ── DC Loads — bottom-right ── */}
+      <div style={{ gridColumn: 5, gridRow: 3 }}>
+        <Node
+          accent={dcActive ? 'var(--sys-blue)' : 'var(--label3)'}
+          active={dcActive}
+          icon={<LightbulbIcon size={18} color={dcActive ? 'var(--sys-blue)' : 'var(--label3)'} />}
+          title="DC Loads"
+          subtitle="Lighting · Fans · Pi"
+          primary={dcLoadWatts > 1 ? `${dcLoadWatts.toFixed(0)} W` : '—'}
+          primaryColor="var(--sys-blue)"
+          rows={[
+            { label: 'Current', value: dcActive ? `${dcLoadAmps.toFixed(1)} A` : '—', color: 'var(--label)' },
+            { label: 'Voltage', value: `${battery.voltage.toFixed(1)} V`,              color: 'var(--sys-blue)' },
           ]}
         />
       </div>

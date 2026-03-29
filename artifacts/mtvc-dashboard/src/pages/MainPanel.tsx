@@ -4,6 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useVanConfig } from '../hooks/useVanConfig';
 import { ConnDot } from '../components/ConnDot';
 import { AdminPanel } from './AdminPanel';
+import { SplashScreen } from '../components/SplashScreen';
 import { InverterTab } from './tabs/InverterTab';
 import { BatteryTab } from './tabs/BatteryTab';
 import { HomeTab } from './tabs/HomeTab';
@@ -74,6 +75,7 @@ function Clock() {
 }
 
 export default function MainPanel() {
+  const [showSplash, setShowSplash] = useState(true);
   const [tab, setTab] = useState('home');
   const [adminOpen, setAdminOpen] = useState(false);
   const [holdPct, setHoldPct] = useState(0);
@@ -126,6 +128,7 @@ export default function MainPanel() {
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden', position: 'relative',
     }}>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
 
       {/* ── AMBIENT GLOW BLOBS — blue-biased automotive ── */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>

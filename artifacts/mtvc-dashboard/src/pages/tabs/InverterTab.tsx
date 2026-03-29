@@ -293,11 +293,10 @@ export function InverterTab({ inverter, battery }: Props) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: '155px 1fr 200px 1fr 155px',
-      gridTemplateRows: '1fr 38px 1fr',
-      gap: '8px',
+      gridTemplateColumns: '144px 1fr 186px 1fr 144px',
+      gridTemplateRows: '1fr 36px 1fr',
+      gap: '7px',
       height: '100%',
-      padding: '0 4px',
     }}>
 
       {/* ── Shore Power — full left column ── */}

@@ -4,7 +4,6 @@ import { useTheme } from '../context/ThemeContext';
 import { useVanConfig } from '../hooks/useVanConfig';
 import { ConnDot } from '../components/ConnDot';
 import { AdminPanel } from './AdminPanel';
-import { calcTimeRemaining } from './tabs/BatteryTab';
 import { InverterTab } from './tabs/InverterTab';
 import { BatteryTab } from './tabs/BatteryTab';
 import { HomeTab } from './tabs/HomeTab';
@@ -20,15 +19,22 @@ const TABS = [
 const HOLD_MS = 2000;
 
 function Clock() {
-  const [t, setT] = useState('');
+  const [now, setNow] = useState(new Date());
   useEffect(() => {
-    const tick = () => setT(new Date().toLocaleTimeString('en-GB', { hour12: false }));
-    tick(); const iv = setInterval(tick, 1000); return () => clearInterval(iv);
+    const iv = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(iv);
   }, []);
+  const time = now.toLocaleTimeString('en-GB', { hour12: false });
+  const date = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   return (
-    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label2)', fontVariantNumeric: 'tabular-nums' }}>
-      {t}
-    </span>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
+      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--label)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+        {time}
+      </span>
+      <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--label3)', lineHeight: 1 }}>
+        {date}
+      </span>
+    </div>
   );
 }
 
@@ -40,7 +46,6 @@ export default function MainPanel() {
   const vanConfig = useVanConfig();
   const { isDark, toggleTheme } = useTheme();
   const online = data.inverter.connected && data.battery.connected;
-  const timeLeft = calcTimeRemaining(data.battery.remaining, data.battery.voltage, data.inverter.outputKw);
 
   // Long-press on logo
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -139,28 +144,6 @@ export default function MainPanel() {
         </div>
 
         <div style={{ flex: 1 }} />
-
-        {/* SOC chip */}
-        <div style={{ padding: '4px 12px', borderRadius: 99, background: 'var(--brand-dim)' }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--brand)' }}>SOC {data.battery.soc}%</span>
-        </div>
-
-        {/* Load chip */}
-        <div style={{ padding: '4px 12px', borderRadius: 99, background: 'rgba(10,132,255,0.12)' }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--sys-blue)' }}>{data.inverter.loadPct}% Load</span>
-        </div>
-
-        {/* Time remaining chip */}
-        <div style={{
-          padding: '4px 12px', borderRadius: 99,
-          background: `color-mix(in srgb, ${timeLeft.color} 14%, transparent)`,
-          display: 'flex', alignItems: 'center', gap: 5,
-        }}>
-          <span style={{ fontSize: 10, color: timeLeft.color, opacity: 0.7 }}>⏱</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: timeLeft.color, fontVariantNumeric: 'tabular-nums' }}>
-            {timeLeft.label}
-          </span>
-        </div>
 
         {/* Theme */}
         <button onClick={toggleTheme} style={{

@@ -51,10 +51,10 @@ function ZoneTile({ light, onToggle }: {
         transition: 'filter 0.22s',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <ZoneIcon type={iconType} color={iconColor} size={52} />
+        <ZoneIcon type={iconType} color={iconColor} size={72} />
       </div>
       <span style={{
-        fontSize: 15, fontWeight: 700, letterSpacing: '0.05em',
+        fontSize: 19, fontWeight: 700, letterSpacing: '0.05em',
         textTransform: 'uppercase', textAlign: 'center', padding: '0 6px',
         color: light.on ? 'var(--label)' : 'var(--label3)',
         lineHeight: 1.2, transition: 'color 0.2s',

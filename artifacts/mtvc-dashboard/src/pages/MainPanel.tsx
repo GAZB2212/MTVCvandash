@@ -113,9 +113,6 @@ export default function MainPanel() {
     }));
   };
 
-  const LOGO_SIZE = 40;
-  const R = 21;
-  const CIRC = 2 * Math.PI * R;
 
   return (
     <div style={{
@@ -167,33 +164,8 @@ export default function MainPanel() {
         flexShrink: 0, zIndex: 10, position: 'relative',
       }}>
 
-        {/* Logo — long-press target */}
-        <div
-          onPointerDown={startHold}
-          onPointerUp={cancelHold}
-          onPointerLeave={cancelHold}
-          style={{ position: 'relative', width: LOGO_SIZE + 4, height: LOGO_SIZE + 4, flexShrink: 0, cursor: 'pointer', touchAction: 'none' }}
-        >
-          <img src="/mtvc-logo.png" alt="MTVC" style={{
-            position: 'absolute', top: 2, left: 2,
-            width: LOGO_SIZE, height: LOGO_SIZE, objectFit: 'contain',
-          }} />
-          {holdPct > 0 && (
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-              viewBox={`0 0 ${LOGO_SIZE + 4} ${LOGO_SIZE + 4}`}>
-              <circle
-                cx={(LOGO_SIZE + 4) / 2} cy={(LOGO_SIZE + 4) / 2} r={R}
-                fill="none" stroke="var(--brand)" strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeDasharray={`${(holdPct / 100) * CIRC} ${CIRC}`}
-                transform={`rotate(-90 ${(LOGO_SIZE + 4) / 2} ${(LOGO_SIZE + 4) / 2})`}
-              />
-            </svg>
-          )}
-        </div>
-
-        {/* Van name + status */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {/* Left: Van name + status */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, zIndex: 1 }}>
           <span style={{
             fontSize: 13, fontWeight: 700, color: 'var(--label)',
             letterSpacing: '0.04em', textTransform: 'uppercase',
@@ -211,10 +183,30 @@ export default function MainPanel() {
           </div>
         </div>
 
-        <div style={{ flex: 1 }} />
+        {/* Centre: logo — absolute so it stays truly centred regardless of side widths */}
+        <div
+          onPointerDown={startHold}
+          onPointerUp={cancelHold}
+          onPointerLeave={cancelHold}
+          style={{
+            position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+          }}
+        >
+          <img src="/logo.png" alt="Mobile Tyre Van City" style={{ height: 30, objectFit: 'contain' }} />
+          {holdPct > 0 && (
+            <div style={{
+              width: '100%', height: 2, marginTop: 3, borderRadius: 1,
+              background: `linear-gradient(to right, var(--brand) ${holdPct}%, rgba(255,255,255,0.08) ${holdPct}%)`,
+            }} />
+          )}
+        </div>
 
-        {/* Clock — hero element */}
-        <Clock />
+        {/* Right: Clock */}
+        <div style={{ marginLeft: 'auto', zIndex: 1 }}>
+          <Clock />
+        </div>
       </div>
 
       {/* ── CONTENT ── */}

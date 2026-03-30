@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { VanConfigAPI } from '../hooks/useVanConfig';
+import { ZoneIcon, ICON_TYPES, ICON_LABELS, IconType } from '../components/ZoneIcon';
 import { Toggle } from '../components/Toggle';
 import { TouchKeyboard } from '../components/TouchKeyboard';
 import { KeyboardProvider, useKeyboard } from '../context/KeyboardContext';
@@ -62,28 +63,64 @@ function SectionHead({ children }: { children: string }) {
 }
 
 function EditRow({
-  id, label, name, enabled, onName, onToggle, accent,
+  id, label, name, enabled, icon, onName, onToggle, onIcon, accent,
 }: {
-  id: string; label: string; name: string; enabled: boolean;
-  onName: (v: string) => void; onToggle: () => void; accent?: string;
+  id: string; label: string; name: string; enabled: boolean; icon?: string;
+  onName: (v: string) => void; onToggle: () => void;
+  onIcon?: (t: IconType) => void; accent?: string;
 }) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 10,
-      padding: '9px 16px', borderBottom: '0.5px solid var(--sep)',
-      opacity: enabled ? 1 : 0.5,
-    }}>
+    <div style={{ borderBottom: '0.5px solid var(--sep)' }}>
+      {/* Main row */}
       <div style={{
-        width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-        background: enabled ? (accent || 'var(--brand)') : 'var(--surface3)',
-      }} />
-      <span style={{ fontSize: 11, color: 'var(--label3)', fontWeight: 500, minWidth: 54, flexShrink: 0 }}>
-        {label}
-      </span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <TouchInput id={id} value={name} onChange={onName} />
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '9px 16px',
+        opacity: enabled ? 1 : 0.5,
+      }}>
+        <div style={{
+          width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+          background: enabled ? (accent || 'var(--brand)') : 'var(--surface3)',
+        }} />
+        <span style={{ fontSize: 11, color: 'var(--label3)', fontWeight: 500, minWidth: 54, flexShrink: 0 }}>
+          {label}
+        </span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <TouchInput id={id} value={name} onChange={onName} />
+        </div>
+        <Toggle on={enabled} onToggle={onToggle} color="var(--brand)" size="sm" />
       </div>
-      <Toggle on={enabled} onToggle={onToggle} color="var(--brand)" size="sm" />
+
+      {/* Icon picker row — shown only for zone outputs */}
+      {onIcon && (
+        <div style={{
+          display: 'flex', gap: 5, padding: '4px 16px 10px', flexWrap: 'wrap',
+        }}>
+          {ICON_TYPES.map(t => {
+            const isSelected = (icon ?? 'light') === t;
+            return (
+              <button
+                key={t}
+                onClick={() => onIcon(t)}
+                title={ICON_LABELS[t]}
+                style={{
+                  width: 34, height: 34, borderRadius: 8, padding: 0,
+                  border: `1.5px solid ${isSelected ? 'var(--brand)' : 'var(--sep)'}`,
+                  background: isSelected ? 'rgba(109,200,43,0.12)' : 'transparent',
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'border-color 0.15s, background 0.15s',
+                }}
+              >
+                <ZoneIcon
+                  type={t}
+                  color={isSelected ? 'var(--brand)' : 'rgba(255,255,255,0.35)'}
+                  size={19}
+                />
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -198,8 +235,8 @@ function AdminContent({ api, onClose }: Props) {
           </div>
         </div>
 
-        {/* Lighting zones */}
-        <SectionHead>Lighting Zones</SectionHead>
+        {/* Output zones */}
+        <SectionHead>Output Zones</SectionHead>
         <div style={{ background: 'var(--surface1)', borderRadius: 12, margin: '0 12px 4px', overflow: 'hidden' }}>
           {config.lights.map((light, i) => (
             <EditRow
@@ -208,14 +245,16 @@ function AdminContent({ api, onClose }: Props) {
               label={`Zone ${i + 1}`}
               name={light.name}
               enabled={light.enabled}
-              accent={light.name === 'Emergency' ? 'var(--sys-red)' : 'var(--brand)'}
+              icon={light.icon}
+              accent={light.id === 7 ? 'var(--sys-red)' : 'var(--brand)'}
               onName={name => setLightConfig(light.id, { name })}
               onToggle={() => setLightConfig(light.id, { enabled: !light.enabled })}
+              onIcon={t => setLightConfig(light.id, { icon: t })}
             />
           ))}
           <div style={{ padding: '6px 16px 10px' }}>
             <span style={{ fontSize: 11, color: 'var(--label3)' }}>
-              Disabled zones are hidden from the dashboard and cab display.
+              Tap an icon to change the zone type. Disabled zones are hidden from the dashboard.
             </span>
           </div>
         </div>

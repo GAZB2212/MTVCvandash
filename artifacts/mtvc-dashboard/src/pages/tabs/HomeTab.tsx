@@ -1,4 +1,5 @@
 import { ArcGauge } from '../../components/ArcGauge';
+import { ZoneIcon, IconType } from '../../components/ZoneIcon';
 import { LightData, BatteryData } from '../../hooks/useLiveData';
 import { calcTimeRemaining } from './BatteryTab';
 
@@ -7,93 +8,58 @@ const EMERGENCY_ID = 7;
 interface Props {
   battery: BatteryData;
   powerKw: number;
-  lights: (LightData & { _enabled?: boolean })[];
+  lights: (LightData & { _enabled?: boolean; icon?: string })[];
   setLights: (lights: LightData[]) => void;
   inverterOn: boolean;
   onToggleInverter: () => void;
 }
 
-/* Lightbulb icon for normal zones */
-function BulbIcon({ on, color }: { on: boolean; color: string }) {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M9 21h6M12 3a6 6 0 0 1 4.243 10.243C15.368 14.12 15 15.03 15 16v1H9v-1c0-.97-.368-1.88-1.243-2.757A6 6 0 0 1 12 3z"
-        fill={on ? `${color}40` : 'none'}
-        stroke={on ? color : 'rgba(255,255,255,0.22)'}
-        strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-      />
-      <line x1="9" y1="17" x2="15" y2="17"
-        stroke={on ? color : 'rgba(255,255,255,0.22)'}
-        strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/* Warning icon for Emergency zone */
-function AlertIcon({ on, color }: { on: boolean; color: string }) {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-        fill={on ? `${color}35` : 'none'}
-        stroke={on ? color : 'rgba(255,255,255,0.22)'}
-        strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-      />
-      <line x1="12" y1="9" x2="12" y2="13"
-        stroke={on ? color : 'rgba(255,255,255,0.22)'}
-        strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx="12" cy="17" r="0.9"
-        fill={on ? color : 'rgba(255,255,255,0.22)'} />
-    </svg>
-  );
-}
-
-/* A single light zone tile */
+/* A single zone control tile */
 function ZoneTile({ light, onToggle }: {
-  light: LightData & { name: string }; onToggle: () => void;
+  light: LightData & { name: string; icon?: string }; onToggle: () => void;
 }) {
   const isEmerg  = light.id === EMERGENCY_ID;
   const accent   = isEmerg ? 'var(--sys-red)' : 'var(--brand)';
   const glowRgb  = isEmerg ? '255,69,58' : '109,200,43';
+  const iconType = (light.icon as IconType | undefined) ?? (isEmerg ? 'emergency' : 'light');
+  const iconColor = light.on ? accent : 'rgba(255,255,255,0.22)';
 
   return (
     <div
       onClick={onToggle}
       style={{
         display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center', gap: 7,
+        alignItems: 'center', justifyContent: 'center', gap: 12,
+        padding: '12px 8px',
         borderRadius: 16, cursor: 'pointer',
         background: light.on
-          ? `linear-gradient(145deg, rgba(${glowRgb},0.20) 0%, rgba(${glowRgb},0.06) 100%)`
+          ? `linear-gradient(145deg, rgba(${glowRgb},0.22) 0%, rgba(${glowRgb},0.06) 100%)`
           : 'linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%)',
-        border: `1px solid ${light.on ? `rgba(${glowRgb},0.40)` : 'rgba(255,255,255,0.08)'}`,
-        borderTopColor: light.on ? `rgba(${glowRgb},0.55)` : 'rgba(255,255,255,0.13)',
+        border: `1px solid ${light.on ? `rgba(${glowRgb},0.42)` : 'rgba(255,255,255,0.08)'}`,
+        borderTopColor: light.on ? `rgba(${glowRgb},0.58)` : 'rgba(255,255,255,0.13)',
         boxShadow: light.on
-          ? `0 0 24px rgba(${glowRgb},0.18), 0 0 48px rgba(${glowRgb},0.07), inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 20px rgba(0,0,0,0.45)`
+          ? `0 0 28px rgba(${glowRgb},0.20), 0 0 56px rgba(${glowRgb},0.08), inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 20px rgba(0,0,0,0.45)`
           : 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.40)',
         transition: 'all 0.22s cubic-bezier(0.4,0,0.2,1)',
         userSelect: 'none', WebkitUserSelect: 'none',
       }}
     >
-      {isEmerg
-        ? <AlertIcon on={light.on} color={accent} />
-        : <BulbIcon  on={light.on} color={accent} />
-      }
+      <div style={{
+        filter: light.on
+          ? `drop-shadow(0 0 12px ${isEmerg ? 'rgba(255,69,58,0.7)' : 'rgba(109,200,43,0.7)'})`
+          : 'none',
+        transition: 'filter 0.22s',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <ZoneIcon type={iconType} color={iconColor} size={52} />
+      </div>
       <span style={{
-        fontSize: 13, fontWeight: 700, letterSpacing: '0.05em',
-        textTransform: 'uppercase', textAlign: 'center',
+        fontSize: 15, fontWeight: 700, letterSpacing: '0.05em',
+        textTransform: 'uppercase', textAlign: 'center', padding: '0 6px',
         color: light.on ? 'var(--label)' : 'var(--label3)',
         lineHeight: 1.2, transition: 'color 0.2s',
       }}>
         {light.name}
-      </span>
-      <span style={{
-        fontSize: 12, fontWeight: 800, letterSpacing: '0.12em',
-        color: light.on ? accent : 'rgba(255,255,255,0.16)',
-        transition: 'color 0.22s',
-      }}>
-        {light.on ? '● ON' : '○ OFF'}
       </span>
     </div>
   );
@@ -226,7 +192,7 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
           <span style={{
             fontSize: 13, fontWeight: 700, letterSpacing: '0.10em',
             textTransform: 'uppercase', color: 'var(--label3)',
-          }}>Lighting</span>
+          }}>Zones</span>
           <div style={{
             padding: '3px 12px', borderRadius: 99, fontSize: 13, fontWeight: 800,
             background: onCount > 0 ? 'var(--brand-dim)' : 'rgba(255,255,255,0.06)',
@@ -263,7 +229,7 @@ export function HomeTab({ battery, powerKw, lights, setLights, inverterOn, onTog
           {lights.map(light => (
             <ZoneTile
               key={light.id}
-              light={light as LightData & { name: string }}
+              light={light as LightData & { name: string; icon?: string }}
               onToggle={() => toggle(light.id)}
             />
           ))}

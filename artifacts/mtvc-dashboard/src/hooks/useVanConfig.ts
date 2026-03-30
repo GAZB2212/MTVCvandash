@@ -4,23 +4,34 @@ export interface OutputConfig {
   id: number;
   name: string;
   enabled: boolean;
+  icon?: string;
 }
 
 export interface VanConfig {
   vanName: string;
   lights: OutputConfig[];
   fans: OutputConfig[];
-  dateTimeOffset: number; // ms added to Date.now() for display
+  dateTimeOffset: number;
 }
 
-const DEFAULT_LIGHTS = ['Cab', 'Load Bay', 'Work', 'Step', 'Exterior', 'Tools', 'Rear', 'Emergency'];
-const DEFAULT_FANS   = ['Cabinet', 'Exhaust', 'Aux'];
+const DEFAULT_LIGHTS: { name: string; icon: string }[] = [
+  { name: 'Cab',      icon: 'light'     },
+  { name: 'Load Bay', icon: 'light'     },
+  { name: 'Work',     icon: 'light'     },
+  { name: 'Step',     icon: 'step'      },
+  { name: 'Exterior', icon: 'light'     },
+  { name: 'Tools',    icon: 'tools'     },
+  { name: 'Rear',     icon: 'light'     },
+  { name: 'Emergency',icon: 'emergency' },
+];
+
+const DEFAULT_FANS = ['Cabinet', 'Exhaust', 'Aux'];
 
 function defaultConfig(): VanConfig {
   return {
     vanName: 'Van 01',
-    lights: DEFAULT_LIGHTS.map((name, id) => ({ id, name, enabled: true })),
-    fans:   DEFAULT_FANS.map((name, id)   => ({ id, name, enabled: true })),
+    lights: DEFAULT_LIGHTS.map(({ name, icon }, id) => ({ id, name, enabled: true, icon })),
+    fans:   DEFAULT_FANS.map((name, id)              => ({ id, name, enabled: true })),
     dateTimeOffset: 0,
   };
 }

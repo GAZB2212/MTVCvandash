@@ -104,7 +104,7 @@ export default function MainPanel() {
   const activeLights = data.lights
     .map(l => {
       const cfg = vanConfig.config.lights.find(c => c.id === l.id);
-      return cfg ? { ...l, name: cfg.name, _enabled: cfg.enabled } : { ...l, _enabled: true };
+      return cfg ? { ...l, name: cfg.name, _enabled: cfg.enabled, icon: cfg.icon } : { ...l, _enabled: true };
     })
     .filter(l => l._enabled);
 

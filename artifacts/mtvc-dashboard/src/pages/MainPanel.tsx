@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLiveData } from '../hooks/useLiveData';
-import { useTheme } from '../context/ThemeContext';
 import { useVanConfig } from '../hooks/useVanConfig';
 import { ConnDot } from '../components/ConnDot';
 import { AdminPanel } from './AdminPanel';
@@ -79,7 +78,6 @@ export default function MainPanel() {
   const [holdPct, setHoldPct] = useState(0);
   const data = useLiveData();
   const vanConfig = useVanConfig();
-  const { isDark, toggleTheme } = useTheme();
   const online = data.inverter.connected && data.battery.connected;
 
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -214,16 +212,6 @@ export default function MainPanel() {
         </div>
 
         <div style={{ flex: 1 }} />
-
-        {/* Theme toggle — subtle icon button */}
-        <button onClick={toggleTheme} style={{
-          width: 34, height: 34, borderRadius: 10, border: '1px solid rgba(255,255,255,0.09)',
-          background: 'rgba(255,255,255,0.05)',
-          backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
-          cursor: 'pointer', fontSize: 14, color: 'var(--label2)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0,
-        }}>{isDark ? '☀' : '●'}</button>
 
         {/* Clock — hero element */}
         <Clock />

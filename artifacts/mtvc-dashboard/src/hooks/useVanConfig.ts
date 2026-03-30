@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
+import { IconType, ICON_TYPES } from '../components/ZoneIcon';
 
 export interface OutputConfig {
   id: number;
   name: string;
   enabled: boolean;
-  icon?: string;
+  icon?: IconType;
 }
 
 export interface VanConfig {
@@ -14,7 +15,7 @@ export interface VanConfig {
   dateTimeOffset: number;
 }
 
-const DEFAULT_LIGHTS: { name: string; icon: string }[] = [
+const DEFAULT_LIGHTS: { name: string; icon: IconType }[] = [
   { name: 'Cab',      icon: 'light'     },
   { name: 'Load Bay', icon: 'light'     },
   { name: 'Work',     icon: 'light'     },
@@ -49,7 +50,11 @@ function loadConfig(): VanConfig {
       dateTimeOffset: parsed.dateTimeOffset ?? 0,
       lights: def.lights.map(d => {
         const saved = parsed.lights?.find(l => l.id === d.id);
-        return saved ? { ...d, ...saved } : d;
+        if (!saved) return d;
+        const icon: IconType | undefined = ICON_TYPES.includes(saved.icon as IconType)
+          ? (saved.icon as IconType)
+          : d.icon;
+        return { ...d, ...saved, icon };
       }),
       fans: def.fans.map(d => {
         const saved = parsed.fans?.find(f => f.id === d.id);

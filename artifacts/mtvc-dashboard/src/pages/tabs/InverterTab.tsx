@@ -144,16 +144,17 @@ function HConn({ active, color, label, sublabel, animSpeed, id, reverse }: HConn
           )}
         </>)}
 
-        {/* Arrowhead — viewBox 0 0 100 28 so we can use fixed coords */}
-        <svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none"
-             style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          {!reverse
-            ? <polygon points="97,14 88,8 88,20"
-                fill={active ? color : 'rgba(255,255,255,0.09)'} opacity={active ? 0.85 : 1} />
-            : <polygon points="3,14 12,8 12,20"
-                fill={active ? color : 'rgba(255,255,255,0.09)'} opacity={active ? 0.85 : 1} />
-          }
-        </svg>
+        {/* Destination glow — soft halo where the wave arrives */}
+        <div style={{
+          position: 'absolute', top: 0, bottom: 0,
+          [reverse ? 'left' : 'right']: 0,
+          width: 22,
+          background: active
+            ? `radial-gradient(ellipse 11px 50% at ${reverse ? '0%' : '100%'} 50%, ${color}90 0%, ${color}28 55%, transparent 100%)`
+            : `radial-gradient(ellipse 8px 50% at ${reverse ? '0%' : '100%'} 50%, rgba(255,255,255,0.07) 0%, transparent 100%)`,
+          pointerEvents: 'none',
+          transition: 'background 0.4s',
+        }} />
       </div>
     </div>
   );
@@ -256,23 +257,27 @@ function VConn({ active, color, animSpeed, id, reverse, bidirectional, color2 }:
           }} />
         )}
 
-        {/* Arrowhead(s) */}
-        <svg width="28" height="100%" viewBox="0 0 28 100" preserveAspectRatio="none"
-             style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          {/* Primary direction */}
-          {reverse
-            ? <polygon points="14,3 8,13 20,13"
-                fill={active ? color : 'rgba(255,255,255,0.09)'} opacity={active ? 0.85 : 1} />
-            : <polygon points="14,97 8,87 20,87"
-                fill={active ? color : 'rgba(255,255,255,0.09)'} opacity={active ? 0.85 : 1} />
-          }
-          {/* Second arrowhead when bidirectional */}
-          {bidirectional && active && (
-            reverse
-              ? <polygon points="14,97 8,87 20,87" fill={color2 || 'var(--sys-blue)'} opacity={0.75} />
-              : <polygon points="14,3 8,13 20,13" fill={color2 || 'var(--sys-blue)'} opacity={0.75} />
-          )}
-        </svg>
+        {/* Destination glow — primary direction */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0,
+          [reverse ? 'top' : 'bottom']: 0,
+          height: 20,
+          background: active
+            ? `radial-gradient(ellipse 50% 10px at 50% ${reverse ? '0%' : '100%'}, ${color}95 0%, ${color}30 55%, transparent 100%)`
+            : `radial-gradient(ellipse 50% 8px at 50% ${reverse ? '0%' : '100%'}, rgba(255,255,255,0.07) 0%, transparent 100%)`,
+          pointerEvents: 'none',
+          transition: 'background 0.4s',
+        }} />
+        {/* Destination glow — second direction when bidirectional */}
+        {bidirectional && active && (
+          <div style={{
+            position: 'absolute', left: 0, right: 0,
+            [reverse ? 'bottom' : 'top']: 0,
+            height: 20,
+            background: `radial-gradient(ellipse 50% 10px at 50% ${reverse ? '100%' : '0%'}, ${(color2 || 'var(--sys-blue)')}80 0%, ${(color2 || 'var(--sys-blue)')}22 55%, transparent 100%)`,
+            pointerEvents: 'none',
+          }} />
+        )}
       </div>
     </div>
   );

@@ -399,9 +399,9 @@ export function InverterTab({ inverter, battery }: Props) {
   const leftActive  = shoreConn;
   const leftReverse = false;                /* shore always flows right → battery */
 
-  /* Right top: battery ↔ multiplus (reverse=true when inverting: bat→multi) */
+  /* Right top: battery → AC loads (always right-flowing, active when inverting or shore on) */
   const rightTopActive  = isOn || shoreConn;
-  const rightTopReverse = batToMulti;       /* inverting = battery→multiplus (right) */
+  const rightTopReverse = false;            /* always flows battery/shore → AC loads (right) */
 
   return (
     <div style={{

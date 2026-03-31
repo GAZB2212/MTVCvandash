@@ -234,15 +234,16 @@ body {
   100% { opacity: 0;    transform: translateY(-90px) scale(0.4); }
 }
 
-/* ── ELECTRIC FLOW — dashes march along the connector line ── */
-/* totalDash = dashLen(6) + gapLen(5) = 11 viewBox units     */
-@keyframes dash-flow-fwd {
-  from { stroke-dashoffset: 0;   }
-  to   { stroke-dashoffset: -11; }
+/* ── ELECTRIC FLOW — sine wave scrolls along connector ── */
+/* Horizontal: 200%-wide child scrolls -50% (one full cycle) */
+@keyframes sine-h {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
-@keyframes dash-flow-rev {
-  from { stroke-dashoffset: 0;  }
-  to   { stroke-dashoffset: 11; }
+/* Vertical: 200%-tall child scrolls -50% */
+@keyframes sine-v {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
 }
 
 /* ── BUTTON STATES ── */

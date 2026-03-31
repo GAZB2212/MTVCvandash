@@ -101,7 +101,7 @@ function HConn({ active, color, label, sublabel, animSpeed, id, reverse }: HConn
           </svg>
         )}
 
-        {/* Active — scrolling sine wave (3 layers) */}
+        {/* Active — scrolling sine wave (3 layers + pulse orb) */}
         {active && (<>
           <svg width="100%" height="28" style={{ position: 'absolute', inset: 0 }}>
             <defs>
@@ -133,6 +133,15 @@ function HConn({ active, color, label, sublabel, animSpeed, id, reverse }: HConn
               <path d={SINE_H} stroke="white" strokeWidth={0.8} fill="none" opacity={0.50} />
             </svg>
           </div>
+          {/* Pulse orb — glowing packet riding along the wave */}
+          {animSpeed > 0 && (
+            <div style={{
+              position: 'absolute', top: 0, width: 52, height: '100%',
+              background: `radial-gradient(ellipse 26px 50% at center, rgba(255,255,255,0.72) 0%, ${color}bb 38%, transparent 72%)`,
+              animation: `${reverse ? 'pulse-h-rev' : 'pulse-h'} ${parseFloat(period) * 2.8}s ease-in-out 0.18s infinite`,
+              pointerEvents: 'none',
+            }} />
+          )}
         </>)}
 
         {/* Arrowhead — viewBox 0 0 100 28 so we can use fixed coords */}
@@ -156,15 +165,49 @@ interface VConnProps {
   color: string;
   animSpeed: number;
   id: string;
-  reverse?: boolean; /* reverse=true = bottom-to-top (battery→inverter when inverting) */
+  reverse?: boolean;       /* true = bottom-to-top (battery→inverter) */
+  bidirectional?: boolean; /* show BOTH directions simultaneously */
+  color2?: string;         /* colour for the reverse direction when bidirectional */
 }
 
-function VConn({ active, color, animSpeed, id, reverse }: VConnProps) {
-  const period = animSpeed > 0 ? `${(animSpeed * 0.13).toFixed(2)}s` : '0.8s';
-  const waveAnim = active && animSpeed > 0
-    ? `sine-v ${period} linear infinite ${reverse ? 'reverse' : 'normal'}`
-    : 'none';
-  const filterId = `vf-${id}`;
+function VConnWave({ color, filterId, anim, opacity = 1 }: {
+  color: string; filterId: string; anim: string; opacity?: number;
+}) {
+  return (<>
+    <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '200%',
+                  animation: anim, pointerEvents: 'none', opacity }}>
+      <svg width="28" height="100%" viewBox="0 0 28 400" preserveAspectRatio="none">
+        <defs>
+          <filter id={filterId} x="-200%" y="-20%" width="500%" height="140%">
+            <feGaussianBlur stdDeviation="3.5" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <path d={SINE_V} stroke={color} strokeWidth={7} fill="none" opacity={0.22} filter={`url(#${filterId})`} />
+      </svg>
+    </div>
+    <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '200%',
+                  animation: anim, pointerEvents: 'none', opacity }}>
+      <svg width="28" height="100%" viewBox="0 0 28 400" preserveAspectRatio="none">
+        <path d={SINE_V} stroke={color} strokeWidth={2.2} fill="none" opacity={0.90} />
+      </svg>
+    </div>
+    <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '200%',
+                  animation: anim, pointerEvents: 'none', opacity }}>
+      <svg width="28" height="100%" viewBox="0 0 28 400" preserveAspectRatio="none">
+        <path d={SINE_V} stroke="white" strokeWidth={0.8} fill="none" opacity={0.50} />
+      </svg>
+    </div>
+  </>);
+}
+
+function VConn({ active, color, animSpeed, id, reverse, bidirectional, color2 }: VConnProps) {
+  const period    = animSpeed > 0 ? `${(animSpeed * 0.13).toFixed(2)}s` : '0.8s';
+  const pulsePer  = `${(animSpeed * 0.13 * 2.8).toFixed(2)}s`;
+  const fwdAnim   = active && animSpeed > 0 ? `sine-v ${period} linear infinite` : 'none';
+  const revAnim   = active && animSpeed > 0 ? `sine-v ${period} linear infinite reverse` : 'none';
+  const waveAnim  = reverse ? revAnim : fwdAnim;
+  const waveOpacity = bidirectional ? 0.60 : 1;
 
   return (
     <div style={{ width: '100%', height: '100%',
@@ -180,47 +223,55 @@ function VConn({ active, color, animSpeed, id, reverse }: VConnProps) {
           </svg>
         )}
 
-        {/* Active — scrolling vertical sine (3 layers) */}
-        {active && (<>
-          {/* Glow */}
-          <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '200%',
-                        animation: waveAnim, pointerEvents: 'none' }}>
-            <svg width="28" height="100%" viewBox="0 0 28 400" preserveAspectRatio="none">
-              <defs>
-                <filter id={filterId} x="-200%" y="-20%" width="500%" height="140%">
-                  <feGaussianBlur stdDeviation="3.5" result="b" />
-                  <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-                </filter>
-              </defs>
-              <path d={SINE_V} stroke={color} strokeWidth={7}
-                fill="none" opacity={0.20} filter={`url(#${filterId})`} />
-            </svg>
-          </div>
-          {/* Main */}
-          <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '200%',
-                        animation: waveAnim, pointerEvents: 'none' }}>
-            <svg width="28" height="100%" viewBox="0 0 28 400" preserveAspectRatio="none">
-              <path d={SINE_V} stroke={color} strokeWidth={2.2} fill="none" opacity={0.90} />
-            </svg>
-          </div>
-          {/* Core */}
-          <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '200%',
-                        animation: waveAnim, pointerEvents: 'none' }}>
-            <svg width="28" height="100%" viewBox="0 0 28 400" preserveAspectRatio="none">
-              <path d={SINE_V} stroke="white" strokeWidth={0.8} fill="none" opacity={0.50} />
-            </svg>
-          </div>
-        </>)}
+        {/* Active — primary wave direction */}
+        {active && (
+          <VConnWave color={color} filterId={`vf-${id}a`} anim={waveAnim} opacity={waveOpacity} />
+        )}
 
-        {/* Arrowhead — viewBox 0 0 28 100 for fixed coords */}
+        {/* Bidirectional — second wave in opposite direction */}
+        {active && bidirectional && (
+          <VConnWave
+            color={color2 || 'var(--sys-blue)'}
+            filterId={`vf-${id}b`}
+            anim={reverse ? fwdAnim : revAnim}
+            opacity={waveOpacity}
+          />
+        )}
+
+        {/* Pulse orb(s) */}
+        {active && animSpeed > 0 && (
+          <div style={{
+            position: 'absolute', left: 0, width: '100%', height: 40,
+            background: `radial-gradient(ellipse 50% 20px at center, rgba(255,255,255,0.70) 0%, ${color}bb 38%, transparent 72%)`,
+            animation: `${reverse ? 'pulse-v-rev' : 'pulse-v'} ${pulsePer} ease-in-out 0.22s infinite`,
+            pointerEvents: 'none',
+          }} />
+        )}
+        {active && bidirectional && animSpeed > 0 && (
+          <div style={{
+            position: 'absolute', left: 0, width: '100%', height: 40,
+            background: `radial-gradient(ellipse 50% 20px at center, rgba(255,255,255,0.70) 0%, ${(color2 || 'var(--sys-blue)')}bb 38%, transparent 72%)`,
+            animation: `${reverse ? 'pulse-v' : 'pulse-v-rev'} ${pulsePer} ease-in-out 1.2s infinite`,
+            pointerEvents: 'none',
+          }} />
+        )}
+
+        {/* Arrowhead(s) */}
         <svg width="28" height="100%" viewBox="0 0 28 100" preserveAspectRatio="none"
              style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          {/* Primary direction */}
           {reverse
             ? <polygon points="14,3 8,13 20,13"
                 fill={active ? color : 'rgba(255,255,255,0.09)'} opacity={active ? 0.85 : 1} />
             : <polygon points="14,97 8,87 20,87"
                 fill={active ? color : 'rgba(255,255,255,0.09)'} opacity={active ? 0.85 : 1} />
           }
+          {/* Second arrowhead when bidirectional */}
+          {bidirectional && active && (
+            reverse
+              ? <polygon points="14,97 8,87 20,87" fill={color2 || 'var(--sys-blue)'} opacity={0.75} />
+              : <polygon points="14,3 8,13 20,13" fill={color2 || 'var(--sys-blue)'} opacity={0.75} />
+          )}
         </svg>
       </div>
     </div>
@@ -302,8 +353,8 @@ function Node({ accent, icon, title, subtitle, primary, primaryColor, rows, acti
 }
 
 /* ═══════════════════════ Battery water-tank (compact) ═══════════════════════ */
-function BatteryTank({ battery, isCharging, remStr }: {
-  battery: BatteryData; isCharging: boolean; remStr: string;
+function BatteryTank({ battery, isCharging, isBothActive, remStr }: {
+  battery: BatteryData; isCharging: boolean; isBothActive?: boolean; remStr: string;
 }) {
   const soc   = battery.soc;
   const rgb   = soc > 60 ? '48,209,88' : soc > 30 ? '255,159,10' : '255,69,58';
@@ -334,12 +385,12 @@ function BatteryTank({ battery, isCharging, remStr }: {
         <div style={{ flex: 1 }} />
         <div style={{
           fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase',
-          color: isCharging ? 'var(--sys-orange)' : 'var(--label3)',
+          color: isBothActive ? 'var(--sys-teal)' : isCharging ? 'var(--sys-orange)' : 'var(--label3)',
           padding: '2px 8px', borderRadius: 5,
-          background: isCharging ? 'rgba(255,159,10,0.12)' : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${isCharging ? 'rgba(255,159,10,0.28)' : 'rgba(255,255,255,0.08)'}`,
+          background: isBothActive ? 'rgba(90,200,250,0.10)' : isCharging ? 'rgba(255,159,10,0.12)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${isBothActive ? 'rgba(90,200,250,0.28)' : isCharging ? 'rgba(255,159,10,0.28)' : 'rgba(255,255,255,0.08)'}`,
         }}>
-          {isCharging ? '⚡ Charging' : 'Discharging'}
+          {isBothActive ? '⚡ Charging + DC' : isCharging ? '⚡ Charging' : 'Discharging'}
         </div>
       </div>
 
@@ -441,24 +492,45 @@ const SHORE_MODES = new Set(['Bulk', 'Absorption', 'Float', 'Storage', 'Equalize
 
 /* ═══════════════════════ Main tab ═══════════════════════ */
 export function InverterTab({ inverter, battery }: Props) {
-  const isOn       = inverter.isOn;
-  const shoreConn  = SHORE_MODES.has(inverter.mode);
-  const isCharging = shoreConn && battery.current < 0;
-  const batToMulti = !shoreConn;   /* true = inverting (bat→multiplus); false = charging */
+  const isOn      = inverter.isOn;
+  const shoreConn = SHORE_MODES.has(inverter.mode);
+
+  /* Net battery direction: negative = charging, positive = discharging */
+  const netCharging    = battery.current < -0.5;  /* shore > DC loads */
+  const netDischarging = battery.current >  0.5;  /* DC loads > shore (or no shore) */
+
+  /* Shore charging the battery (even if DC loads are also running) */
+  const isCharging = shoreConn;   /* any shore-connected mode means charger is active */
+
+  /* Battery simultaneously charging from shore AND supplying DC loads:
+     shore is connected but we also have DC loads drawing from the bus */
+  const dcLoadAmps  = shoreConn
+    ? Math.max(0, -battery.current + (inverter.dcCurrent || 0))  /* combined DC draw when charging */
+    : Math.max(0, battery.current);                               /* plain battery current when inverting */
+  const dcLoadW     = dcLoadAmps * battery.voltage;
+  const dcActive    = dcLoadAmps > 0.5;
+
+  /* True when BOTH shore charging AND dc loads are running at the same time */
+  const isBothActive = shoreConn && dcActive;
+
+  /* Charging display (for bubbles / badge) — battery is actually receiving charge */
+  const batActuallyCharging = shoreConn && netCharging;
+
+  /* VConn direction: downward when net-charging, upward when net-discharging/inverting */
+  const vConnReverse = netDischarging;  /* true = battery→up */
 
   /* Power calcs */
-  const batKw      = inverter.dcVoltage * Math.abs(inverter.dcCurrent) / 1000;
-  const chargeKw   = isCharging ? Math.abs(battery.current) * battery.voltage / 1000 : 0;
-  const shoreKw    = shoreConn ? (inverter.outputKw + chargeKw) : 0;
-  const dcLoadAmps = Math.max(0, battery.current - (batToMulti ? inverter.dcCurrent : 0));
-  const dcLoadW    = dcLoadAmps * battery.voltage;
-  const dcActive   = dcLoadAmps > 0.5;
+  const batKw    = battery.voltage * Math.abs(battery.current) / 1000;
+  const chargeKw = netCharging ? Math.abs(battery.current) * battery.voltage / 1000 : 0;
+  const shoreKw  = shoreConn ? (inverter.outputKw + chargeKw) : 0;
 
   /* Colours */
   const loadC  = inverter.loadPct > 80 ? 'var(--sys-red)' : inverter.loadPct > 60 ? 'var(--sys-orange)' : 'var(--label)';
   const tempC  = inverter.temp > 55   ? 'var(--sys-red)' : inverter.temp > 40     ? 'var(--sys-orange)' : 'var(--sys-green)';
   const hubCol = shoreConn ? 'var(--sys-orange)' : isOn ? 'var(--brand)' : 'var(--label3)';
-  const batDir = batToMulti ? 'var(--sys-blue)' : 'var(--sys-orange)';
+  /* VConn primary colour: orange when charging dominates, blue when discharging dominates */
+  const vConnColor  = netCharging || shoreConn ? 'var(--sys-orange)' : 'var(--sys-blue)';
+  const vConnColor2 = 'var(--sys-blue)';  /* second direction (DC loads) always blue */
 
   /* Animation speeds (kW → seconds, slower = more power) */
   const spd = (kw: number) => kw > 0.05 ? Math.max(4.0, 9.0 - kw * 1.2) : 0;
@@ -574,16 +646,18 @@ export function InverterTab({ inverter, battery }: Props) {
       <div style={{ gridColumn: 3, gridRow: 2, minWidth: 0 }}>
         <VConn
           active={isOn || shoreConn || dcActive}
-          color={batDir}
+          color={vConnColor}
+          color2={vConnColor2}
           animSpeed={batSpd}
           id="bat-v"
-          reverse={batToMulti}   /* inverting = battery→top (upward) */
+          reverse={vConnReverse}
+          bidirectional={isBothActive}
         />
       </div>
 
       {/* ── Battery Tank — bottom centre ── */}
       <div style={{ gridColumn: 3, gridRow: 3, minWidth: 0 }}>
-        <BatteryTank battery={battery} isCharging={isCharging} remStr={remStr} />
+        <BatteryTank battery={battery} isCharging={batActuallyCharging} isBothActive={isBothActive} remStr={remStr} />
       </div>
 
       {/* ── Battery → DC Loads ── */}

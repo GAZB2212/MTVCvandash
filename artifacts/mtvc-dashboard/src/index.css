@@ -246,6 +246,34 @@ body {
   to   { transform: translateY(-50%); }
 }
 
+/* ── PULSE ORB — glowing packet that rides along the connector ── */
+/* Horizontal: moves left-to-right across the container             */
+@keyframes pulse-h {
+  0%   { left: -52px; opacity: 0;   }
+  8%   { opacity: 1;                }
+  88%  { opacity: 1;                }
+  100% { left: calc(100% + 12px); opacity: 0; }
+}
+@keyframes pulse-h-rev {
+  0%   { left: calc(100% + 12px); opacity: 0; }
+  8%   { opacity: 1;                          }
+  88%  { opacity: 1;                          }
+  100% { left: -52px; opacity: 0;             }
+}
+/* Vertical: moves top-to-bottom */
+@keyframes pulse-v {
+  0%   { top: -40px; opacity: 0;   }
+  8%   { opacity: 1;               }
+  88%  { opacity: 1;               }
+  100% { top: calc(100% + 10px); opacity: 0; }
+}
+@keyframes pulse-v-rev {
+  0%   { top: calc(100% + 10px); opacity: 0; }
+  8%   { opacity: 1;                         }
+  88%  { opacity: 1;                         }
+  100% { top: -40px; opacity: 0;             }
+}
+
 /* ── BUTTON STATES ── */
 button { -webkit-tap-highlight-color: transparent; }
 button:active { opacity: 0.75; }

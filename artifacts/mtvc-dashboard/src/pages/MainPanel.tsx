@@ -73,7 +73,7 @@ function Clock() {
         color: 'rgba(255,255,255,0.22)',
         marginTop: 1,
       }}>
-        Powered by Gajotech
+        Powered by <span style={{ color: '#FFD60A', fontWeight: 600 }}>Gajotech</span>
       </span>
     </div>
   );

@@ -68,13 +68,11 @@ function Clock() {
       <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--label3)', lineHeight: 1, letterSpacing: '0.03em' }}>
         {date}
       </span>
-      <span style={{
-        fontSize: 10, fontWeight: 400, lineHeight: 1, letterSpacing: '0.06em',
-        color: 'rgba(255,255,255,0.22)',
-        marginTop: 1,
-      }}>
-        Powered by <span style={{ color: '#FFD60A', fontWeight: 600 }}>Gajotech</span>
-      </span>
+      <img
+        src="/gajotech-logo.png"
+        alt="Powered by Gajotech"
+        style={{ height: 18, width: 'auto', marginTop: 3, opacity: 0.85 }}
+      />
     </div>
   );
 }

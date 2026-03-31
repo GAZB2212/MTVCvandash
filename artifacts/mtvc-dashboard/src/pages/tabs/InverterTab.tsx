@@ -64,48 +64,90 @@ interface HConnProps {
 }
 
 function HConn({ active, color, label, sublabel, animSpeed, pathId, reverse }: HConnProps) {
-  const t  = (animSpeed / 3).toFixed(2);
-  const t2 = ((animSpeed / 3) * 2).toFixed(2);
-  const path     = reverse ? `M 97 10 H 3` : `M 3 10 H 97`;
-  const filterId = `glow-h-${pathId}`;
+  /* Dash dimensions (viewBox units, vb width=100) */
+  const DASH = 6;
+  const GAP  = 5;   /* totalDash=11, matches CSS keyframe */
+
+  /* Period: animSpeed 4→9s maps to dashPeriod 0.22→0.50s */
+  const period = animSpeed > 0 ? `${(animSpeed * 0.055).toFixed(2)}s` : '0.4s';
+  const anim   = active && animSpeed > 0
+    ? `${reverse ? 'dash-flow-rev' : 'dash-flow-fwd'} ${period} linear infinite`
+    : 'none';
+
+  const filterId = `gf-${pathId}`;
+  const x1 = 3, x2 = 93;
 
   return (
     <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minWidth:0 }}>
-      <div style={{ textAlign:'center', marginBottom:4, lineHeight:1.2 }}>
-        <div style={{ fontSize:13, fontWeight:600, color: active ? color : 'var(--label3)', fontVariantNumeric:'tabular-nums', transition:'color 0.4s' }}>{label}</div>
+      {/* Labels */}
+      <div style={{ textAlign:'center', marginBottom:5, lineHeight:1.2 }}>
+        <div style={{
+          fontSize:13, fontWeight:600, fontVariantNumeric:'tabular-nums',
+          color: active ? color : 'var(--label3)', transition:'color 0.4s',
+        }}>{label}</div>
         <div style={{ fontSize:11, color:'var(--label3)', marginTop:1 }}>{sublabel}</div>
       </div>
-      <div style={{ width:'100%', height:24 }}>
-        <svg width="100%" height="24" viewBox="0 0 100 24" preserveAspectRatio="none" overflow="visible">
+
+      {/* SVG connector */}
+      <div style={{ width:'100%', height:28 }}>
+        <svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none" overflow="visible">
           <defs>
-            <path id={pathId} d={path} />
-            <filter id={filterId} x="-80%" y="-300%" width="260%" height="700%">
-              <feGaussianBlur stdDeviation="2.2" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            <filter id={filterId} x="-100%" y="-400%" width="300%" height="900%">
+              <feGaussianBlur stdDeviation="2.8" result="b" />
+              <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
             </filter>
           </defs>
-          <line x1="3" y1="12" x2="97" y2="12"
-            stroke={active ? color : 'rgba(255,255,255,0.09)'}
-            strokeWidth={1.5} strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-            opacity={active ? 0.30 : 0.6}
-            style={{ transition:'stroke 0.4s, opacity 0.4s' }}
-          />
-          {!reverse
-            ? <polygon points="100,12 91,7.5 91,16.5" fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.70 : 1} />
-            : <polygon points="0,12 9,7.5 9,16.5"    fill={active ? color : 'rgba(255,255,255,0.10)'} opacity={active ? 0.70 : 1} />
-          }
-          {active && animSpeed > 0 && (<>
-            <ellipse rx="5.5" ry="2.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
-              <animateMotion dur={`${animSpeed}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
-            </ellipse>
-            <ellipse rx="5.5" ry="2.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
-              <animateMotion dur={`${animSpeed}s`} begin={`-${t}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
-            </ellipse>
-            <ellipse rx="5.5" ry="2.5" fill={color} opacity="0.90" filter={`url(#${filterId})`}>
-              <animateMotion dur={`${animSpeed}s`} begin={`-${t2}s`} repeatCount="indefinite" rotate="none"><mpath href={`#${pathId}`} /></animateMotion>
-            </ellipse>
+
+          {/* ── INACTIVE: static dim dots ── */}
+          {!active && (
+            <line x1={x1} y1="14" x2={x2} y2="14"
+              stroke="rgba(255,255,255,0.10)"
+              strokeWidth={1.5} strokeLinecap="round"
+              strokeDasharray="3 7"
+            />
+          )}
+
+          {/* ── ACTIVE: 3-layer glowing electric dash ── */}
+          {active && (<>
+            {/* Layer 1 — wide soft glow halo */}
+            <line x1={x1} y1="14" x2={x2} y2="14"
+              stroke={color} strokeWidth={7} strokeLinecap="round"
+              strokeDasharray={`${DASH} ${GAP}`}
+              opacity={0.18}
+              filter={`url(#${filterId})`}
+              style={{ animation: anim }}
+            />
+            {/* Layer 2 — coloured dashes */}
+            <line x1={x1} y1="14" x2={x2} y2="14"
+              stroke={color} strokeWidth={2} strokeLinecap="round"
+              strokeDasharray={`${DASH} ${GAP}`}
+              opacity={0.92}
+              style={{ animation: anim }}
+            />
+            {/* Layer 3 — bright white core (electric arc look) */}
+            <line x1={x1} y1="14" x2={x2} y2="14"
+              stroke="white" strokeWidth={0.7} strokeLinecap="round"
+              strokeDasharray={`${DASH} ${GAP}`}
+              opacity={0.55}
+              style={{ animation: anim }}
+            />
           </>)}
+
+          {/* ── Arrowhead (glows when active) ── */}
+          {!reverse
+            ? <polygon
+                points="100,14 90,8.5 90,19.5"
+                fill={active ? color : 'rgba(255,255,255,0.09)'}
+                opacity={active ? 0.85 : 1}
+                filter={active ? `url(#${filterId})` : undefined}
+              />
+            : <polygon
+                points="0,14 10,8.5 10,19.5"
+                fill={active ? color : 'rgba(255,255,255,0.09)'}
+                opacity={active ? 0.85 : 1}
+                filter={active ? `url(#${filterId})` : undefined}
+              />
+          }
         </svg>
       </div>
     </div>

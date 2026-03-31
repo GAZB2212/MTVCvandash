@@ -234,6 +234,17 @@ body {
   100% { opacity: 0;    transform: translateY(-90px) scale(0.4); }
 }
 
+/* ── ELECTRIC FLOW — dashes march along the connector line ── */
+/* totalDash = dashLen(6) + gapLen(5) = 11 viewBox units     */
+@keyframes dash-flow-fwd {
+  from { stroke-dashoffset: 0;   }
+  to   { stroke-dashoffset: -11; }
+}
+@keyframes dash-flow-rev {
+  from { stroke-dashoffset: 0;  }
+  to   { stroke-dashoffset: 11; }
+}
+
 /* ── BUTTON STATES ── */
 button { -webkit-tap-highlight-color: transparent; }
 button:active { opacity: 0.75; }
